@@ -80,8 +80,5 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
     }
 
     @Override
-    public void onClose(Player player) {
-        DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(60);
-        player.openInventory(dawsPlayModeHolder.getInventory());
-    }
+    public void onClose(Player player) {}
 }

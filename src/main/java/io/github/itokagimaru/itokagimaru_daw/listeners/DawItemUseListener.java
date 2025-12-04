@@ -30,15 +30,15 @@ public class DawItemUseListener implements Listener {
         if (item.getType() != Material.WOODEN_HOE) return;
 
         if (item.getItemMeta().hasItemModel()) {
-            NamespacedKey data = item.getItemMeta().getItemModel();
-            event.setCancelled(true);
             String itemId = ItemData.ITEM_ID.get(item);
             switch (itemId) {
                 case "daw" -> {
+                    event.setCancelled(true);
                     MainMenuHolder mainMenuHolder = new MainMenuHolder();
                     player.openInventory(mainMenuHolder.getInventory());
                 }
                 case "walkman" -> {
+                    event.setCancelled(true);
                     SwapItems.mainAndHead(player);
                     Location location = player.getLocation();
                     location.setPitch(0);

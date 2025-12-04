@@ -17,24 +17,23 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 
 public final class Itokagimaru_daw extends JavaPlugin implements Listener {
     public static Itokagimaru_daw instance;
 
-    public static Map<UUID, int[]> savedMusicList = new HashMap<>();
+//    public static Map<UUID, int[]> savedMusicList = new HashMap<>();
     public static final HashMap<UUID, ItemStack[]> inv = new HashMap<>();
-    public static final int MUSICLENGTH = 2048;
-    public static final int MAXPAGE = MUSICLENGTH / 8;
+    public static final int MUSIC_LENGTH = 2048;
+    public static final int MAX_PAGE = MUSIC_LENGTH / 8;
 
     @Override
     public void onEnable() {
         // setup music manager
-        MusicManager music = new MusicManager();
-        music.setSavedMusicList(music.loadMapFile(this));
-        getSLF4JLogger().info("曲をロードしました。");
+//        MusicManager music = new MusicManager();
+//        music.setSavedMusicList(music.loadMapFile(this));
+//        getSLF4JLogger().info("曲をロードしました。");
 
         // listener
         registerListeners(
@@ -72,8 +71,8 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        MusicManager music = new MusicManager();
-        music.makeMapFile(this, music.getSavedMusicList());
+//        MusicManager music = new MusicManager();
+//        music.makeMapFile(this, music.getSavedMusicList());
     }
 
     public static Itokagimaru_daw getInstance() {

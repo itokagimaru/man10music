@@ -43,7 +43,7 @@ public class SetCassetteName implements CommandExecutor {
             data = item.getItemMeta().getItemModel();
         }
 
-        if (item.getType() == Material.WOODEN_HOE && Objects.equals(data, NamespacedKey.minecraft("cassette_tape"))) {
+        if (item.getType() == Material.PAPER && Objects.equals(data, NamespacedKey.minecraft("cassette_tape"))) {
             @Nullable List<Component> lore = meta.lore();
             int lines = (lore != null) ? lore.size() : 0;
             if (lines == 2) {

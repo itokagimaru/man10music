@@ -19,7 +19,7 @@ public class GetSheetMusicItem implements CommandExecutor {
             sender.sendMessage("Only players can execute this command");
             return false;
         }
-        ItemStack stack = new ItemStack(Material.WOODEN_HOE);
+        ItemStack stack = new ItemStack(Material.PAPER);
         stack.editMeta(meta -> {
             meta.setItemModel(NamespacedKey.minecraft("blank_sheet_music"));
             meta.customName(Component.text("白紙の楽譜"));

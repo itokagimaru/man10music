@@ -93,11 +93,11 @@ public class MusicSheetExportHolder extends BaseGuiHolder{
         ItemStack check = inv.getItem(4);
         if (check == null) return;
         if (Objects.equals(ItemData.ITEM_ID.get(check), "SELECT CASSETTE")) {
-            ItemStack cassetteTape = new ItemStack(Material.WOODEN_HOE);
+            ItemStack cassetteTape = new ItemStack(Material.PAPER);
             MakeItem.setItemMeta(cassetteTape,"カセットテープ",null,"cassette_tape", ItemData.ITEM_ID,"CASSETTE TAPE");
             player.getInventory().addItem(cassetteTape);
         } else if (Objects.equals(ItemData.ITEM_ID.get(check), "SELECT SHEET")) {
-            ItemStack sheetMusic = new ItemStack(Material.WOODEN_HOE);
+            ItemStack sheetMusic = new ItemStack(Material.PAPER);
             MakeItem.setItemMeta(sheetMusic,"白紙の楽譜",null,"blank_sheet_music", ItemData.ITEM_ID,"BLANK SHEET");
             player.getInventory().addItem(sheetMusic);
         }

@@ -27,7 +27,7 @@ public class GetDawItem implements CommandExecutor {
             meta.customName(Component.text("daw").color(TextColor.color(149, 229, 249)));
         });
         ItemData.ITEM_ID.set(stack,"daw");
-        ItemData.MUSIC_SAVED_RED.set(stack,new int[Itokagimaru_daw.MUSICLENGTH]);
+        ItemData.MUSIC_SAVED_RED.set(stack,new int[Itokagimaru_daw.MUSIC_LENGTH]);
         player.give(stack);
         return true;
     }

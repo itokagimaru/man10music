@@ -25,7 +25,7 @@ public class ItemsOptionBpmHolder extends DawsOptionBpmHolder {
         switch (buttonId) {
             case "SET BPM" -> {
                 int bpm = ItemData.BPM.get(clicked);
-                ItemStack item = new ItemStack(Material.WOODEN_HOE);
+                ItemStack item = new ItemStack(Material.PAPER);
                 MakeItem.setItemMeta(item, "記録済みのカセットテープ", null, "cassette_tape", ItemData.BPM, bpm);
                 ItemData.BUTTON_ID.set(item, "RECORD ITEM");
                 ItemMeta meta = item.getItemMeta();
@@ -38,7 +38,7 @@ public class ItemsOptionBpmHolder extends DawsOptionBpmHolder {
                 item.setItemMeta(meta);
                 FakeEnchant.addFakeEnchant(item);
                 player.give(item);
-
+                ItemData.FLAG.set(inv.getItem(0),(byte) 0);
                 player.closeInventory();
             }
             case "SHIFT RIGHT" -> {
@@ -59,8 +59,8 @@ public class ItemsOptionBpmHolder extends DawsOptionBpmHolder {
     }
     @Override
     public void onClose(Player player) {
-        if (ItemData.FLAG.get(inv.getItem(0)) != (byte) 0) return;
-        ItemStack cassetteTape = new ItemStack(Material.WOODEN_HOE);
+        if (ItemData.FLAG.get(inv.getItem(0)) == (byte) 0) return;
+        ItemStack cassetteTape = new ItemStack(Material.PAPER);
         MakeItem.setItemMeta(cassetteTape,"カセットテープ",null,"cassette_tape", ItemData.ITEM_ID,"CASSETTE TAPE");
         player.getInventory().addItem(cassetteTape);
     }

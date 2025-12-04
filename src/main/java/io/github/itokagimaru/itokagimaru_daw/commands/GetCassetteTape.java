@@ -21,7 +21,7 @@ public class GetCassetteTape implements CommandExecutor {
             return false;
         }
 
-        ItemStack stack = new ItemStack(Material.WOODEN_HOE);
+        ItemStack stack = new ItemStack(Material.PAPER);
         stack.editMeta(meta -> {
             meta.customName(Component.text("カセットテープ"));
             meta.setItemModel(NamespacedKey.minecraft("cassette_tape"));

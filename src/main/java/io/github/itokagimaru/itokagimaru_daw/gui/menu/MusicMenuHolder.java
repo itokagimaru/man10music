@@ -22,7 +22,7 @@ public class MusicMenuHolder extends BaseGuiHolder {
         MakeItem.setItemMeta(exportMusic,"save",null,"blank_sheet_music", ItemData.BUTTON_ID,"EXPORT");
         inv.setItem(3,exportMusic);
         ItemStack importMusic = new ItemStack(Material.PAPER);
-        MakeItem.setItemMeta(importMusic,"load",null,"written_sheet_music", ItemData.BUTTON_ID,"IMPORT");
+        MakeItem.setItemMeta(importMusic,"lode",null,"written_sheet_music", ItemData.BUTTON_ID,"IMPORT");
         inv.setItem(5,importMusic);
     }
 

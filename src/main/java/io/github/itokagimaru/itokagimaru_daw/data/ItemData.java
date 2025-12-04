@@ -25,6 +25,6 @@ public class ItemData {
     public static final ByteKey FLAG = new ByteKey(getKey("flag"), () -> (byte) 0);
     // 将来のために変数だけ用意
 //    public static final IntArrayKey MUSIC_SAVED_BLUE = new IntArrayKey(getKey("music_saved_blue"), () -> new int[0]);
-    public static final IntArrayKey MUSIC_SAVED_RED = new IntArrayKey(getKey("music_saved_blue"), () -> new int[Itokagimaru_daw.MUSICLENGTH]);
+    public static final IntArrayKey MUSIC_SAVED_RED = new IntArrayKey(getKey("music_saved_blue"), () -> new int[Itokagimaru_daw.MUSIC_LENGTH]);
 //    public static final IntArrayKey MUSIC_SAVED_YELLOW = new IntArrayKey(getKey("music_saved_blue"), () -> new int[0]);
 }
