@@ -16,4 +16,7 @@ public class PlayerMusicManager {
     public static PlayMusic getMusic(Player player) {
         return playing.get(player.getUniqueId());
     }
+    public static void removeMusic(Player player) {
+        playing.remove(player.getUniqueId());
+    }
 }

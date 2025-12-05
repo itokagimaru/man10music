@@ -5,10 +5,10 @@ import io.github.itokagimaru.itokagimaru_daw.commands.GetDawItem;
 import io.github.itokagimaru.itokagimaru_daw.commands.GetPlayItem;
 import io.github.itokagimaru.itokagimaru_daw.commands.GetSheetMusicItem;
 import io.github.itokagimaru.itokagimaru_daw.commands.SetCassetteName;
+import io.github.itokagimaru.itokagimaru_daw.commands.CassetteTransfer;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.DawClickInventoryListener;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.DawCloseInventoryListeners;
 import io.github.itokagimaru.itokagimaru_daw.listeners.DawItemUseListener;
-import io.github.itokagimaru.itokagimaru_daw.manager.MusicManager;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
@@ -23,18 +23,12 @@ import java.util.UUID;
 public final class Itokagimaru_daw extends JavaPlugin implements Listener {
     public static Itokagimaru_daw instance;
 
-//    public static Map<UUID, int[]> savedMusicList = new HashMap<>();
     public static final HashMap<UUID, ItemStack[]> inv = new HashMap<>();
     public static final int MUSIC_LENGTH = 2048;
     public static final int MAX_PAGE = MUSIC_LENGTH / 8;
 
     @Override
     public void onEnable() {
-        // setup music manager
-//        MusicManager music = new MusicManager();
-//        music.setSavedMusicList(music.loadMapFile(this));
-//        getSLF4JLogger().info("曲をロードしました。");
-
         // listener
         registerListeners(
                 this,
@@ -51,6 +45,7 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
         registerCommand("getPlayItem", new GetPlayItem());
         registerCommand("getCassetteTape", new GetCassetteTape());
         registerCommand("setCassettesName", new SetCassetteName());
+        registerCommand("cassetteTransfer", new CassetteTransfer());
         getSLF4JLogger().info("コマンドを登録しました。");
 
         instance = this;

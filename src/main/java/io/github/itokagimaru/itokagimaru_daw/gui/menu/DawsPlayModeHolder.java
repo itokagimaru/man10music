@@ -26,9 +26,9 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
         MakeItem.setItemMeta(clock, "現在のBPM:" + bpm, null, "clock", ItemData.BPM, bpm);
         ItemData.BUTTON_ID.set(clock, "OPTION BPM");
         inv.setItem(2, clock);
-        ItemStack play = new ItemStack(Material.PAPER);
-        MakeItem.setItemMeta(play, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
-        inv.setItem(4, play);
+        ItemStack playIcon = new ItemStack(Material.PAPER);
+        MakeItem.setItemMeta(playIcon, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
+        inv.setItem(4, playIcon);
     }
 
     @Override
@@ -47,11 +47,11 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             MakeItem.setItemMeta(clicked, "再生停止", null, "elytra", ItemData.BUTTON_ID, "STOP");
             PlayMusic play = new PlayMusic();
             PlayerMusicManager.setPlayingMusic(player, play);
-            play.playMusic(player, MusicManager.loadMusicForPdc(player.getInventory().getItemInMainHand()), (long) (1200 / bpm));
+            play.playMusic(player, player.getInventory().getItemInMainHand());
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "STOP")) {
             PlayMusic play = PlayerMusicManager.getMusic(player);
             MakeItem.setItemMeta(clicked, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
-            play.stopTask();
+            play.stopTask(player);
         }
     }
 
@@ -59,6 +59,6 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
     public void onClose(Player player) {
         PlayMusic play = PlayerMusicManager.getMusic(player);
         if (play == null) return;
-        play.stopTask();
+        play.stopTask(player);
     }
 }

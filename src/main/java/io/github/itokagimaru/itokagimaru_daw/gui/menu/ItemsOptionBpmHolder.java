@@ -31,9 +31,7 @@ public class ItemsOptionBpmHolder extends DawsOptionBpmHolder {
                 ItemMeta meta = item.getItemMeta();
                 MusicManager musicManager = new MusicManager();
                 int[] musicList = musicManager.loadMusicForPdc(player.getInventory().getItemInMainHand());
-                ByteArrayManager byteArrayManager = new ByteArrayManager();
-                byte[] data = byteArrayManager.encode(musicList);
-                ItemData.BYTE_LIST.set(meta.getPersistentDataContainer(), data);
+                ItemData.MUSIC_SAVED_RED.set(meta.getPersistentDataContainer(), musicList);
                 meta.lore(List.of(Component.text("BPM:" + bpm), Component.text("recorded by " + player.getName())));
                 item.setItemMeta(meta);
                 FakeEnchant.addFakeEnchant(item);

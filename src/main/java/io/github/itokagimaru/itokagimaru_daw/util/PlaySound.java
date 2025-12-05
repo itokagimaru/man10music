@@ -9,14 +9,14 @@ public class PlaySound {
         float pitch;
         soundId -= 2;//soundIdの正規化(諸事情で引数側が2からになってます
         pitch = 1;
-        player.getWorld().playSound(player.getLocation(), "soundid" + soundId, SoundCategory.MASTER, 1.9f, pitch);
+        player.getWorld().playSound(player.getLocation(), "soundid" + soundId, SoundCategory.MASTER, 1f, pitch);
     }
 
-    public void playPageTurn(Player player) {
+    public static void playPageTurn(Player player) {
         player.getWorld().playSound(player.getLocation().add(0, 2, 0), Sound.ITEM_BOOK_PAGE_TURN, 2f, 1f);
     }
 
-    public void playLevelUp(Player player) {
+    public static void playLevelUp(Player player) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
     }
 }

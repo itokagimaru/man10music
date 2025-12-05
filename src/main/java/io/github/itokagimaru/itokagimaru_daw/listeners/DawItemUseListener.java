@@ -43,7 +43,7 @@ public class DawItemUseListener implements Listener {
                     Location location = player.getLocation();
                     location.setPitch(0);
                     player.teleport(location);
-                    ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder();
+                    ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder(player);
                     player.openInventory(itemsPlayModeHolder.getInventory());
                 }
             }

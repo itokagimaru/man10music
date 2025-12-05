@@ -2,7 +2,9 @@ package io.github.itokagimaru.itokagimaru_daw.task;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.ItemsPlayModeHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.ParticleManager;
+import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.PlaySound;
 import org.bukkit.Material;
@@ -15,18 +17,24 @@ import org.bukkit.scheduler.BukkitTask;
 public class PlayMusic {
     //HashMap<UUID, BukkitTask> tasks = new HashMap<>();
     BukkitTask task;
-
-    public void playMusic(Player player, int[] lodedMusic, long interval) {
+    ItemStack cassetteIcon;
+    public void playMusic(Player player,ItemStack pdcHolder) {
+        cassetteIcon = pdcHolder.clone();
+        int[] lodedMusic = ItemData.MUSIC_SAVED_RED.get(pdcHolder);
+        int bpm = ItemData.BPM.get(pdcHolder);
+        long interval = (1200 / bpm);
         task = new BukkitRunnable() {
             int count = 0;
 
             @Override
             public void run() {
                 if (lodedMusic[count] == -1) {
-                    ItemStack play = new ItemStack(Material.PAPER);
-                    MakeItem.setItemMeta(play, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
-                    player.getOpenInventory().getTopInventory().setItem(4, play);
-                    cancel();
+                    if (player.getOpenInventory().getTopInventory().getHolder() instanceof ItemsPlayModeHolder holder) {
+                        ItemStack play = new ItemStack(Material.PAPER);
+                        MakeItem.setItemMeta(play, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
+                        holder.getInventory().setItem(4, play);
+                    }
+                    stopTask(player);
                 } else if (lodedMusic[count] != 0) {
                     PlaySound.playNote(player, lodedMusic[count]);
                     ParticleManager.playNote(player);
@@ -35,8 +43,11 @@ public class PlayMusic {
             }
         }.runTaskTimer(Itokagimaru_daw.getInstance(), 0, interval);
     }
-
-    public void stopTask() {
+    public ItemStack getCassetteIcon() {
+        return cassetteIcon;
+    }
+    public void stopTask(Player player) {
         task.cancel();
+        PlayerMusicManager.removeMusic(player);
     }
 }
