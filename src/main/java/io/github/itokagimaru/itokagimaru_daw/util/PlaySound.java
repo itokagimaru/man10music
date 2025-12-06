@@ -5,11 +5,11 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 public class PlaySound {
-    public static void playNote(Player player, int soundId) {
+    public static void playNote(Player player, int soundId, float volume) {
         float pitch;
         soundId -= 2;//soundIdの正規化(諸事情で引数側が2からになってます
         pitch = 1;
-        player.getWorld().playSound(player.getLocation(), "soundid" + soundId, SoundCategory.MASTER, 1f, pitch);
+        player.getWorld().playSound(player.getLocation(), "soundid" + soundId, SoundCategory.MASTER, volume, pitch);
     }
 
     public static void playPageTurn(Player player) {
