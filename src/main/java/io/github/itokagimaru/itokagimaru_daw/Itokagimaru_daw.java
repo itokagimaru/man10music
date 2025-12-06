@@ -9,6 +9,7 @@ import io.github.itokagimaru.itokagimaru_daw.commands.CassetteTransfer;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.DawClickInventoryListener;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.DawCloseInventoryListeners;
 import io.github.itokagimaru.itokagimaru_daw.listeners.DawItemUseListener;
+import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerQuitListener;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
@@ -34,7 +35,8 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
                 this,
                 new DawClickInventoryListener(),
                 new DawItemUseListener(),
-                new DawCloseInventoryListeners()
+                new DawCloseInventoryListeners(),
+                new PlayerQuitListener()
         );
         getSLF4JLogger().info("イベントリスナーを登録しました。");
 

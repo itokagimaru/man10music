@@ -3,6 +3,7 @@ package io.github.itokagimaru.itokagimaru_daw.task;
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.ItemsPlayModeHolder;
+import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.ParticleManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -29,14 +30,15 @@ public class PlayMusic {
             @Override
             public void run() {
                 if (lodedMusic[count] == -1) {
-                    if (player.getOpenInventory().getTopInventory().getHolder() instanceof ItemsPlayModeHolder holder) {
-                        ItemStack play = new ItemStack(Material.PAPER);
-                        MakeItem.setItemMeta(play, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
-                        holder.getInventory().setItem(4, play);
-                    }
                     stopTask(player);
                 } else if (lodedMusic[count] != 0) {
-                    PlaySound.playNote(player, lodedMusic[count]);
+                    float volume;
+                    if (AutPlayManager.get(player)) {
+                        volume =(float) 0.125;
+                    } else {
+                        volume =(float) 0.25;
+                    }
+                    PlaySound.playNote(player, lodedMusic[count], volume);
                     ParticleManager.playNote(player);
                 }
                 count++;
@@ -49,5 +51,14 @@ public class PlayMusic {
     public void stopTask(Player player) {
         task.cancel();
         PlayerMusicManager.removeMusic(player);
+        if (AutPlayManager.get(player)) {
+            PlayMusic play = new PlayMusic();
+            PlayerMusicManager.setPlayingMusic(player, play);
+            play.playMusic(player,cassetteIcon);
+        } else if (player.getOpenInventory().getTopInventory().getHolder() instanceof ItemsPlayModeHolder holder) {
+            ItemStack play = new ItemStack(Material.PAPER);
+            MakeItem.setItemMeta(play, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
+            holder.getInventory().setItem(4, play);
+        }
     }
 }
