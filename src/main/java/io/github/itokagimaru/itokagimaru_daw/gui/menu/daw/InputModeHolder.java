@@ -22,6 +22,8 @@ import java.util.Objects;
 public class InputModeHolder extends BaseGuiHolder {
     final Inventory playerInventory = Bukkit.createInventory(null, 36);
 
+    int[] musicList;
+
     public InputModeHolder() {
         this.inv = Bukkit.createInventory(this, 54, Component.text("InputMode"));
         setup();
@@ -99,16 +101,12 @@ public class InputModeHolder extends BaseGuiHolder {
         ItemStack pdcHolder = player.getInventory().getItemInMainHand().clone();
         player.getInventory().clear();
         player.getInventory().setContents(playerInventory.getContents());
-        inputGuiUpdate(pdcHolder, 0, 1);
-        ItemStack musicHolder = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-        MusicManager.saveMusicForPdc(musicHolder,MusicManager.loadMusicForPdc(pdcHolder));
-        player.getInventory().setItem(9,musicHolder);
+        musicList = MusicManager.loadMusicForPdc(pdcHolder);
+        inputGuiUpdate(0, 1);
         player.openInventory(this.inv);
     }
 
-    public void inputGuiUpdate(ItemStack pdcHolder, Integer topNote, Integer page) {
-        MusicManager music = new MusicManager();
-        int[] musicList = music.loadMusicForPdc(pdcHolder);
+    public void inputGuiUpdate(Integer topNote, Integer page) {
         int noteId;
 
         if (topNote == null || musicList == null) {
@@ -149,11 +147,11 @@ public class InputModeHolder extends BaseGuiHolder {
         }
     }
 
-    public void jumpPage(int page, int topNote, Player player , ItemStack pdcHolder) {
+    public void jumpPage(int page, int topNote, Player player) {
         ItemStack pageItem = player.getInventory().getItem(2);
         if (page < 1 || page > Itokagimaru_daw.MAX_PAGE) return;
         MakeItem.setItemMeta(pageItem, "現在" + page + "ページ目", null, null, ItemData.PAGE, page);
-        inputGuiUpdate(pdcHolder, topNote, page);
+        inputGuiUpdate(topNote, page);
         ItemStack paper = new ItemStack(Material.PAPER);
         MakeItem.setItemMeta(paper, "選択中", null, "select", ItemData.BUTTON_ID, "SELECTED");
         player.getInventory().setItem(10, paper);
@@ -163,25 +161,24 @@ public class InputModeHolder extends BaseGuiHolder {
         }
     }
 
-    public int[] setMusicEndpoint(int[] loadedMusic) {
-        for (int i = 0; i < loadedMusic.length; i++) {//エンドポイントの削除
-            if (loadedMusic[i] == -1) loadedMusic[i] = 0;
+    public void setMusicEndpoint() {
+        for (int i = 0; i < musicList.length; i++) {//エンドポイントの削除
+            if (musicList[i] == -1) musicList[i] = 0;
         }
         int music_end_point = 0;
-        for (int i = loadedMusic.length; i > 0; i--) {//エンドポイントの追加
-            if (loadedMusic[i - 1] != 0) {
+        for (int i = musicList.length; i > 0; i--) {//エンドポイントの追加
+            if (musicList[i - 1] != 0) {
                 music_end_point = i;
                 break;
             }
         }
-        if (!(music_end_point >= loadedMusic.length)) loadedMusic[music_end_point] = -1;
-        return loadedMusic;
+        if (!(music_end_point >= musicList.length)) musicList[music_end_point] = -1;
     }
 
-    public int getMusicFinalPage(int[] loadedMusic) {
+    public int getMusicFinalPage() {
         int endPoint = 0;
-        for (int i = 0; i < loadedMusic.length; i++) {//エンドポイントの削除
-            if (loadedMusic[i] == -1) endPoint = i;
+        for (int i = 0; i < musicList.length; i++) {//エンドポイントの削除
+            if (musicList[i] == -1) endPoint = i;
         }
         return endPoint / 8 + 1;
     }
@@ -200,7 +197,6 @@ public class InputModeHolder extends BaseGuiHolder {
             player.closeInventory();
         } else if (clicked.getType() == Material.WHITE_STAINED_GLASS_PANE) {
             MusicManager musicManager = new MusicManager();
-            int[] lodedMusic = musicManager.loadMusicForPdc(player.getInventory().getItem(9));
             ItemStack pageItem = clickedInv.getItem(2);
             int page = ItemData.PAGE.get(pageItem);
             ItemStack topnoteItem = player.getOpenInventory().getTopInventory().getItem(0);
@@ -215,56 +211,53 @@ public class InputModeHolder extends BaseGuiHolder {
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ド/C")) {
                 add = Math.min((topnote + 2) / 6, 5);
-                Objects.requireNonNull(lodedMusic)[(page - 1) * 8 + select - 1] = 8 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 8 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "レ/D")) {
                 add = Math.min((topnote + 3) / 6, 5);
-                Objects.requireNonNull(lodedMusic)[(page - 1) * 8 + select - 1] = 6 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 6 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ミ/E")) {
                 add = Math.min((topnote + 4) / 6, 5);
-                Objects.requireNonNull(lodedMusic)[(page - 1) * 8 + select - 1] = 4 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 4 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ファ/F")) {
                 add = Math.min((topnote + 4) / 6, 5);
-                Objects.requireNonNull(lodedMusic)[(page - 1) * 8 + select - 1] = 3 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 3 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ソ/G")) {
                 if (topnote != 0) {
                     add = Math.min((topnote - 1) / 6, 5);
-                    Objects.requireNonNull(lodedMusic)[(page - 1) * 8 + select - 1] = 13 + add * 12;
+                    Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 13 + add * 12;
                 }
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ラ/A")) {
                 add = Math.min((topnote) / 6, 5);
-                Objects.requireNonNull(lodedMusic)[(page - 1) * 8 + select - 1] = 11 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 11 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "シ/B")) {
                 add = Math.min((topnote + 1) / 6, 5);
-                Objects.requireNonNull(lodedMusic)[(page - 1) * 8 + select - 1] = 9 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 9 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "休符"))
-                Objects.requireNonNull(lodedMusic)[(page - 1) * 8 + select - 1] = 0;
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 0;
             //"ド/C","レ/D","ミ/E","ファ/F","ソ/G","ラ/A","シ/B"
 
 
-            ItemStack pdcHolder = player.getInventory().getItem(9);
-            MusicManager.saveMusicForPdc(pdcHolder, lodedMusic.clone());
-            inputGuiUpdate(pdcHolder, topnote, page);
+            inputGuiUpdate(topnote, page);
 
             ItemStack update_select = new ItemStack(Material.PAPER);
             MakeItem.setItemMeta(update_select, "カーソルを移動", null, "next_b_up", ItemData.BUTTON_ID, "SELECT");
             player.getInventory().setItem(select + 9, update_select);
 
             if (select >= 8) {
-                jumpPage(page + 1, topnote, player, pdcHolder);
+                jumpPage(page + 1, topnote, player);
                 return;
             }
             select++;
             MakeItem.setItemMeta(update_select, "選択中", null, "select", ItemData.BUTTON_ID, "SELECTED");
             player.getInventory().setItem(select + 9, update_select);
         } else if (clicked.getType() == Material.BLACK_STAINED_GLASS_PANE) {
-            int[] loadedMusic = MusicManager.loadMusicForPdc(player.getInventory().getItem(9));
             ItemStack pageItem = clickedInv.getItem(2);
             int page = ItemData.PAGE.get(pageItem);
             ItemStack topnoteItem = player.getOpenInventory().getTopInventory().getItem(0);
@@ -279,37 +272,35 @@ public class InputModeHolder extends BaseGuiHolder {
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ド#/C#")) {
                 add = Math.min((topnote + 2) / 6, 5);
-                Objects.requireNonNull(loadedMusic)[(page - 1) * 8 + select - 1] = 7 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 7 + (12 * add);
             }
 
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "レ#/D#")) {
                 add = Math.min((topnote + 3) / 6, 5);
-                Objects.requireNonNull(loadedMusic)[(page - 1) * 8 + select - 1] = 5 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 5 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ファ#/F#")) {
                 add = Math.min((topnote + 5) / 6, 5);
                 if (topnote == 0) add = 0;
 
-                Objects.requireNonNull(loadedMusic)[(page - 1) * 8 + select - 1] = 2 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 2 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ソ#/G#")) {
                 add = Math.min((topnote) / 6, 5);
-                Objects.requireNonNull(loadedMusic)[(page - 1) * 8 + select - 1] = 12 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 12 + (12 * add);
 
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ラ#/A#")) {
                 add = Math.min((topnote + 1) / 6, 5);
-                Objects.requireNonNull(loadedMusic)[(page - 1) * 8 + select - 1] = 10 + (12 * add);
+                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 10 + (12 * add);
             }
 
-            ItemStack pdcHolder = player.getInventory().getItem(9);
-            MusicManager.saveMusicForPdc(pdcHolder, loadedMusic.clone());
-            inputGuiUpdate(pdcHolder, topnote, page);
+            inputGuiUpdate(topnote, page);
             ItemStack update_select = new ItemStack(Material.PAPER);
             MakeItem.setItemMeta(update_select, "カーソルを移動", null, "next_b_up", ItemData.BUTTON_ID, "SELECT");
             player.getInventory().setItem(select + 9, update_select);
             if (select >= 8) {
-                jumpPage(page + 1, topnote, player, pdcHolder);
+                jumpPage(page + 1, topnote, player);
                 return;
             }
             select++;
@@ -325,7 +316,7 @@ public class InputModeHolder extends BaseGuiHolder {
                 ItemStack page_item = clickedInv.getItem(2);
                 int tag_int = ItemData.PAGE.get(page_item);
                 if (topnote <= 0) topnote += 1;
-                inputGuiUpdate(player.getInventory().getItem(9), topnote - 1, tag_int);
+                inputGuiUpdate(topnote - 1, tag_int);
             } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "DOWN NOTE")) {
                 ItemStack page_item = clickedInv.getItem(2);
                 int tag_int = ItemData.PAGE.get(page_item);
@@ -333,7 +324,7 @@ public class InputModeHolder extends BaseGuiHolder {
                 ItemStack topnote_item = player.getOpenInventory().getTopInventory().getItem(0);
                 int topnote = ItemData.TOP_NOTE.get(topnote_item);
                 if (topnote >= 31) topnote -= 1;
-                inputGuiUpdate(player.getInventory().getItem(9), topnote + 1, tag_int);
+                inputGuiUpdate(topnote + 1, tag_int);
 
             } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "SELECT")) {
                 MakeItem.setItemMeta(clicked, "選択中", null, "select", ItemData.BUTTON_ID, "SELECTED");
@@ -352,7 +343,7 @@ public class InputModeHolder extends BaseGuiHolder {
                     ItemStack topnote_item = player.getOpenInventory().getTopInventory().getItem(0);
                     int topnote = ItemData.TOP_NOTE.get(topnote_item);
                     int page = ItemData.PAGE.get(Objects.requireNonNull(page_item));
-                    jumpPage(page + 1, topnote, player,player.getInventory().getItem(9));
+                    jumpPage(page + 1, topnote, player);
                 }
 
             } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "BACK PAGE")) {
@@ -361,42 +352,38 @@ public class InputModeHolder extends BaseGuiHolder {
                 ItemStack topnote_item = player.getOpenInventory().getTopInventory().getItem(0);
                 int topnote = ItemData.TOP_NOTE.get(topnote_item);
                 int page = ItemData.PAGE.get(Objects.requireNonNull(page_item));
-                jumpPage(page - 1, topnote, player,player.getInventory().getItem(9));
+                jumpPage(page - 1, topnote, player);
 
             } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "GO FIRST")) {
                 ItemStack topnote_item = player.getOpenInventory().getTopInventory().getItem(0);
                 int topnote = ItemData.TOP_NOTE.get(topnote_item);
-                jumpPage(1, topnote, player, player.getInventory().getItem(9));
+                jumpPage(1, topnote, player);
             } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "GO END")) {
                 ItemStack topnote_item = player.getOpenInventory().getTopInventory().getItem(0);
                 int topnote = ItemData.TOP_NOTE.get(topnote_item);
-                ItemStack pdcHolder = player.getInventory().getItem(9);
-                MusicManager.saveMusicForPdc(pdcHolder,setMusicEndpoint(MusicManager.loadMusicForPdc(pdcHolder)));
-                int endPage = getMusicFinalPage(MusicManager.loadMusicForPdc(pdcHolder));
-                jumpPage(endPage, topnote, player,pdcHolder);
+                setMusicEndpoint();
+                int endPage = getMusicFinalPage();
+                jumpPage(endPage, topnote, player);
             }
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked),"ALL DELETE")) {
             int[] reset = new int[Itokagimaru_daw.MUSIC_LENGTH];
             Arrays.fill(reset, 0);
-            MusicManager musicManager = new MusicManager();
-            musicManager.saveMusicForPdc(player.getInventory().getItem(9),reset);
+            musicList = reset;
 
             ItemStack page_item = clickedInv.getItem(2);
             Integer page = ItemData.PAGE.get(page_item);
 
             ItemStack topnote_item = player.getOpenInventory().getTopInventory().getItem(0);
             int topnote = ItemData.TOP_NOTE.get(topnote_item);
-            inputGuiUpdate(player.getInventory().getItem(9), topnote, page);
+            inputGuiUpdate(topnote, page);
         } else {}
     }
 
     @Override
     public void onClose(Player player) {
-        ItemStack pdcHolder = player.getInventory().getItem(9);
-        int[] music = setMusicEndpoint(MusicManager.loadMusicForPdc(pdcHolder));
         InventoryManager inventoryManager = new InventoryManager();
         inventoryManager.loadInventory(player);
         ItemStack daw = player.getInventory().getItemInMainHand();
-        MusicManager.saveMusicForPdc(daw,music);
+        MusicManager.saveMusicForPdc(daw,musicList);
     }
 }

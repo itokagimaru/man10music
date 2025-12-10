@@ -1,6 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.listeners;
 
 import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
+import io.github.itokagimaru.itokagimaru_daw.manager.InventoryManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import org.bukkit.entity.Player;
@@ -17,5 +18,8 @@ public class PlayerQuitListener implements Listener {
         if(play != null){
             play.stopTask(player);
         }
+
+        InventoryManager inventoryManager = new InventoryManager();
+        inventoryManager.loadInventory(player);
     }
 }
