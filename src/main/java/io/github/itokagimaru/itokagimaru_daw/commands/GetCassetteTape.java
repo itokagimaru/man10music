@@ -25,6 +25,7 @@ public class GetCassetteTape implements CommandExecutor {
         stack.editMeta(meta -> {
             meta.customName(Component.text("カセットテープ"));
             meta.setItemModel(NamespacedKey.minecraft("cassette_tape"));
+            meta.setMaxStackSize(1);
         });
         ItemData.ITEM_ID.set(stack,"CASSETTE TAPE");
         player.give(stack);

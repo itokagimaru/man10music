@@ -1,14 +1,10 @@
 package io.github.itokagimaru.itokagimaru_daw;
 
-import io.github.itokagimaru.itokagimaru_daw.commands.GetCassetteTape;
-import io.github.itokagimaru.itokagimaru_daw.commands.GetDawItem;
-import io.github.itokagimaru.itokagimaru_daw.commands.GetPlayItem;
-import io.github.itokagimaru.itokagimaru_daw.commands.GetSheetMusicItem;
-import io.github.itokagimaru.itokagimaru_daw.commands.SetCassetteName;
-import io.github.itokagimaru.itokagimaru_daw.commands.CassetteTransfer;
+import io.github.itokagimaru.itokagimaru_daw.commands.*;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.DawClickInventoryListener;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.DawCloseInventoryListeners;
 import io.github.itokagimaru.itokagimaru_daw.listeners.DawItemUseListener;
+import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerInteractEntityListner;
 import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerQuitListener;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
@@ -25,7 +21,7 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
     public static Itokagimaru_daw instance;
 
     public static final HashMap<UUID, ItemStack[]> inv = new HashMap<>();
-    public static final int MUSIC_LENGTH = 2048;
+    public static final int MUSIC_LENGTH = 8192;
     public static final int MAX_PAGE = MUSIC_LENGTH / 8;
 
     @Override
@@ -36,7 +32,8 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
                 new DawClickInventoryListener(),
                 new DawItemUseListener(),
                 new DawCloseInventoryListeners(),
-                new PlayerQuitListener()
+                new PlayerQuitListener(),
+                new PlayerInteractEntityListner()
         );
         getSLF4JLogger().info("イベントリスナーを登録しました。");
 
@@ -48,6 +45,7 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
         registerCommand("getCassetteTape", new GetCassetteTape());
         registerCommand("setCassettesName", new SetCassetteName());
         registerCommand("cassetteTransfer", new CassetteTransfer());
+        registerCommand("getCassetteWorkSpace", new GetCassetteWorkSpace());
         getSLF4JLogger().info("コマンドを登録しました。");
 
         instance = this;
@@ -68,8 +66,6 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-//        MusicManager music = new MusicManager();
-//        music.makeMapFile(this, music.getSavedMusicList());
     }
 
     public static Itokagimaru_daw getInstance() {

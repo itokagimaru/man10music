@@ -9,25 +9,31 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jspecify.annotations.NullMarked;
 
-@NullMarked
-public class GetSheetMusicItem implements CommandExecutor {
+import java.util.List;
+
+public class GetCassetteWorkSpace implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can execute this command");
             return false;
         }
-        ItemStack stack = new ItemStack(Material.PAPER);
+
+        ItemStack stack = new ItemStack(Material.WOODEN_HOE);
         stack.editMeta(meta -> {
-            meta.setItemModel(NamespacedKey.minecraft("blank_sheet_music"));
-            meta.customName(Component.text("白紙の楽譜"));
-            meta.setMaxStackSize(1);
+            meta.customName(Component.text("カセットテープ編集台"));
+            meta.setItemModel(NamespacedKey.minecraft("cassette_workspace_item"));
+            meta.lore(List.of(
+                    Component.text("カセットテープを"),
+                    Component.text("作成,編集できる作業台"),
+                    Component.text("右クリックで設置できるようだ")
+            ));
         });
-        ItemData.ITEM_ID.set(stack,"BLANK SHEET");
+        ItemData.ITEM_ID.set(stack,"CASSETTE WORKSPACE");
         player.give(stack);
 
         return true;
     }
+
 }

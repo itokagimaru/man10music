@@ -1,7 +1,7 @@
-package io.github.itokagimaru.itokagimaru_daw.gui.menu;
+package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
-import io.github.itokagimaru.itokagimaru_daw.manager.MusicManager;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -62,3 +62,4 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
         play.stopTask(player);
     }
 }
+

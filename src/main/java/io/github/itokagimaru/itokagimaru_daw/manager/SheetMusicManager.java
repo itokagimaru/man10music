@@ -15,12 +15,13 @@ public class SheetMusicManager {
     public static ItemStack makeSheetMusic(Player player) {
         MusicManager musicManager = new MusicManager();
         int[] musicList = musicManager.loadMusicForPdc(player.getInventory().getItemInMainHand());
-        ItemStack item = new ItemStack(Material.WOODEN_HOE);
+        ItemStack item = new ItemStack(Material.PAPER);
         MakeItem.setItemMeta(item,"記述済みの楽譜", null, "written_sheet_music",ItemData.ITEM_ID,"WRITTEN MUSIC");
         ItemData.MUSIC_SAVED_RED.set(item,musicList);
         PlaySound playSound = new PlaySound();
         playSound.playPageTurn(player);
         ItemMeta meta = item.getItemMeta();
+        meta.setMaxStackSize(1);
         meta.lore(List.of(Component.text("written by " + player.getName())));
         item.setItemMeta(meta);
         return  item;

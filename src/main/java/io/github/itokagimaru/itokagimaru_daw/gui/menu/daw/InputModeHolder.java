@@ -1,7 +1,8 @@
-package io.github.itokagimaru.itokagimaru_daw.gui.menu;
+package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.InventoryManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.MusicManager;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -14,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -194,7 +194,6 @@ public class InputModeHolder extends BaseGuiHolder {
             return;
         }
         Player player = (Player) event.getWhoClicked();
-        ItemMeta meta = clicked.getItemMeta();
         Inventory clickedInv = event.getClickedInventory();
         Inventory plInv = player.getInventory();
         if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "CLOSE")) {
@@ -229,7 +228,6 @@ public class InputModeHolder extends BaseGuiHolder {
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ファ/F")) {
                 add = Math.min((topnote + 4) / 6, 5);
                 Objects.requireNonNull(lodedMusic)[(page - 1) * 8 + select - 1] = 3 + (12 * add);
-
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ソ/G")) {
                 if (topnote != 0) {
@@ -289,7 +287,7 @@ public class InputModeHolder extends BaseGuiHolder {
                 Objects.requireNonNull(loadedMusic)[(page - 1) * 8 + select - 1] = 5 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ファ#/F#")) {
-                add = Math.min((topnote + 5) / 6, 6);
+                add = Math.min((topnote + 5) / 6, 5);
                 if (topnote == 0) add = 0;
 
                 Objects.requireNonNull(loadedMusic)[(page - 1) * 8 + select - 1] = 2 + (12 * add);
@@ -378,7 +376,7 @@ public class InputModeHolder extends BaseGuiHolder {
                 jumpPage(endPage, topnote, player,pdcHolder);
             }
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked),"ALL DELETE")) {
-            int[] reset = new int[256];
+            int[] reset = new int[Itokagimaru_daw.MUSIC_LENGTH];
             Arrays.fill(reset, 0);
             MusicManager musicManager = new MusicManager();
             musicManager.saveMusicForPdc(player.getInventory().getItem(9),reset);
@@ -389,8 +387,7 @@ public class InputModeHolder extends BaseGuiHolder {
             ItemStack topnote_item = player.getOpenInventory().getTopInventory().getItem(0);
             int topnote = ItemData.TOP_NOTE.get(topnote_item);
             inputGuiUpdate(player.getInventory().getItem(9), topnote, page);
-        } else {
-        }
+        } else {}
     }
 
     @Override

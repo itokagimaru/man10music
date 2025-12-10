@@ -2,7 +2,7 @@ package io.github.itokagimaru.itokagimaru_daw.task;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
-import io.github.itokagimaru.itokagimaru_daw.gui.menu.ItemsPlayModeHolder;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.walkman.ItemsPlayModeHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.ParticleManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;

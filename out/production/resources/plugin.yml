@@ -15,6 +15,9 @@ commands:
   getCassetteTape:
     description: /getCassetteTape でカセットテープを入手できるよ
     usage: /getCassetteTape
+  getCassetteWorkSpace:
+    description: /getCassetteWorkSpace でカセットテープ編集台を入手できるよ
+    usage: /getCassetteWorkSpace
   setCassettesName:
     description: /setCassettesName でカセットテープに曲名を設定できるよ
     usage: /setCassettesName

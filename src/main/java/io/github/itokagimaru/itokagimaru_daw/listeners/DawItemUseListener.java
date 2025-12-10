@@ -1,22 +1,20 @@
 package io.github.itokagimaru.itokagimaru_daw.listeners;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
-import io.github.itokagimaru.itokagimaru_daw.gui.menu.ItemsOptionBpmHolder;
-import io.github.itokagimaru.itokagimaru_daw.gui.menu.ItemsPlayModeHolder;
-import io.github.itokagimaru.itokagimaru_daw.gui.menu.MainMenuHolder;
-import io.github.itokagimaru.itokagimaru_daw.manager.SheetMusicManager;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.walkman.ItemsPlayModeHolder;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.daw.MainMenuHolder;
+import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.SwapItems;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Objects;
 
 public class DawItemUseListener implements Listener {
     @EventHandler
@@ -45,6 +43,17 @@ public class DawItemUseListener implements Listener {
                     player.teleport(location);
                     ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder(player);
                     player.openInventory(itemsPlayModeHolder.getInventory());
+                }
+                case "CASSETTE WORKSPACE" -> {
+                    event.setCancelled(true);
+                    Location location = player.getLocation();
+                    ItemStack icon = new ItemStack(Material.PAPER);
+                    MakeItem.setItemMeta(icon,"",null,"cassette_workspace",ItemData.ITEM_ID,"CASSETTE_WORKSPACE");
+                    GlowItemFrame frame = (GlowItemFrame) location.getWorld().spawn(location, GlowItemFrame.class);
+                    frame.setFacingDirection(BlockFace.UP,true);
+                    frame.setItem(icon);
+                    frame.setFixed(true);
+                    frame.setInvulnerable(true);
                 }
             }
 //            if (Objects.equals(data, NamespacedKey.minecraft("itokagimaru_daw"))) {

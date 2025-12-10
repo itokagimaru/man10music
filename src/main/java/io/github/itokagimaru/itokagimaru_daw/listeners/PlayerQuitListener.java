@@ -14,6 +14,8 @@ public class PlayerQuitListener implements Listener {
         Player player = event.getPlayer();
         AutPlayManager.set(player, false);
         PlayMusic play = PlayerMusicManager.getMusic(player);
-        play.stopTask(player);
+        if(play != null){
+            play.stopTask(player);
+        }
     }
 }

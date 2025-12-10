@@ -1,6 +1,7 @@
-package io.github.itokagimaru.itokagimaru_daw.gui.menu;
+package io.github.itokagimaru.itokagimaru_daw.gui.menu.walkman;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;

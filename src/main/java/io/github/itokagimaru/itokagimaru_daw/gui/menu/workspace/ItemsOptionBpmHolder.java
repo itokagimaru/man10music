@@ -1,10 +1,8 @@
-package io.github.itokagimaru.itokagimaru_daw.gui.menu;
+package io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
-import io.github.itokagimaru.itokagimaru_daw.manager.ByteArrayManager;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.daw.DawsOptionBpmHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.MusicManager;
-import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;
-import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import io.github.itokagimaru.itokagimaru_daw.util.FakeEnchant;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import net.kyori.adventure.text.Component;
@@ -17,6 +15,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 
 public class ItemsOptionBpmHolder extends DawsOptionBpmHolder {
+    ItemStack sourceItem;
+    ItemStack destinationItem;
+
+    public void setReturnItem(ItemStack sourceItem, ItemStack destinationItem) {
+        this.sourceItem = sourceItem;
+        this.destinationItem = destinationItem;
+    }
+
     @Override
     public void onClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
@@ -25,19 +31,10 @@ public class ItemsOptionBpmHolder extends DawsOptionBpmHolder {
         switch (buttonId) {
             case "SET BPM" -> {
                 int bpm = ItemData.BPM.get(clicked);
-                ItemStack item = new ItemStack(Material.PAPER);
-                MakeItem.setItemMeta(item, "記録済みのカセットテープ", null, "cassette_tape", ItemData.BPM, bpm);
-                ItemData.BUTTON_ID.set(item, "RECORD ITEM");
-                ItemMeta meta = item.getItemMeta();
-                MusicManager musicManager = new MusicManager();
-                int[] musicList = musicManager.loadMusicForPdc(player.getInventory().getItemInMainHand());
-                ItemData.MUSIC_SAVED_RED.set(meta.getPersistentDataContainer(), musicList);
-                meta.lore(List.of(Component.text("BPM:" + bpm), Component.text("recorded by " + player.getName())));
-                item.setItemMeta(meta);
-                FakeEnchant.addFakeEnchant(item);
-                player.give(item);
-                ItemData.FLAG.set(inv.getItem(0),(byte) 0);
-                player.closeInventory();
+                ConvertManuHolder convertManuHolder = new ConvertManuHolder(bpm);
+                convertManuHolder.setMusicIcon(sourceItem);
+                convertManuHolder.setCassetteIcon(destinationItem);
+                player.openInventory(convertManuHolder.getInventory());
             }
             case "SHIFT RIGHT" -> {
                 int selectBpmId = getSelectBpmId(ItemData.BPM.get(inv.getItem(1)));
@@ -57,9 +54,9 @@ public class ItemsOptionBpmHolder extends DawsOptionBpmHolder {
     }
     @Override
     public void onClose(Player player) {
-        if (ItemData.FLAG.get(inv.getItem(0)) == (byte) 0) return;
-        ItemStack cassetteTape = new ItemStack(Material.PAPER);
-        MakeItem.setItemMeta(cassetteTape,"カセットテープ",null,"cassette_tape", ItemData.ITEM_ID,"CASSETTE TAPE");
-        player.getInventory().addItem(cassetteTape);
+        ConvertManuHolder convertManuHolder = new ConvertManuHolder(60);
+        convertManuHolder.setMusicIcon(sourceItem);
+        convertManuHolder.setCassetteIcon(destinationItem);
+        player.openInventory(convertManuHolder.getInventory());
     }
 }
