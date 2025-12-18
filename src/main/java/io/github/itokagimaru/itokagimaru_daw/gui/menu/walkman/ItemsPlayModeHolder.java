@@ -61,6 +61,7 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
             if (bpm == -1) return;
             MakeItem.setItemMeta(clickedItem, "再生停止", null, "elytra", ItemData.BUTTON_ID, "STOP");
             PlayMusic play = new PlayMusic();
+            play.setPrivate(false);
             PlayerMusicManager.setPlayingMusic(player, play);
             play.playMusic(player,clicked_inv.getItem(7));
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "STOP")) {

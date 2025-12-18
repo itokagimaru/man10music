@@ -107,7 +107,7 @@ public class ChangeBpmHolder extends BaseGuiHolder {
 
     public boolean isCanChange(int newBpm){
         double scale = (double) newBpm/prevBpm;
-        return Math.abs(scale - Math.round(scale)) <= 1e-9;
+        return Math.abs(scale - Math.round(scale)) <= 1e-9 && newBpm != prevBpm;
     }
 
     @Override

@@ -46,35 +46,35 @@ public class ItemUseListener implements Listener {
                     ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder(player);
                     player.openInventory(itemsPlayModeHolder.getInventory());
                 }
-                case "CASSETTE WORKSPACE" -> {
-                    event.setCancelled(true);
-                    Location location = player.getLocation();
-                    if(location.getBlock().getType().isSolid()){
-                        player.sendMessage("ここには設置できません");
-                        return;
-                    }
-                    Block blockUnder = location.clone().subtract(0, 1, 0).getBlock();
-                    if (!blockUnder.getType().isSolid()) {
-                        player.sendMessage("空中には設置できません");
-                        return;
-                    }
-
-                    boolean existsFrame = location.getWorld().getNearbyEntities(location, 0.5, 0.5, 0.5).stream().anyMatch(
-                            e -> e instanceof GlowItemFrame
-                    );
-
-                    if (existsFrame) {
-                        player.sendMessage("すでに額縁があります");
-                        return;
-                    }
-                    ItemStack icon = new ItemStack(Material.PAPER);
-                    MakeItem.setItemMeta(icon,"",null,"cassette_workspace",ItemData.ITEM_ID,"CASSETTE_WORKSPACE");
-                    GlowItemFrame frame = (GlowItemFrame) location.getWorld().spawn(location, GlowItemFrame.class);
-                    frame.setFacingDirection(BlockFace.UP,true);
-                    frame.setItem(icon);
-                    frame.setFixed(true);
-                    frame.setInvulnerable(true);
-                }
+//                case "CASSETTE WORKSPACE" -> {
+//                    event.setCancelled(true);
+//                    Location location = player.getLocation();
+//                    if(location.getBlock().getType().isSolid()){
+//                        player.sendMessage("ここには設置できません");
+//                        return;
+//                    }
+//                    Block blockUnder = location.clone().subtract(0, 1, 0).getBlock();
+//                    if (!blockUnder.getType().isSolid()) {
+//                        player.sendMessage("空中には設置できません");
+//                        return;
+//                    }
+//
+//                    boolean existsFrame = location.getWorld().getNearbyEntities(location, 0.5, 0.5, 0.5).stream().anyMatch(
+//                            e -> e instanceof GlowItemFrame
+//                    );
+//
+//                    if (existsFrame) {
+//                        player.sendMessage("すでに額縁があります");
+//                        return;
+//                    }
+//                    ItemStack icon = new ItemStack(Material.PAPER);
+//                    MakeItem.setItemMeta(icon,"",null,"cassette_workspace",ItemData.ITEM_ID,"CASSETTE_WORKSPACE");
+//                    GlowItemFrame frame = (GlowItemFrame) location.getWorld().spawn(location, GlowItemFrame.class);
+//                    frame.setFacingDirection(BlockFace.UP,true);
+//                    frame.setItem(icon);
+//                    frame.setFixed(true);
+//                    frame.setInvulnerable(true);
+//                }
             }
 //            if (Objects.equals(data, NamespacedKey.minecraft("itokagimaru_daw"))) {
 //                MainMenuHolder mainMenuHolder = new MainMenuHolder();

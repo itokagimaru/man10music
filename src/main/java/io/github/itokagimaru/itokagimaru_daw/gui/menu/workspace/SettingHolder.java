@@ -31,12 +31,16 @@ public class SettingHolder extends BaseGuiHolder {
         setup();
     }
     public void setup(){
-        ItemStack paper = new ItemStack(Material.PAPER);
-        MakeItem.setItemMetaByColor(paper, "撤去する", NamedTextColor.RED, "cassette_workspace_item", ItemData.BUTTON_ID, "remove");
-        inv.setItem(12, paper);
+        ItemStack remove = new ItemStack(Material.PAPER);
+        MakeItem.setItemMetaByColor(remove, "撤去する", NamedTextColor.RED, "cassette_workspace_item", ItemData.BUTTON_ID, "remove");
+        //inv.setItem(12, remove);仕様変更に伴い消しましたが、場合によっては戻すかもなのでこのままで
+
+        ItemStack info = new ItemStack(Material.OAK_SIGN);
+        MakeItem.setItemMetaByColor(info, "問合せ情報", NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "info");
+        inv.setItem(12,info);
 
         ItemStack flow = new ItemStack(Material.FLOW_BANNER_PATTERN);
-        MakeItem.setItemMeta(flow, "回転させる", null, null, ItemData.BUTTON_ID, "rotate");
+        MakeItem.setItemMetaByColor(flow, "回転させる", NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "rotate");
         inv.setItem(14, flow);
 
     }
@@ -61,6 +65,16 @@ public class SettingHolder extends BaseGuiHolder {
                 Rotation current = glowFream.getRotation();
                 Rotation next = current.rotateClockwise().rotateClockwise();//45°*2で90°回しているよ
                 glowFream.setRotation(next);
+            }
+            case "info" -> {
+                ItemStack icon = glowFream.getItem();
+                String placerUuid = ItemData.UUID.get(icon);
+                player.sendMessage(Component.text(
+                        "--問合せ情報--\n" +
+                                "world:" + world.getName() +"\n" +
+                                "額縁uuid:" + frameUuid + "\n" +
+                                "設置者uuid:" + placerUuid + "\n"
+                ));
             }
         }
     }

@@ -48,6 +48,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             ItemStack pdcHolder = player.getInventory().getItemInMainHand().clone();
             ItemData.BPM.set(pdcHolder,bpm);
             PlayMusic play = new PlayMusic();
+            play.setPrivate(true);
             PlayerMusicManager.setPlayingMusic(player, play);
             play.playMusic(player, pdcHolder);
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "STOP")) {
