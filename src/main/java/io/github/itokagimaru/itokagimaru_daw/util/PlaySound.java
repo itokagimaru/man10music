@@ -5,10 +5,14 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 public class PlaySound {
-    public static void playNote(Player player, int soundId, float volume) {
+    public static void playNote(Player player, int soundId, float volume, boolean isPrivet) {
         float pitch;
         soundId -= 2;//soundIdの正規化(諸事情で引数側が2からになってます
         pitch = 1;
+        if (isPrivet){
+            player.playSound(player.getLocation(), "soundid" + soundId, SoundCategory.RECORDS, volume, pitch);
+            return;
+        }
         player.getWorld().playSound(player.getLocation(), "soundid" + soundId, SoundCategory.RECORDS, volume, pitch);
     }
 

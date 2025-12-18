@@ -22,6 +22,10 @@ public class PlayMusic {
     //HashMap<UUID, BukkitTask> tasks = new HashMap<>();
     BukkitTask task;
     ItemStack cassetteIcon;
+    boolean isPrivate;
+    public void setPrivate(boolean bool){
+        isPrivate = bool;
+    }
     public void playMusic(Player player,ItemStack pdcHolder) {
         cassetteIcon = pdcHolder.clone();
         int[] lodedMusic = ItemData.MUSIC_SAVED_RED.get(pdcHolder);
@@ -41,7 +45,7 @@ public class PlayMusic {
                     } else {
                         volume =(float) 0.25;
                     }
-                    PlaySound.playNote(player, lodedMusic[count], volume);
+                    PlaySound.playNote(player, lodedMusic[count], volume, isPrivate);
                     ParticleManager.playNote(player);
                 }
                 count++;

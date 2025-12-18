@@ -26,7 +26,7 @@ public class ItemData {
     public static final StringKey ITEM_ID = new StringKey(getKey("itemid"), () -> "");
     public static final StringKey RECORDER = new StringKey(getKey("recorder"), () -> "");
     public static final StringKey MUSIC_NAME = new StringKey(getKey("musicname"), () -> "");
-
+    public static final StringKey UUID = new StringKey(getKey("uuid"), () -> "");
     // 将来のために変数だけ用意
 //    public static final IntArrayKey MUSIC_SAVED_BLUE = new IntArrayKey(getKey("music_saved_blue"), () -> new int[0]);
     public static final IntArrayKey MUSIC_SAVED_RED = new IntArrayKey(getKey("music_saved_blue"), () -> new int[Itokagimaru_daw.MUSIC_LENGTH]);

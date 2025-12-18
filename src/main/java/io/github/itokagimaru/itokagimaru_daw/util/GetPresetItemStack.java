@@ -34,17 +34,19 @@ public class GetPresetItemStack {
     }
 
     public static ItemStack workSpace(){
-        ItemStack stack = new ItemStack(Material.WOODEN_HOE);
+        ItemStack stack = new ItemStack(Material.PAPER);
         stack.editMeta(meta -> {
             meta.customName(Component.text("カセットテープ編集台"));
             meta.setItemModel(NamespacedKey.minecraft("cassette_workspace_item"));
             meta.lore(List.of(
                     Component.text("カセットテープを"),
                     Component.text("作成,編集できる作業台"),
-                    Component.text("右クリックで設置できるようだ")
+                    Component.text("設置方法:地面に設置された\"輝く額縁\"に入れ"),
+                    Component.text("　　　　 右クリックすることで設置"),
+                    Component.text("撤去方法:シフト右クリックで撤去")
             ));
         });
-        ItemData.ITEM_ID.set(stack,"CASSETTE WORKSPACE");
+        ItemData.ITEM_ID.set(stack,"CASSETTE_WORKSPACE_ITEM");
         return stack;
     }
 
