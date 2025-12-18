@@ -1,6 +1,7 @@
-package io.github.itokagimaru.itokagimaru_daw.gui.menu;
+package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

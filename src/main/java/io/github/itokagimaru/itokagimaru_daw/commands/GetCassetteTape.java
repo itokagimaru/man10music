@@ -2,6 +2,7 @@ package io.github.itokagimaru.itokagimaru_daw.commands;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.data.StringKey;
+import io.github.itokagimaru.itokagimaru_daw.util.GetPresetItemStack;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -21,13 +22,7 @@ public class GetCassetteTape implements CommandExecutor {
             return false;
         }
 
-        ItemStack stack = new ItemStack(Material.PAPER);
-        stack.editMeta(meta -> {
-            meta.customName(Component.text("カセットテープ"));
-            meta.setItemModel(NamespacedKey.minecraft("cassette_tape"));
-        });
-        ItemData.ITEM_ID.set(stack,"CASSETTE TAPE");
-        player.give(stack);
+        player.give(GetPresetItemStack.cassette());
 
         return true;
     }

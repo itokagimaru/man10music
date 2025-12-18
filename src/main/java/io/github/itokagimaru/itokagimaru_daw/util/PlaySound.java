@@ -9,7 +9,7 @@ public class PlaySound {
         float pitch;
         soundId -= 2;//soundIdの正規化(諸事情で引数側が2からになってます
         pitch = 1;
-        player.getWorld().playSound(player.getLocation(), "soundid" + soundId, SoundCategory.MASTER, volume, pitch);
+        player.getWorld().playSound(player.getLocation(), "soundid" + soundId, SoundCategory.RECORDS, volume, pitch);
     }
 
     public static void playPageTurn(Player player) {
@@ -18,5 +18,17 @@ public class PlaySound {
 
     public static void playLevelUp(Player player) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+    }
+
+    public  static void playCompassLock(Player player){
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_LODESTONE_COMPASS_LOCK,1f,1f);
+    }
+
+    public static void playSmithingTableUse(Player player){
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE,1f,1f);
+    }
+
+    public static void playAnvilUse(Player player){
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE,1f,1f);
     }
 }

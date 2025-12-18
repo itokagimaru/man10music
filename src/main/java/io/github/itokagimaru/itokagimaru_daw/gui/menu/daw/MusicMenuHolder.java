@@ -1,6 +1,7 @@
-package io.github.itokagimaru.itokagimaru_daw.gui.menu;
+package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,7 +18,6 @@ public class MusicMenuHolder extends BaseGuiHolder {
         setup();
     }
     public void setup() {
-        MakeItem makeItem = new MakeItem();
         ItemStack exportMusic = new ItemStack(Material.PAPER);
         MakeItem.setItemMeta(exportMusic,"save",null,"blank_sheet_music", ItemData.BUTTON_ID,"EXPORT");
         inv.setItem(3,exportMusic);
