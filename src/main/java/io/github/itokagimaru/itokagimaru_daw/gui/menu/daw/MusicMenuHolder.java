@@ -18,7 +18,6 @@ public class MusicMenuHolder extends BaseGuiHolder {
         setup();
     }
     public void setup() {
-        MakeItem makeItem = new MakeItem();
         ItemStack exportMusic = new ItemStack(Material.PAPER);
         MakeItem.setItemMeta(exportMusic,"save",null,"blank_sheet_music", ItemData.BUTTON_ID,"EXPORT");
         inv.setItem(3,exportMusic);

@@ -1,10 +1,10 @@
 package io.github.itokagimaru.itokagimaru_daw;
 
 import io.github.itokagimaru.itokagimaru_daw.commands.*;
-import io.github.itokagimaru.itokagimaru_daw.gui.listener.DawClickInventoryListener;
-import io.github.itokagimaru.itokagimaru_daw.gui.listener.DawCloseInventoryListeners;
-import io.github.itokagimaru.itokagimaru_daw.listeners.DawItemUseListener;
-import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerInteractEntityListner;
+import io.github.itokagimaru.itokagimaru_daw.gui.listener.ClickInventoryListener;
+import io.github.itokagimaru.itokagimaru_daw.gui.listener.CloseInventoryListeners;
+import io.github.itokagimaru.itokagimaru_daw.listeners.ItemUseListener;
+import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerInteractEntityListener;
 import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerQuitListener;
 import io.github.itokagimaru.itokagimaru_daw.manager.InventoryManager;
 import org.bukkit.Bukkit;
@@ -12,20 +12,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 
 public final class Itokagimaru_daw extends JavaPlugin implements Listener {
     public static Itokagimaru_daw instance;
 
     public static final HashMap<UUID, ItemStack[]> inv = new HashMap<>();
-    public static final int MUSIC_LENGTH = 8192;
+    public static final int MUSIC_LENGTH = 16384;//=2^14,>=2^3
     public static final int MAX_PAGE = MUSIC_LENGTH / 8;
 
     @Override
@@ -33,11 +31,11 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
         // listener
         registerListeners(
                 this,
-                new DawClickInventoryListener(),
-                new DawItemUseListener(),
-                new DawCloseInventoryListeners(),
+                new ClickInventoryListener(),
+                new ItemUseListener(),
+                new CloseInventoryListeners(),
                 new PlayerQuitListener(),
-                new PlayerInteractEntityListner()
+                new PlayerInteractEntityListener()
         );
         getSLF4JLogger().info("イベントリスナーを登録しました。");
 
@@ -79,4 +77,6 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
     public static Itokagimaru_daw getInstance() {
         return instance;
     }
+
+
 }

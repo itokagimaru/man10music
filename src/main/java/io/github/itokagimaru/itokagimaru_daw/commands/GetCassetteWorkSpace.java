@@ -1,6 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.commands;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
+import io.github.itokagimaru.itokagimaru_daw.util.GetPresetItemStack;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -20,18 +21,7 @@ public class GetCassetteWorkSpace implements CommandExecutor {
             return false;
         }
 
-        ItemStack stack = new ItemStack(Material.WOODEN_HOE);
-        stack.editMeta(meta -> {
-            meta.customName(Component.text("カセットテープ編集台"));
-            meta.setItemModel(NamespacedKey.minecraft("cassette_workspace_item"));
-            meta.lore(List.of(
-                    Component.text("カセットテープを"),
-                    Component.text("作成,編集できる作業台"),
-                    Component.text("右クリックで設置できるようだ")
-            ));
-        });
-        ItemData.ITEM_ID.set(stack,"CASSETTE WORKSPACE");
-        player.give(stack);
+        player.give(GetPresetItemStack.workSpace());
 
         return true;
     }

@@ -44,10 +44,10 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
             inv.setItem(4, exportedSheet);
             ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
             MakeItem.setItemMetaByColor(green,"決定",NamedTextColor.GREEN,null, ItemData.BUTTON_ID,"DECISION");
-            inv.setItem(8, green);
+            inv.setItem(7, green);
             ItemStack red =  new ItemStack(Material.RED_STAINED_GLASS_PANE);
             MakeItem.setItemMetaByColor(red,"キャンセル", NamedTextColor.RED,null, ItemData.BUTTON_ID,"CANCEL");
-            inv.setItem(0, red);
+            inv.setItem(1, red);
         } else if (Objects.equals(ItemData.ITEM_ID.get(clicked), "SELECT SHEET")) {
             onClose(player);
             setup();
@@ -57,7 +57,7 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
                 SheetMusicManager sheetMusicManager = new SheetMusicManager();
                 player.getInventory().addItem(sheetMusicManager.makeSheetMusic(player));
                 check.setAmount(0);
-                player.closeInventory();
+                setup();
             }
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "CANCEL")) {
             setup();

@@ -7,8 +7,10 @@ import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.SwapItems;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.GlowItemFrame;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +18,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class DawItemUseListener implements Listener {
+public class ItemUseListener implements Listener {
     @EventHandler
     public static void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -47,6 +49,24 @@ public class DawItemUseListener implements Listener {
                 case "CASSETTE WORKSPACE" -> {
                     event.setCancelled(true);
                     Location location = player.getLocation();
+                    if(location.getBlock().getType().isSolid()){
+                        player.sendMessage("ここには設置できません");
+                        return;
+                    }
+                    Block blockUnder = location.clone().subtract(0, 1, 0).getBlock();
+                    if (!blockUnder.getType().isSolid()) {
+                        player.sendMessage("空中には設置できません");
+                        return;
+                    }
+
+                    boolean existsFrame = location.getWorld().getNearbyEntities(location, 0.5, 0.5, 0.5).stream().anyMatch(
+                            e -> e instanceof GlowItemFrame
+                    );
+
+                    if (existsFrame) {
+                        player.sendMessage("すでに額縁があります");
+                        return;
+                    }
                     ItemStack icon = new ItemStack(Material.PAPER);
                     MakeItem.setItemMeta(icon,"",null,"cassette_workspace",ItemData.ITEM_ID,"CASSETTE_WORKSPACE");
                     GlowItemFrame frame = (GlowItemFrame) location.getWorld().spawn(location, GlowItemFrame.class);

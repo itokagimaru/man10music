@@ -20,9 +20,13 @@ public class ItemData {
     public static final IntKey TOP_NOTE = new IntKey(getKey("topnote"), () -> 0);
     public static final IntKey PAGE = new IntKey(getKey("page"), () -> 0);
     public static final ByteArrayKey BYTE_LIST = new ByteArrayKey(getKey("bytelist"), () -> new byte[]{});
+    public static final ByteKey IS_NAMED = new ByteKey(getKey("isnamed"), () -> (byte) 0);
+    public static final ByteKey IS_MERGED = new ByteKey(getKey("ismerged"), () -> (byte) 0);
     public static final StringKey BUTTON_ID = new StringKey(getKey("buttonid"), () -> "");
     public static final StringKey ITEM_ID = new StringKey(getKey("itemid"), () -> "");
-    public static final ByteKey FLAG = new ByteKey(getKey("flag"), () -> (byte) 0);
+    public static final StringKey RECORDER = new StringKey(getKey("recorder"), () -> "");
+    public static final StringKey MUSIC_NAME = new StringKey(getKey("musicname"), () -> "");
+
     // 将来のために変数だけ用意
 //    public static final IntArrayKey MUSIC_SAVED_BLUE = new IntArrayKey(getKey("music_saved_blue"), () -> new int[0]);
     public static final IntArrayKey MUSIC_SAVED_RED = new IntArrayKey(getKey("music_saved_blue"), () -> new int[Itokagimaru_daw.MUSIC_LENGTH]);

@@ -17,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class InputModeHolder extends BaseGuiHolder {
@@ -376,14 +377,16 @@ public class InputModeHolder extends BaseGuiHolder {
             ItemStack topnote_item = player.getOpenInventory().getTopInventory().getItem(0);
             int topnote = ItemData.TOP_NOTE.get(topnote_item);
             inputGuiUpdate(topnote, page);
-        } else {}
+        }
     }
 
     @Override
     public void onClose(Player player) {
+        setMusicEndpoint();
         InventoryManager inventoryManager = new InventoryManager();
         inventoryManager.loadInventory(player);
         ItemStack daw = player.getInventory().getItemInMainHand();
         MusicManager.saveMusicForPdc(daw,musicList);
+        daw.lore(List.of(Component.text(Arrays.toString(musicList))));
     }
 }

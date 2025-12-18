@@ -47,7 +47,7 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
     public void onClick(InventoryClickEvent event) {
         ItemStack clickedItem = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
-        if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "RECORD ITEM")) {
+        if (Objects.equals(ItemData.ITEM_ID.get(clickedItem), "recordCassette")) {
             setRecordIcons(clickedItem);
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "RECORD BUTTON")) {
             ItemStack bar = new ItemStack(Material.BARRIER);
@@ -79,6 +79,7 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
 
     public void setRecordIcons(ItemStack item){
         ItemStack recordButton = item.clone();
+        ItemData.ITEM_ID.set(recordButton,"");
         ItemData.BUTTON_ID.set(recordButton, "RECORD BUTTON");
         inv.setItem(7, recordButton);
         ItemStack clock = new ItemStack(Material.CLOCK);

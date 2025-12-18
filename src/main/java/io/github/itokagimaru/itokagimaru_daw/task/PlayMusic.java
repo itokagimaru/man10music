@@ -2,6 +2,7 @@ package io.github.itokagimaru.itokagimaru_daw.task;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.walkman.ItemsPlayModeHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.ParticleManager;
@@ -10,6 +11,8 @@ import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.PlaySound;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -55,7 +58,7 @@ public class PlayMusic {
             PlayMusic play = new PlayMusic();
             PlayerMusicManager.setPlayingMusic(player, play);
             play.playMusic(player,cassetteIcon);
-        } else if (player.getOpenInventory().getTopInventory().getHolder() instanceof ItemsPlayModeHolder holder) {
+        } else if (player.getOpenInventory().getTopInventory().getHolder() instanceof BaseGuiHolder holder) {
             ItemStack play = new ItemStack(Material.PAPER);
             MakeItem.setItemMeta(play, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
             holder.getInventory().setItem(4, play);

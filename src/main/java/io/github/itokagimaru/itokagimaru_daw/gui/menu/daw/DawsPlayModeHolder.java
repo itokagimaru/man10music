@@ -43,11 +43,13 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             dawsOptionBpmHolder.updateBpmIcons(bpm);
             player.openInventory(dawsOptionBpmHolder.getInventory());
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "PLAY")) {
-            double bpm = ItemData.BPM.get(Objects.requireNonNull(clicked_inv.getItem(2)));
+            int bpm = ItemData.BPM.get(Objects.requireNonNull(clicked_inv.getItem(2)));
             MakeItem.setItemMeta(clicked, "再生停止", null, "elytra", ItemData.BUTTON_ID, "STOP");
+            ItemStack pdcHolder = player.getInventory().getItemInMainHand().clone();
+            ItemData.BPM.set(pdcHolder,bpm);
             PlayMusic play = new PlayMusic();
             PlayerMusicManager.setPlayingMusic(player, play);
-            play.playMusic(player, player.getInventory().getItemInMainHand());
+            play.playMusic(player, pdcHolder);
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "STOP")) {
             PlayMusic play = PlayerMusicManager.getMusic(player);
             MakeItem.setItemMeta(clicked, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");

@@ -1,6 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.commands;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
+import io.github.itokagimaru.itokagimaru_daw.util.GetPresetItemStack;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -19,14 +20,8 @@ public class GetSheetMusicItem implements CommandExecutor {
             sender.sendMessage("Only players can execute this command");
             return false;
         }
-        ItemStack stack = new ItemStack(Material.PAPER);
-        stack.editMeta(meta -> {
-            meta.setItemModel(NamespacedKey.minecraft("blank_sheet_music"));
-            meta.customName(Component.text("白紙の楽譜"));
-            meta.setMaxStackSize(1);
-        });
-        ItemData.ITEM_ID.set(stack,"BLANK SHEET");
-        player.give(stack);
+
+        player.give(GetPresetItemStack.musicSheet());
 
         return true;
     }

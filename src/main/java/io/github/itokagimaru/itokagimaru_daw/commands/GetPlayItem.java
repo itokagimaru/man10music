@@ -1,6 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.commands;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
+import io.github.itokagimaru.itokagimaru_daw.util.GetPresetItemStack;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -21,20 +22,8 @@ public class GetPlayItem implements CommandExecutor {
             sender.sendMessage("Only players can execute this command");
             return false;
         }
-        ItemStack stack = new ItemStack(Material.WOODEN_HOE);
-        stack.editMeta(meta -> {
-            meta.setItemModel(NamespacedKey.minecraft("walkman"));
-            meta.customName(Component.text("レトロなカセットプレイヤー"));
-            meta.lore(List.of(
-                    Component.text("レトロでかわいいカセットプレイヤー"),
-                    Component.text("**注意**"),
-                    Component.text("イヤホンジャックがぬけた状態で"),
-                    Component.text("再生してしまいますと"),
-                    Component.text("音漏れいたしますのでご注意ください")
-            ));
-        });
-        ItemData.ITEM_ID.set(stack,"walkman");
-        player.give(stack);
+
+        player.give(GetPresetItemStack.walkMan());
         return true;
     }
 }

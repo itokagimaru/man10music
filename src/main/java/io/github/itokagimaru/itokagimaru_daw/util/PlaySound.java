@@ -19,4 +19,16 @@ public class PlaySound {
     public static void playLevelUp(Player player) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
     }
+
+    public  static void playCompassLock(Player player){
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_LODESTONE_COMPASS_LOCK,1f,1f);
+    }
+
+    public static void playSmithingTableUse(Player player){
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE,1f,1f);
+    }
+
+    public static void playAnvilUse(Player player){
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE,1f,1f);
+    }
 }
