@@ -281,7 +281,7 @@ public class InputModeHolder extends BaseGuiHolder {
                 Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 5 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "ファ#/F#")) {
-                add = Math.min((topnote + 5) / 6, 5);
+                add = Math.min((topnote + 5) / 6, 6);
                 if (topnote == 0) add = 0;
 
                 Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 2 + (12 * add);

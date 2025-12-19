@@ -138,14 +138,15 @@ public class ChangeBpmHolder extends BaseGuiHolder {
                 setup();
             }
             case "SHIFT RIGHT" -> {
+                if(inv.getItem(4) == null)return;
                 getSelectBpmId(ItemData.BPM.get(inv.getItem(4)));
-
                 selectedBpmId += 1;
                 if (selectedBpmId > bpmList.length - 4) selectedBpmId = bpmList.length - 4;
                 int bpm = bpmList[selectedBpmId];
                 updateBpmIcons(bpm);
             }
             case "SHIFT LEFT" -> {
+                if(inv.getItem(4) == null)return;
                 getSelectBpmId(ItemData.BPM.get(inv.getItem(4)));
                 selectedBpmId -= 1;
                 if (selectedBpmId < 0) selectedBpmId = 0;

@@ -6,14 +6,30 @@ import org.bukkit.entity.Player;
 
 public class PlaySound {
     public static void playNote(Player player, int soundId, float volume, boolean isPrivet) {
-        float pitch;
-        soundId -= 2;//soundIdの正規化(諸事情で引数側が2からになってます
-        pitch = 1;
+        float pitch = 1;
+        soundId -= 2;//soundIdの正規化(諸事情で引数側が3からになってます
+        int playSound = 1 + 3 * ((soundId) / 3);
+        switch (soundId % 3){
+            case 0 -> pitch = (float) Math.pow(2,1.0/12);
+            case 1 -> pitch = (float) 1;
+            case 2 -> pitch = (float) Math.pow(2,-1.0/12);
+        }
+        if (soundId == 72){//例外処理だよ
+            playSound = 72;
+            pitch = 1;
+        }
         if (isPrivet){
-            player.playSound(player.getLocation(), "soundid" + soundId, SoundCategory.RECORDS, volume, pitch);
+            player.playSound(player.getLocation(), "soundid" + playSound, SoundCategory.RECORDS, volume, pitch);
             return;
         }
-        player.getWorld().playSound(player.getLocation(), "soundid" + soundId, SoundCategory.RECORDS, volume, pitch);
+        player.getWorld().playSound(player.getLocation(), "soundid" + playSound, SoundCategory.RECORDS, volume, pitch);
+
+//        pitch = 1;
+//        if (isPrivet){
+//            player.playSound(player.getLocation(), "soundid" + soundId, SoundCategory.RECORDS, volume, pitch);
+//            return;
+//        }
+//        player.getWorld().playSound(player.getLocation(), "soundid" + soundId, SoundCategory.RECORDS, volume, pitch);
     }
 
     public static void playPageTurn(Player player) {
