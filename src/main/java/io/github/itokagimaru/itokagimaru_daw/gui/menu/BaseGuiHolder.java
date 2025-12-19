@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class BaseGuiHolder implements InventoryHolder {
     protected Inventory inv;
-    public boolean closeFlag;
+    public boolean closeFlag = true;
 
     public abstract void onClick(InventoryClickEvent event);
 
