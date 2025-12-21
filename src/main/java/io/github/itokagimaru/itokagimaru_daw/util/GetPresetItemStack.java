@@ -41,11 +41,14 @@ public class GetPresetItemStack {
             meta.lore(List.of(
                     Component.text("カセットテープを"),
                     Component.text("作成,編集できる作業台"),
+                    Component.text(""),
                     Component.text("設置方法:地面に設置された\"輝く額縁\"に入れ"),
-                    Component.text("　　　　 右クリックすることで設置"),
+                    Component.text("　　　　右クリックすることで設置"),
                     Component.text("撤去方法:シフト右クリックで撤去")
             ));
+            meta.setMaxStackSize(1);
         });
+
         ItemData.ITEM_ID.set(stack,"CASSETTE_WORKSPACE_ITEM");
         return stack;
     }
@@ -75,6 +78,25 @@ public class GetPresetItemStack {
             meta.setMaxStackSize(1);
         });
         ItemData.ITEM_ID.set(stack,"BLANK SHEET");
+        return stack;
+    }
+
+    public static ItemStack radio(){
+        ItemStack stack = new ItemStack(Material.PAPER);
+        stack.editMeta(meta -> {
+            meta.setItemModel(NamespacedKey.minecraft("radio_cassette_item"));
+            meta.customName(Component.text("ラジカセ"));
+            meta.lore(List.of(
+                    Component.text("カセットテープを"),
+                    Component.text("再生できるラジカセ"),
+                    Component.text(""),
+                    Component.text("設置方法:地面に設置された\"輝く額縁\"に入れ"),
+                    Component.text("　　　　右クリックすることで設置"),
+                    Component.text("撤去方法:シフト右クリックで撤去")
+            ));
+            meta.setMaxStackSize(1);
+        });
+        ItemData.ITEM_ID.set(stack,"RADIO_ITEM");
         return stack;
     }
 }

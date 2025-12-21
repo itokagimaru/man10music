@@ -24,3 +24,6 @@ commands:
   cassetteTransfer:
     description: /cassetteTransfer で旧pdcで記録されていたmusicを新pdcに引っ越しさせるよ
     usage: /cassetteTransfer
+  getRadio:
+    description: /getRadio でラジカセを入手できるよ
+    usage: /getRadio

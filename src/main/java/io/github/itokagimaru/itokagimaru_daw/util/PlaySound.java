@@ -1,13 +1,17 @@
 package io.github.itokagimaru.itokagimaru_daw.util;
 
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public class PlaySound {
-    public static void playNote(Player player, int soundId, float volume, boolean isPrivet) {
+    static Double soundRange = 5.0;// 音の聞こえる範囲。音を鳴らす位置を中心とした正方形範囲
+    public static void playNote(Entity target, int soundId, float volume, boolean isPrivet) {
         float pitch = 1;
         soundId -= 2;//soundIdの正規化(諸事情で引数側が3からになってます
+        if(soundId < 0) return;
         int playSound = 1 + 3 * ((soundId) / 3);
         switch (soundId % 3){
             case 0 -> pitch = (float) Math.pow(2,1.0/12);
@@ -19,10 +23,15 @@ public class PlaySound {
             pitch = 1;
         }
         if (isPrivet){
+            if(!(target instanceof Player player))return;
             player.playSound(player.getLocation(), "soundid" + playSound, SoundCategory.RECORDS, volume, pitch);
             return;
         }
-        player.getWorld().playSound(player.getLocation(), "soundid" + playSound, SoundCategory.RECORDS, volume, pitch);
+        for (Entity entity : target.getWorld().getNearbyEntities(target.getLocation(),soundRange,soundRange,soundRange)){
+            if(entity instanceof Player player){
+                player.playSound(player.getLocation(), "soundid" + playSound, SoundCategory.RECORDS, volume, pitch);
+            }
+        }
 
 //        pitch = 1;
 //        if (isPrivet){
