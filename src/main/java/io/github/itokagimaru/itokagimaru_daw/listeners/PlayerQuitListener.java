@@ -2,7 +2,7 @@ package io.github.itokagimaru.itokagimaru_daw.listeners;
 
 import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.InventoryManager;
-import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;
+import io.github.itokagimaru.itokagimaru_daw.manager.PlayMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +14,7 @@ public class PlayerQuitListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
         AutPlayManager.set(player, false);
-        PlayMusic play = PlayerMusicManager.getMusic(player);
+        PlayMusic play = PlayMusicManager.getMusic(player);
         if(play != null){
             play.stopTask(player);
         }

@@ -3,13 +3,14 @@ package io.github.itokagimaru.itokagimaru_daw.gui.menu.walkman;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
-import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;
+import io.github.itokagimaru.itokagimaru_daw.manager.PlayMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -20,14 +21,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class ItemsPlayModeHolder extends BaseGuiHolder {
-    public ItemsPlayModeHolder(Player player) {
+    public ItemsPlayModeHolder(Entity target) {
         inv = Bukkit.createInventory(this, 9, Component.text("PlayMode"));
-        setup(player);
+        setup(target);
     }
 
-    public void setup(Player player) {
+    public void setup(Entity target) {
         ItemStack playIcon = new ItemStack(Material.PAPER);
-        PlayMusic play = PlayerMusicManager.getMusic(player);
+        PlayMusic play = PlayMusicManager.getMusic(target);
         if (play == null) {
             MakeItem.setItemMeta(playIcon, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
             ItemStack cassetteIcon = new ItemStack(Material.BARRIER);
@@ -39,7 +40,7 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
         }
         inv.setItem(4, playIcon);
 
-        ItemStack autPlayIcon = upDateAutoPlayIcon(AutPlayManager.get(player));
+        ItemStack autPlayIcon = upDateAutoPlayIcon(AutPlayManager.get(target));
         inv.setItem(0, autPlayIcon);
     }
 
@@ -50,32 +51,47 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
         if (Objects.equals(ItemData.ITEM_ID.get(clickedItem), "recordCassette")) {
             setRecordIcons(clickedItem);
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "RECORD BUTTON")) {
-            ItemStack bar = new ItemStack(Material.BARRIER);
-            MakeItem.setItemMeta(bar, "未選択", null, null, null, null);
-            inv.setItem(7, bar);
-            inv.setItem(1, null);
+            removeIcon();
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "PLAY")) {
-
-            Inventory clicked_inv = event.getClickedInventory();
-            double bpm = ItemData.BPM.get(Objects.requireNonNull(clicked_inv.getItem(7)));
-            if (bpm == -1) return;
-            MakeItem.setItemMeta(clickedItem, "再生停止", null, "elytra", ItemData.BUTTON_ID, "STOP");
-            PlayMusic play = new PlayMusic();
-            play.setPrivate(false);
-            PlayerMusicManager.setPlayingMusic(player, play);
-            play.playMusic(player,clicked_inv.getItem(7));
+            playMusic(event);
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "STOP")) {
-
-            PlayMusic play = PlayerMusicManager.getMusic(player);
-            MakeItem.setItemMeta(clickedItem, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
-            AutPlayManager.set(player,false);
-            inv.setItem(0,upDateAutoPlayIcon(false));
-            play.stopTask(player);
+            stopMusic(event);
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "AUTPLAY_ICON")) {
             AutPlayManager.set(player,!(AutPlayManager.get(player)));
             ItemStack autPlayIcon = upDateAutoPlayIcon(AutPlayManager.get(player));
             inv.setItem(0, autPlayIcon);
         }
+    }
+
+    public void removeIcon(){
+        ItemStack bar = new ItemStack(Material.BARRIER);
+        MakeItem.setItemMeta(bar, "未選択", null, null, null, null);
+        inv.setItem(7, bar);
+        inv.setItem(1, null);
+    }
+
+    public void playMusic(InventoryClickEvent event){
+        ItemStack clickedItem = event.getCurrentItem();
+        Inventory clicked_inv = event.getClickedInventory();
+        Player player = (Player) event.getWhoClicked();
+        double bpm = ItemData.BPM.get(Objects.requireNonNull(clicked_inv.getItem(7)));
+        if (bpm == -1) return;
+        MakeItem.setItemMeta(clickedItem, "再生停止", null, "elytra", ItemData.BUTTON_ID, "STOP");
+        PlayMusic play = new PlayMusic();
+        play.setPrivate(false);
+        play.setRequester(player);
+        PlayMusicManager.setPlayingMusic(player, play);
+        play.playMusic(player,clicked_inv.getItem(7));
+    }
+
+    public void stopMusic(InventoryClickEvent event){
+        ItemStack clickedItem = event.getCurrentItem();
+        Player player = (Player) event.getWhoClicked();
+        PlayMusic play = PlayMusicManager.getMusic(player);
+        MakeItem.setItemMeta(clickedItem, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
+        AutPlayManager.set(player,false);
+        inv.setItem(0,upDateAutoPlayIcon(false));
+        play.stopTask(player);
     }
 
     public void setRecordIcons(ItemStack item){

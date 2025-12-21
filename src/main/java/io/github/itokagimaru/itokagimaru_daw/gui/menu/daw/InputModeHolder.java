@@ -241,7 +241,12 @@ public class InputModeHolder extends BaseGuiHolder {
                 Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 9 + (12 * add);
             }
             if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "休符"))
-                Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 0;
+                if(musicList[(page - 1) * 8 + select - 1] != 0) {
+                    Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 0;
+                } else {
+                    Objects.requireNonNull(musicList)[(page - 1) * 8 + select - 1] = 1;
+                }
+
             //"ド/C","レ/D","ミ/E","ファ/F","ソ/G","ラ/A","シ/B"
 
 

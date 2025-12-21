@@ -1,6 +1,6 @@
 package io.github.itokagimaru.itokagimaru_daw.manager;
 
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -8,17 +8,17 @@ import java.util.UUID;
 public class AutPlayManager {
     public static HashMap<UUID, Boolean> autPlay  = new HashMap<>();
 
-    public static void set(Player player, Boolean flag){
-        autPlay.put(player.getUniqueId(), flag);
+    public static void set(Entity target, Boolean flag){
+        autPlay.put(target.getUniqueId(), flag);
     }
 
-    public static Boolean get(Player player){
-        if(autPlay.get(player.getUniqueId()) == null) set(player, false);
-        return autPlay.get(player.getUniqueId());
+    public static Boolean get(Entity target){
+        if(autPlay.get(target.getUniqueId()) == null) set(target, false);
+        return autPlay.get(target.getUniqueId());
     }
 
-    public static void remove(Player player){
-        autPlay.remove(player.getUniqueId());
+    public static void remove(Entity target){
+        autPlay.remove(target.getUniqueId());
     }
 
 }

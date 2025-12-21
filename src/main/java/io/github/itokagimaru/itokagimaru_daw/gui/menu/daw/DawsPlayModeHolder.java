@@ -2,7 +2,7 @@ package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
-import io.github.itokagimaru.itokagimaru_daw.manager.PlayerMusicManager;
+import io.github.itokagimaru.itokagimaru_daw.manager.PlayMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import net.kyori.adventure.text.Component;
@@ -49,10 +49,11 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             ItemData.BPM.set(pdcHolder,bpm);
             PlayMusic play = new PlayMusic();
             play.setPrivate(true);
-            PlayerMusicManager.setPlayingMusic(player, play);
+            play.setRequester(player);
+            PlayMusicManager.setPlayingMusic(player, play);
             play.playMusic(player, pdcHolder);
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "STOP")) {
-            PlayMusic play = PlayerMusicManager.getMusic(player);
+            PlayMusic play = PlayMusicManager.getMusic(player);
             MakeItem.setItemMeta(clicked, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
             play.stopTask(player);
         }
@@ -60,7 +61,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
 
     @Override
     public void onClose(Player player) {
-        PlayMusic play = PlayerMusicManager.getMusic(player);
+        PlayMusic play = PlayMusicManager.getMusic(player);
         if (play == null) return;
         play.stopTask(player);
     }
