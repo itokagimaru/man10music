@@ -1,5 +1,6 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
+import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.SheetMusicManager;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Objects;
 
 public class MusicSheetExportHolder extends BaseGuiHolder {
@@ -26,7 +28,8 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
             inv.setItem(i, air);
         }
         ItemStack bar = new ItemStack(Material.BARRIER);
-        MakeItem.setItemMeta(bar,"未選択",null,null, null,null);
+        MakeItem.setItemMetaByColor(bar,"未選択",NamedTextColor.RED,null, null,null);
+        bar.lore(List.of(Component.text("\"白紙の楽譜\"を選択")));
         inv.setItem(4, bar);
     }
 
@@ -65,13 +68,21 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
     }
     @Override
     public void onClose(Player player){
+        if (!closeFlag) return;
+        closeFlag = false;
         ItemStack check = inv.getItem(4);
-        if (check == null) return;
-        if (Objects.equals(ItemData.ITEM_ID.get(check), "SELECT SHEET")) {
-            ItemStack sheetMusic = new ItemStack(Material.PAPER);
-            MakeItem.setItemMeta(sheetMusic,"白紙の楽譜",null,"blank_sheet_music", ItemData.ITEM_ID,"BLANK SHEET");
-            player.getInventory().addItem(sheetMusic);
+        if (check != null) {
+            if (Objects.equals(ItemData.ITEM_ID.get(check), "SELECT SHEET")) {
+                ItemStack sheetMusic = new ItemStack(Material.PAPER);
+                MakeItem.setItemMeta(sheetMusic,"白紙の楽譜",null,"blank_sheet_music", ItemData.ITEM_ID,"BLANK SHEET");
+                player.getInventory().addItem(sheetMusic);
+            }
         }
+        Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
+            MusicMenuHolder musicMenuHolder = new MusicMenuHolder();
+            player.openInventory(musicMenuHolder.getInventory());
+        });
+
     }
 
 

@@ -1,9 +1,11 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
+import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,7 +34,7 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
         ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         if (selectedBpmId > bpmList.length - 7) selectedBpmId = bpmList.length - 7;
         for (int i = 0; i < 7; i++) {
-            MakeItem.setItemMeta(green, "set:" + bpmList[selectedBpmId + i], null, null, ItemData.BPM, bpmList[selectedBpmId + i]);
+            MakeItem.setItemMetaByColor(green, "set:" + bpmList[selectedBpmId + i], NamedTextColor.GREEN, null, ItemData.BPM, bpmList[selectedBpmId + i]);
             ItemData.BUTTON_ID.set(green, "SET BPM");
             inv.setItem(i + 1, green);
         }
@@ -57,6 +59,7 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
         switch (buttonId) {
             case "SET BPM" -> {
                 int bpm = ItemData.BPM.get(clicked);
+                closeFlag = false;
                 DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(bpm);
                 player.openInventory(dawsPlayModeHolder.getInventory());
             }
@@ -79,7 +82,15 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
     }
 
     @Override
-    public void onClose(Player player) {}
+    public void onClose(Player player) {
+        if (!closeFlag)return;
+        closeFlag = false;
+        Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
+            DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(60);
+            player.openInventory(dawsPlayModeHolder.getInventory());
+        });
+
+    }
 }
 
 

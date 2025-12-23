@@ -1,10 +1,12 @@
 package io.github.itokagimaru.itokagimaru_daw;
 
 import io.github.itokagimaru.itokagimaru_daw.commands.*;
+import io.github.itokagimaru.itokagimaru_daw.db.MySQLManager;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.ClickInventoryListener;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.CloseInventoryListeners;
 import io.github.itokagimaru.itokagimaru_daw.listeners.ItemUseListener;
 import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerInteractEntityListener;
+import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerJoinListener;
 import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerQuitListener;
 import io.github.itokagimaru.itokagimaru_daw.manager.InventoryManager;
 import org.bukkit.Bukkit;
@@ -25,6 +27,8 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
     public static final HashMap<UUID, ItemStack[]> inv = new HashMap<>();
     public static final int MUSIC_LENGTH = 16384;//=2^14,>=2^3
     public static final int MAX_PAGE = MUSIC_LENGTH / 8;
+    private MySQLManager mysql;
+    public InventoryManager inventoryManager;
 
     @Override
     public void onEnable() {
@@ -35,12 +39,12 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
                 new ItemUseListener(),
                 new CloseInventoryListeners(),
                 new PlayerQuitListener(),
-                new PlayerInteractEntityListener()
+                new PlayerInteractEntityListener(),
+                new PlayerJoinListener()
         );
         getSLF4JLogger().info("イベントリスナーを登録しました。");
 
         // command
-        //getServer().getPluginManager().registerEvents(new PlayerJpinListener(),this);
         registerCommand("getDawItem", new GetDawItem());
         registerCommand("getSheetMusic", new GetSheetMusicItem());
         registerCommand("getPlayItem", new GetPlayItem());
@@ -51,6 +55,17 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
         registerCommand("getRadio", new GetRadio());
         getSLF4JLogger().info("コマンドを登録しました。");
 
+        //dataBase
+        saveDefaultConfig();
+        mysql = new MySQLManager();
+        mysql.init(
+                getConfig().getString("mysql.host"),
+                getConfig().getInt("mysql.port"),
+                getConfig().getString("mysql.database"),
+                getConfig().getString("mysql.user"),
+                getConfig().getString("mysql.password")
+        );
+        inventoryManager = new InventoryManager(mysql);
         instance = this;
     }
 
@@ -68,16 +83,10 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
     }
 
     @Override
-    public void onDisable() {
-        InventoryManager inventoryManager = new InventoryManager();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            inventoryManager.loadInventory(player);
-        }
-    }
+    public void onDisable(){}
 
     public static Itokagimaru_daw getInstance() {
         return instance;
     }
-
 
 }

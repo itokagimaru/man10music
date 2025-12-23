@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 public class SettingHolder extends BaseGuiHolder {
-    UUID frameUuid;
+    public UUID frameUuid;
     public void setUuid(UUID uuid){
         frameUuid = uuid;
     }
@@ -63,7 +63,7 @@ public class SettingHolder extends BaseGuiHolder {
             }
             case "rotate" -> {
                 Rotation current = glowFream.getRotation();
-                Rotation next = current.rotateClockwise().rotateClockwise();//45°*2で90°回しているよ
+                Rotation next = current.rotateClockwise();//45°回しているよ
                 glowFream.setRotation(next);
             }
             case "info" -> {

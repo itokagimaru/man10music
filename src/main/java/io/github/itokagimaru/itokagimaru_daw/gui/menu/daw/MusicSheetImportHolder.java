@@ -1,5 +1,6 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
+import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Objects;
 
 public class MusicSheetImportHolder extends BaseGuiHolder {
@@ -19,13 +21,13 @@ public class MusicSheetImportHolder extends BaseGuiHolder {
         setup();
     }
     public void setup(){
-        MakeItem makeItem = new MakeItem();
         ItemStack air = new ItemStack(Material.AIR);
         for (int i = 0; i < 9;i++){
             inv.setItem(i, air);
         }
         ItemStack bar = new ItemStack(Material.BARRIER);
         MakeItem.setItemMeta(bar,"未選択",null,null, null,null);
+        bar.lore(List.of(Component.text("\"記述済みの楽譜\"を選択")));
         inv.setItem(4, bar);
     }
 
@@ -54,7 +56,14 @@ public class MusicSheetImportHolder extends BaseGuiHolder {
         }
     }
     @Override
-    public void onClose(Player player) {}
+    public void onClose(Player player) {
+        if (!closeFlag) return;
+        closeFlag = false;
+        Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
+            MusicMenuHolder musicMenuHolder = new MusicMenuHolder();
+            player.openInventory(musicMenuHolder.getInventory());
+        });
+    }
 }
 
 

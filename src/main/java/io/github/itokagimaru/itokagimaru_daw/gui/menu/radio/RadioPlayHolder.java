@@ -6,6 +6,7 @@ import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.PlayMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.GlowItemFrame;
@@ -21,9 +22,31 @@ public class RadioPlayHolder extends ItemsPlayModeHolder {
     public void setFream(Entity glowFream){
         if(!(glowFream instanceof GlowItemFrame))return;
         fream = glowFream;
+
     }
-    public RadioPlayHolder(Entity target) {
+    public RadioPlayHolder(GlowItemFrame target) {
         super(target);
+        setSettingItem();
+    }
+
+    public void setSettingItem(){
+        ItemStack setting = new ItemStack(Material.FLOWER_BANNER_PATTERN);
+        MakeItem.setItemMetaByColor(setting, "Setting", NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "setting");
+        inv.setItem(0, setting);
+    }
+    @Override
+    public void onClick(InventoryClickEvent event){
+        ItemStack clicked = event.getCurrentItem();
+        String buttonId = ItemData.BUTTON_ID.get(clicked);
+        if (("setting").equals(buttonId)){
+            Player player = (Player) event.getWhoClicked();
+            closeFlag = false;
+            RadiosSettingHolder radiosSettingHolder = new RadiosSettingHolder();
+            radiosSettingHolder.setUuid(fream.getUniqueId());
+            player.openInventory(radiosSettingHolder.getInventory());
+        }
+        super.onClick(event);
+
     }
 
     @Override

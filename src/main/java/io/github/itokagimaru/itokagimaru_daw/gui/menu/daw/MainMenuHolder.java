@@ -21,7 +21,7 @@ public class MainMenuHolder extends BaseGuiHolder {
 
     public void setup() {
         ItemStack sheetMusic = new ItemStack(Material.WOODEN_HOE);
-        MakeItem.setItemMetaByColor(sheetMusic,"save&lode",NamedTextColor.YELLOW,"written_sheet_music",ItemData.BUTTON_ID,"SAVE AND LODE");
+        MakeItem.setItemMetaByColor(sheetMusic,"saveToDB&lode",NamedTextColor.YELLOW,"written_sheet_music",ItemData.BUTTON_ID,"SAVE AND LODE");
         this.inv.setItem(1, sheetMusic);
 
         ItemStack writable = new ItemStack(Material.WRITABLE_BOOK);
