@@ -1,9 +1,11 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.listener;
 
+import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace.AnvilGUIOpening;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace.NamingAnvilGUI;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace.NamingCassetteMenuHolder;
+import io.github.itokagimaru.itokagimaru_daw.manager.InventoryManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,10 +26,11 @@ public class ClickInventoryListener implements Listener {
             namingAnvilGUI.onClick(event);
             return;
         }
-        if (!(event.getView().getTopInventory().getHolder() instanceof BaseGuiHolder baseGuiHolder)) return;
-        ItemStack clicked = event.getCurrentItem();
-        if (clicked == null || clicked.getType() == Material.AIR) return;
-        event.setCancelled(true);
-        baseGuiHolder.onClick(event);
+        if ((event.getView().getTopInventory().getHolder() instanceof BaseGuiHolder baseGuiHolder)) {
+            ItemStack clicked = event.getCurrentItem();
+            if (clicked == null || clicked.getType() == Material.AIR) return;
+            event.setCancelled(true);
+            baseGuiHolder.onClick(event);
+        }
     }
 }

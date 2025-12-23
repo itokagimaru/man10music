@@ -32,6 +32,7 @@ public class InputModeHolder extends BaseGuiHolder {
 
     public void setup() {
         ItemStack paper = new ItemStack(Material.PAPER);
+
         for (int i = 0; i <= 53; i++) {
             MakeItem.setItemMeta(paper, "", null, "note_def", null, null);
             this.inv.setItem(i, paper);
@@ -41,7 +42,7 @@ public class InputModeHolder extends BaseGuiHolder {
             this.inv.setItem(i * 9, paper);
         }
         ItemStack gray = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-        MakeItem.setItemMeta(gray, "", null, null, null, null);
+        MakeItem.setItemMeta(gray, "", null, null, ItemData.BUTTON_ID, "flager");
         for (int i = 0; i < 36; i++) {
             playerInventory.setItem(i, gray);
         }
@@ -97,7 +98,7 @@ public class InputModeHolder extends BaseGuiHolder {
     }
 
     public void open(Player player) {
-        InventoryManager inventoryManager = new InventoryManager();
+        InventoryManager inventoryManager = Itokagimaru_daw.getInstance().inventoryManager;
         inventoryManager.saveInventory(player);
         ItemStack pdcHolder = player.getInventory().getItemInMainHand().clone();
         player.getInventory().clear();
@@ -178,7 +179,7 @@ public class InputModeHolder extends BaseGuiHolder {
 
     public int getMusicFinalPage() {
         int endPoint = 0;
-        for (int i = 0; i < musicList.length; i++) {//エンドポイントの削除
+        for (int i = 0; i < musicList.length; i++) {
             if (musicList[i] == -1) endPoint = i;
         }
         return endPoint / 8 + 1;
@@ -387,11 +388,16 @@ public class InputModeHolder extends BaseGuiHolder {
 
     @Override
     public void onClose(Player player) {
+        if (!closeFlag) return;
         setMusicEndpoint();
-        InventoryManager inventoryManager = new InventoryManager();
+        InventoryManager inventoryManager = Itokagimaru_daw.getInstance().inventoryManager;
         inventoryManager.loadInventory(player);
         ItemStack daw = player.getInventory().getItemInMainHand();
         MusicManager.saveMusicForPdc(daw,musicList);
         daw.lore(List.of(Component.text(Arrays.toString(musicList))));
+        Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
+           MainMenuHolder mainMenuHolder = new MainMenuHolder();
+           player.openInventory(mainMenuHolder.getInventory());
+        });
     }
 }

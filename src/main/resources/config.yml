@@ -2,5 +2,5 @@ mysql:
   host: localhost
   port: 3306
   database: minecraft
-  user: mcuser
+  user: username
   password: password

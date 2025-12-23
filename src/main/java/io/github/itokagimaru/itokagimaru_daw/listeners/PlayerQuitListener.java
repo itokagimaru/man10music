@@ -18,8 +18,5 @@ public class PlayerQuitListener implements Listener {
         if(play != null){
             play.stopTask(player);
         }
-
-        InventoryManager inventoryManager = new InventoryManager();
-        inventoryManager.loadInventory(player);
     }
 }

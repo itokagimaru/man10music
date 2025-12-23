@@ -3,6 +3,7 @@ package io.github.itokagimaru.itokagimaru_daw.task;
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
+import io.github.itokagimaru.itokagimaru_daw.gui.menu.daw.DawsPlayModeHolder;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.walkman.ItemsPlayModeHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.ParticleManager;
@@ -24,6 +25,7 @@ public class PlayMusic {
     ItemStack cassetteIcon;
     boolean isPrivate = true;
     Player requester;
+    BaseGuiHolder requestHolder;
 
     public void setPrivate(boolean bool){
         isPrivate = bool;
@@ -31,6 +33,11 @@ public class PlayMusic {
 
     public void setRequester(Player player){
         requester = player;
+        if (player.getInventory().getHolder() instanceof ItemsPlayModeHolder holder){
+            requestHolder = holder;
+        }else if (player.getOpenInventory().getTopInventory().getHolder() instanceof DawsPlayModeHolder holder){
+            requestHolder = holder;
+        }
     }
 
     public void playMusic(Entity target, ItemStack pdcHolder) {
@@ -47,9 +54,9 @@ public class PlayMusic {
                 } else if (loadedMusic[count] != 0) {
                     float volume;
                     if (AutPlayManager.get(target)) {
-                        volume =(float) 0.125;
-                    } else {
                         volume =(float) 0.25;
+                    } else {
+                        volume =(float) 0.5;
                     }
                     PlaySound.playNote(target, loadedMusic[count], volume, isPrivate);
                     if(target instanceof Player player){
@@ -72,10 +79,10 @@ public class PlayMusic {
             play.setRequester(requester);
             PlayMusicManager.setPlayingMusic(target, play);
             play.playMusic(target,cassetteIcon);
-        } else if (requester.getOpenInventory().getTopInventory().getHolder() instanceof ItemsPlayModeHolder holder) {
+        } else if (requester.getOpenInventory().getTopInventory().getHolder() == requestHolder) {
             ItemStack play = new ItemStack(Material.PAPER);
             MakeItem.setItemMeta(play, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
-            holder.getInventory().setItem(4, play);
+            requestHolder.getInventory().setItem(4, play);
         }
     }
 }

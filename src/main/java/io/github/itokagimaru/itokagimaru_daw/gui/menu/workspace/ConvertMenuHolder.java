@@ -8,6 +8,7 @@ import io.github.itokagimaru.itokagimaru_daw.util.FakeEnchant;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.PlaySound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -34,17 +35,17 @@ public class ConvertMenuHolder extends BaseGuiHolder {
     }
     public void setup() {
         ItemStack bar = new ItemStack(Material.BARRIER);
-        MakeItem.setItemMeta(bar, "未選択", null, null, null, null);
+        MakeItem.setItemMetaByColor(bar, "未選択", NamedTextColor.RED, null, null, null);
         bar.lore(List.of(Component.text("楽譜を選択してください")));
         inv.setItem(2, bar);
         bar.lore(List.of(Component.text("カセットテープを選択してください")));
         inv.setItem(5, bar);
         ItemStack clock = new ItemStack(Material.CLOCK);
-        MakeItem.setItemMeta(clock, "bpm/" + String.valueOf(bpm), null, null, ItemData.BUTTON_ID, "option");
+        MakeItem.setItemMetaByColor(clock, "bpm/" + String.valueOf(bpm), NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "option");
         ItemData.BPM.set(clock, bpm);
         inv.setItem(7, clock);
         ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
-        MakeItem.setItemMeta(green, "Convert!!", null, null, ItemData.BUTTON_ID, "decision");
+        MakeItem.setItemMetaByColor(green, "Convert!!", NamedTextColor.GREEN, null, ItemData.BUTTON_ID, "decision");
         inv.setItem(13, green);
     }
 

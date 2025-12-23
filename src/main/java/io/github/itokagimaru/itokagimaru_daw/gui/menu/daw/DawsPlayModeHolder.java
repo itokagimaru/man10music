@@ -1,11 +1,13 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
+import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.PlayMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,11 +25,11 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
 
     public void setup(int bpm) {
         ItemStack clock = new ItemStack(Material.PAPER);
-        MakeItem.setItemMeta(clock, "現在のBPM:" + bpm, null, "clock", ItemData.BPM, bpm);
+        MakeItem.setItemMetaByColor(clock, "現在のBPM:" + bpm, NamedTextColor.YELLOW, "clock", ItemData.BPM, bpm);
         ItemData.BUTTON_ID.set(clock, "OPTION BPM");
         inv.setItem(2, clock);
         ItemStack playIcon = new ItemStack(Material.PAPER);
-        MakeItem.setItemMeta(playIcon, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
+        MakeItem.setItemMetaByColor(playIcon, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
         inv.setItem(4, playIcon);
     }
 
@@ -38,6 +40,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
         Inventory clicked_inv = event.getClickedInventory();
         if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "OPTION BPM")) {
             int bpm = ItemData.BPM.get(clicked);
+            closeFlag = false;
             player.closeInventory();
             DawsOptionBpmHolder dawsOptionBpmHolder = new DawsOptionBpmHolder();
             dawsOptionBpmHolder.updateBpmIcons(bpm);
@@ -62,8 +65,14 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
     @Override
     public void onClose(Player player) {
         PlayMusic play = PlayMusicManager.getMusic(player);
-        if (play == null) return;
-        play.stopTask(player);
+        if (play != null) play.stopTask(player);
+        if(!closeFlag)return;
+        closeFlag = false;
+        Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(),() -> {
+            MainMenuHolder mainMenuHolder = new MainMenuHolder();
+            player.openInventory(mainMenuHolder.getInventory());
+        });
+
     }
 }
 

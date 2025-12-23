@@ -60,11 +60,11 @@ public class ChangeBpmHolder extends BaseGuiHolder {
         if (selectedBpmId > bpmList.length - 4) selectedBpmId = bpmList.length - 4;
         for (int i = 0; i < 4; i++) {
             if(isCanChange(bpmList[selectedBpmId + i])){
-                MakeItem.setItemMeta(green, "set:" + bpmList[selectedBpmId + i], null, null, ItemData.BPM, bpmList[selectedBpmId + i]);
+                MakeItem.setItemMetaByColor(green, "set:" + bpmList[selectedBpmId + i], NamedTextColor.GREEN, null, ItemData.BPM, bpmList[selectedBpmId + i]);
                 ItemData.BUTTON_ID.set(green, "SET BPM");
                 inv.setItem(i + 4, green);
             }else{
-                MakeItem.setItemMeta(red, "set:" + bpmList[selectedBpmId + i], null, null, ItemData.BPM, bpmList[selectedBpmId + i]);
+                MakeItem.setItemMetaByColor(red, "set:" + bpmList[selectedBpmId + i], NamedTextColor.RED, null, ItemData.BPM, bpmList[selectedBpmId + i]);
                 inv.setItem(i + 4, red);
             }
         }
