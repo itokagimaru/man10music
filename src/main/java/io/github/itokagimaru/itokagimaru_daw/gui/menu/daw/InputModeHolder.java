@@ -394,7 +394,7 @@ public class InputModeHolder extends BaseGuiHolder {
         inventoryManager.loadInventory(player);
         ItemStack daw = player.getInventory().getItemInMainHand();
         MusicManager.saveMusicForPdc(daw,musicList);
-        daw.lore(List.of(Component.text(Arrays.toString(musicList))));
+        //daw.lore(List.of(Component.text(Arrays.toString(musicList))));
         Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
            MainMenuHolder mainMenuHolder = new MainMenuHolder();
            player.openInventory(mainMenuHolder.getInventory());
