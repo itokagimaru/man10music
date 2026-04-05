@@ -124,7 +124,7 @@ public class InputModeHolder extends BaseGuiHolder {
             noteId = topNote + i;
             paper.setAmount(7 - (noteId + 2) / 6);
             while (noteId >= 7) noteId -= 6;
-            MakeItem.setItemMeta(paper, topNote + "/" + noteId, null, "key_board_" + noteId, ItemData.TOP_NOTE, topNote);
+            MakeItem.setItemMeta(paper, "", null, "key_board_" + noteId, ItemData.TOP_NOTE, topNote);
             this.inv.setItem(i * 9, paper);
         }
         paper.setAmount(1);
