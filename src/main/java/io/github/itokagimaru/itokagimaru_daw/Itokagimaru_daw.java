@@ -9,10 +9,8 @@ import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerInteractEntityListe
 import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerJoinListener;
 import io.github.itokagimaru.itokagimaru_daw.listeners.PlayerQuitListener;
 import io.github.itokagimaru.itokagimaru_daw.manager.InventoryManager;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;

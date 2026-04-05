@@ -39,10 +39,9 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
         ItemStack clicked = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
         if (Objects.equals(ItemData.ITEM_ID.get(clicked), "BLANK SHEET")){
-            onClose(player);
             setup();
             ItemStack exportedSheet = clicked.clone();
-            event.setCurrentItem(null);
+            clicked.setAmount(0);
             ItemData.ITEM_ID.set(exportedSheet,"SELECT SHEET");
             inv.setItem(4, exportedSheet);
             ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
@@ -57,8 +56,9 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "DECISION")) {
             ItemStack check = inv.getItem(4);
             if (Objects.equals(ItemData.ITEM_ID.get(check), "SELECT SHEET")) {
-                SheetMusicManager sheetMusicManager = new SheetMusicManager();
-                player.getInventory().addItem(sheetMusicManager.makeSheetMusic(player));
+                ItemStack returnItem = SheetMusicManager.makeSheetMusic(player);
+                if(returnItem == null) return;
+                player.getInventory().addItem(returnItem);
                 check.setAmount(0);
                 setup();
             }
@@ -82,7 +82,6 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
             MusicMenuHolder musicMenuHolder = new MusicMenuHolder();
             player.openInventory(musicMenuHolder.getInventory());
         });
-
     }
 
 

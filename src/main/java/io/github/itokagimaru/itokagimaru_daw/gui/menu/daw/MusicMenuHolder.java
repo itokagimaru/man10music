@@ -24,7 +24,7 @@ public class MusicMenuHolder extends BaseGuiHolder {
         MakeItem.setItemMetaByColor(exportMusic,"save", NamedTextColor.YELLOW,"blank_sheet_music", ItemData.BUTTON_ID,"EXPORT");
         inv.setItem(3,exportMusic);
         ItemStack importMusic = new ItemStack(Material.PAPER);
-        MakeItem.setItemMetaByColor(importMusic,"lode",NamedTextColor.YELLOW,"written_sheet_music", ItemData.BUTTON_ID,"IMPORT");
+        MakeItem.setItemMetaByColor(importMusic,"load",NamedTextColor.YELLOW,"written_sheet_music", ItemData.BUTTON_ID,"IMPORT");
         inv.setItem(5,importMusic);
     }
 
