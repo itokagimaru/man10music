@@ -36,9 +36,12 @@ public class ConvertMenuHolder extends BaseGuiHolder {
     public void setup() {
         ItemStack bar = new ItemStack(Material.BARRIER);
         MakeItem.setItemMetaByColor(bar, "未選択", NamedTextColor.RED, null, null, null);
-        bar.lore(List.of(Component.text("楽譜を選択してください")));
+        bar.lore(List.of(Component.text("楽譜を選択してください").color(NamedTextColor.WHITE)));
         inv.setItem(2, bar);
-        bar.lore(List.of(Component.text("カセットテープを選択してください")));
+        bar.editMeta(meta -> {
+            meta.lore(List.of(Component.text("カセットテープを選択してください").color(NamedTextColor.WHITE)));
+            meta.customName(Component.text("未選択").color(NamedTextColor.RED));
+        });
         inv.setItem(5, bar);
         ItemStack clock = new ItemStack(Material.CLOCK);
         MakeItem.setItemMetaByColor(clock, "bpm/" + String.valueOf(bpm), NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "option");
@@ -54,7 +57,6 @@ public class ConvertMenuHolder extends BaseGuiHolder {
             ItemData.ITEM_ID.set(musicItem,"musicIcon");
             inv.setItem(2,musicItem);
         }
-
     }
 
     public void setCassetteIcon(ItemStack cassetteItem){
@@ -93,6 +95,7 @@ public class ConvertMenuHolder extends BaseGuiHolder {
             bar.lore(List.of(Component.text("楽譜を選択してください")));
             inv.setItem(2,bar);
         } else if (("CASSETTE TAPE").equals(itemId)){
+            if(("cassetteIcon").equals(ItemData.ITEM_ID.get(inv.getItem(5)))) return;
             setCassetteIcon(clicked.clone());
             clicked.setAmount(0);
         } else if (("cassetteIcon").equals(itemId)) {
