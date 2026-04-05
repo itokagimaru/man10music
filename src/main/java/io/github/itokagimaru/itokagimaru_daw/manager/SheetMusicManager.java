@@ -14,7 +14,7 @@ import java.util.List;
 public class SheetMusicManager {
     public static ItemStack makeSheetMusic(Player player) {
         int[] musicList = MusicManager.loadMusicForPdc(player.getInventory().getItemInMainHand());
-        if(musicList.length == 0) return null;
+        if(musicList.length == 0 || musicList[0] == -1) return null;
         ItemStack item = new ItemStack(Material.PAPER);
         MakeItem.setItemMeta(item,"記述済みの楽譜", null, "written_sheet_music",ItemData.ITEM_ID,"WRITTEN MUSIC");
         ItemData.MUSIC_SAVED_RED.set(item,musicList);
