@@ -29,7 +29,7 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
         }
         ItemStack bar = new ItemStack(Material.BARRIER);
         MakeItem.setItemMetaByColor(bar,"未選択",NamedTextColor.RED,null, null,null);
-        bar.lore(List.of(Component.text("\"白紙の楽譜\"を選択")));
+        bar.lore(List.of(Component.text("\"白紙の楽譜\"を選択").color(NamedTextColor.WHITE)));
         inv.setItem(4, bar);
     }
 

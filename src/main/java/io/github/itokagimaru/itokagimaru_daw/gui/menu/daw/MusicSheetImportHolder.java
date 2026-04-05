@@ -6,6 +6,7 @@ import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.manager.SheetMusicManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,8 +27,8 @@ public class MusicSheetImportHolder extends BaseGuiHolder {
             inv.setItem(i, air);
         }
         ItemStack bar = new ItemStack(Material.BARRIER);
-        MakeItem.setItemMeta(bar,"未選択",null,null, null,null);
-        bar.lore(List.of(Component.text("\"記述済みの楽譜\"を選択")));
+        MakeItem.setItemMetaByColor(bar,"未選択", NamedTextColor.RED,null, null,null);
+        bar.lore(List.of(Component.text("\"記述済みの楽譜\"を選択").color(NamedTextColor.WHITE)));
         inv.setItem(4, bar);
     }
 
