@@ -4,6 +4,7 @@ import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.SheetMusicManager;
+import io.github.itokagimaru.itokagimaru_daw.util.GetPresetItemStack;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -73,9 +74,8 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
         ItemStack check = inv.getItem(4);
         if (check != null) {
             if (Objects.equals(ItemData.ITEM_ID.get(check), "SELECT SHEET")) {
-                ItemStack sheetMusic = new ItemStack(Material.PAPER);
-                MakeItem.setItemMeta(sheetMusic,"白紙の楽譜",null,"blank_sheet_music", ItemData.ITEM_ID,"BLANK SHEET");
-                player.getInventory().addItem(sheetMusic);
+                GetPresetItemStack.musicSheet();
+                player.getInventory().addItem(GetPresetItemStack.musicSheet());
             }
         }
         Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {

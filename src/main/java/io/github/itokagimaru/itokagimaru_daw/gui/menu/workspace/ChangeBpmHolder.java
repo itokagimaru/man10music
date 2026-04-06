@@ -7,6 +7,7 @@ import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.PlaySound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -129,9 +130,14 @@ public class ChangeBpmHolder extends BaseGuiHolder {
                 ItemData.ITEM_ID.set(returnItem,"recordCassette");
                 ItemData.BPM.set(returnItem,newBpm);
                 returnItem.lore(
-                        List.of(Component.text("\"" + ItemData.MUSIC_NAME.get(returnItem) + "\" was recorded in this"),
-                                Component.text("BPM:" + newBpm),
-                                Component.text("recorded by " + ItemData.RECORDER.get(returnItem)))
+                        List.of(Component.text("\"").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                                        .append(Component.text(ItemData.MUSIC_NAME.get(returnItem)).color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
+                                                .append(Component.text("\" was recorded in this").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false))),
+                                Component.text("BPM:").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                                        .append(Component.text(newBpm).color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, true)),
+                                Component.text("recorded by ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                                        .append(Component.text(ItemData.RECORDER.get(returnItem)).color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true))
+                        )
                 );
                 player.give(returnItem);
                 PlaySound.playCompassLock(player);

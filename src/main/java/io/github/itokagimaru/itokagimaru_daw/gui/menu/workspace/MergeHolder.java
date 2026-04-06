@@ -8,6 +8,7 @@ import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.PlaySound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -164,11 +165,22 @@ public class MergeHolder extends BaseGuiHolder {
             recorder = ItemData.RECORDER.get(stack);
             musicName = ItemData.MUSIC_NAME.get(stack);
             i++;
-            lore.addLast(Component.text(String.valueOf(i) + ".\"" + musicName + "\""));
-            lore.addLast(Component.text("    recorded by " + recorder + "."));
+            lore.addLast(Component.text(String.valueOf(i) + ".\"").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                    .append(Component.text(musicName).color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
+                            .append(Component.text("\"").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)))
+            );
+            lore.addLast(Component.text("    recorded by ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                    .append(Component.text(recorder).color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
+                            .append(Component.text(".").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)))
+            );
         }
-        lore.addLast(Component.text("BPM:" + bpm));
-        lore.addLast(Component.text("merged by" + player.getName() + "."));
+        lore.addLast(Component.text("BPM: ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                .append(Component.text(bpm).color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, true))
+        );
+        lore.addLast(Component.text("merged by ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                .append(Component.text(player.getName()).color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, true)
+                        .append(Component.text(".").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)))
+        );
         return lore;
     }
 

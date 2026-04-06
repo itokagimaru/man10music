@@ -7,6 +7,7 @@ import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.PlaySound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -102,9 +103,14 @@ public class NamingCassetteMenuHolder extends BaseGuiHolder {
                 ItemData.MUSIC_NAME.set(cassette, name);
                 int bpm = ItemData.BPM.get(cassette);
                 cassette.lore(
-                        List.of(Component.text("\"" + name + "\" was recorded in this"),
-                                Component.text("BPM:" + bpm),
-                                Component.text("recorded by " + recorder))
+                        List.of(Component.text("\"").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                                .append(Component.text(name).color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
+                                                .append(Component.text("\" was recorded in this").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false))),
+                                        Component.text("BPM: ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                                                .append(Component.text(bpm).color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, true)),
+                                        Component.text("recorded by ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                                                .append(Component.text(recorder).color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true))
+                        )
                 );
                 player.give(cassette);
                 PlaySound.playSmithingTableUse(player);
