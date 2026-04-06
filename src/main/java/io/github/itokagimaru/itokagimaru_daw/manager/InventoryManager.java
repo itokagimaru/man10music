@@ -14,82 +14,102 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class InventoryManager {
+
     private final HashMap<UUID, ItemStack[]> inv = Itokagimaru_daw.inv;
-    private MySQLManager mysql;
+    private final MySQLManager mysql;
+
     public InventoryManager(MySQLManager mySQLManager){
-        mysql = mySQLManager;
+        this.mysql = mySQLManager;
     }
 
     public void saveInventory(Player player) {
-        inv.put(player.getUniqueId(), player.getInventory().getContents().clone());
-        saveToDB(player, true);
+
+        ItemStack[] contents = player.getInventory().getContents().clone();
+        inv.put(player.getUniqueId(), contents);
+
+
+        saveToDB(player.getUniqueId(), contents);
     }
 
-    public void saveToDB(Player p, boolean flag) {
+    public CompletableFuture<Void> saveToDB(UUID uuid, ItemStack[] contents) {
 
-        String sql =
-                "INSERT INTO player_data (uuid, inventory) VALUES (?, ?) " +
-                        "ON DUPLICATE KEY UPDATE inventory = ?";
+        return CompletableFuture
+                .supplyAsync(() -> toBase64(contents)) // 重い処理
+                .thenAcceptAsync(base64 -> {
 
-        String inv = toBase64(p.getInventory());
+                    String sql =
+                            "INSERT INTO player_data (uuid, inventory) VALUES (?, ?) " +
+                                    "ON DUPLICATE KEY UPDATE inventory = ?";
 
-        Bukkit.getScheduler().runTaskAsynchronously(Itokagimaru_daw.getInstance(), () -> {
-            try (Connection con = mysql.getConn();
-                 PreparedStatement ps = con.prepareStatement(sql)) {
+                    try (Connection con = mysql.getConn();
+                         PreparedStatement ps = con.prepareStatement(sql)) {
 
-                ps.setString(1, p.getUniqueId().toString());
-                ps.setString(2, inv);
-                ps.setString(3, inv);
+                        ps.setString(1, uuid.toString());
+                        ps.setString(2, base64);
+                        ps.setString(3, base64);
 
-                ps.executeUpdate();
+                        ps.executeUpdate();
 
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+
+                });
     }
 
     public void loadInventory(Player player) {
-        if (!inv.containsKey(player.getUniqueId())) {
-            return;
-        }
+        if (!inv.containsKey(player.getUniqueId())) return;
+
         player.getInventory().setContents(inv.get(player.getUniqueId()).clone());
         inv.remove(player.getUniqueId());
     }
 
-    public void loadFromDB(Player p) {
+    public CompletableFuture<Void> loadFromDB(Player player) {
 
-        String selectSql =
-                "SELECT inventory FROM player_data WHERE uuid = ?";
+        UUID uuid = player.getUniqueId();
 
-        Bukkit.getScheduler().runTaskAsynchronously(Itokagimaru_daw.getInstance(), () -> {
-            try (Connection con = mysql.getConn();
-                 PreparedStatement ps = con.prepareStatement(selectSql)) {
+        return CompletableFuture
+                .supplyAsync(() -> {
 
-                ps.setString(1, p.getUniqueId().toString());
-                ResultSet rs = ps.executeQuery();
+                    String selectSql =
+                            "SELECT inventory FROM player_data WHERE uuid = ?";
 
-                if (!rs.next()) return;
+                    try (Connection con = mysql.getConn();
+                         PreparedStatement ps = con.prepareStatement(selectSql)) {
 
-                String inv = rs.getString("inventory");
+                        ps.setString(1, uuid.toString());
+                        ResultSet rs = ps.executeQuery();
 
-                Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
-                    fromBase64(p.getInventory(), inv);
+                        if (!rs.next()) return null;
+
+                        return rs.getString("inventory");
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+
+                })
+                .thenAccept(base64 -> {
+
+                    if (base64 == null) return;
+
+                    // Bukkit APIはメインスレッド
+                    Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
+                        ItemStack[] items = fromBase64(base64);
+                        player.getInventory().setContents(items);
+                    });
+
                 });
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        });
     }
 
-
-    public String toBase64(PlayerInventory inv) {
+    public String toBase64(ItemStack[] items) {
         try {
             YamlConfiguration cfg = new YamlConfiguration();
-            cfg.set("items", inv.getContents());
+            cfg.set("items", items);
 
             String yaml = cfg.saveToString();
             return Base64.getEncoder()
@@ -100,7 +120,7 @@ public class InventoryManager {
         }
     }
 
-    public void fromBase64(PlayerInventory inv, String base64) {
+    public ItemStack[] fromBase64(String base64) {
         try {
             byte[] bytes = Base64.getDecoder().decode(base64);
             String yaml = new String(bytes, StandardCharsets.UTF_8);
@@ -109,9 +129,7 @@ public class InventoryManager {
             cfg.loadFromString(yaml);
 
             List<?> list = cfg.getList("items");
-            ItemStack[] items = list.toArray(new ItemStack[0]);
-
-            inv.setContents(items);
+            return list.toArray(new ItemStack[0]);
 
         } catch (Exception e) {
             throw new IllegalStateException(e);
