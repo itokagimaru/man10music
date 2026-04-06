@@ -9,6 +9,7 @@ import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.PlaySound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -117,7 +118,13 @@ public class ConvertMenuHolder extends BaseGuiHolder {
             int[] musicList = MusicManager.loadMusicForPdc(sourceItem);
             ItemData.MUSIC_SAVED_RED.set(item, musicList);
             ItemData.RECORDER.set(item,player.getName());
-            item.lore(List.of(Component.text("BPM:" + bpm), Component.text("recorded by " + player.getName())));
+            item.lore(List.of(
+                    Component.text("BPM:").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                            .append(Component.text(bpm).color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, true)),
+                    Component.text("recorded by ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
+                            .append(Component.text(player.getName()).color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true))
+                    )
+            );
             FakeEnchant.addFakeEnchant(item);
             ItemMeta meta = item.getItemMeta();
             meta.setMaxStackSize(1);
