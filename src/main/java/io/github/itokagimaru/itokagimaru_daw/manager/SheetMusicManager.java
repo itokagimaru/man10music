@@ -12,8 +12,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 
 public class SheetMusicManager {
-    public static ItemStack makeSheetMusic(Player player) {
-        int[] musicList = MusicManager.loadMusicForPdc(player.getInventory().getItemInMainHand());
+    public static ItemStack makeSheetMusic(Player player, ItemStack daw) {
+        int[] musicList = MusicManager.loadMusicForPdc(daw);
         if(musicList.length == 0 || musicList[0] == -1) return null;
         ItemStack item = new ItemStack(Material.PAPER);
         MakeItem.setItemMeta(item,"記述済みの楽譜", null, "written_sheet_music",ItemData.ITEM_ID,"WRITTEN MUSIC");
@@ -26,9 +26,8 @@ public class SheetMusicManager {
         return  item;
     }
 
-    public static void loadSheetMusic(Player player, ItemStack item) {
+    public static void loadSheetMusic(ItemStack daw, ItemStack item) {
         int[] music = ItemData.MUSIC_SAVED_RED.get(item);
-        ItemStack saveItem = player.getInventory().getItemInMainHand();
-        MusicManager.saveMusicForPdc(saveItem,music);
+        MusicManager.saveMusicForPdc(daw, music);
     }
 }

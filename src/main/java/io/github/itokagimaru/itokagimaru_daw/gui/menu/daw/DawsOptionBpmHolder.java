@@ -15,7 +15,10 @@ import org.bukkit.inventory.ItemStack;
 public class DawsOptionBpmHolder extends BaseGuiHolder {
     final public int[] bpmList = {1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 20, 24, 25, 30, 40, 48, 50, 60, 75, 80, 100, 120, 150, 200, 240, 300, 400, 600, 1200};
     public int selectedBpmId;
-    public DawsOptionBpmHolder() {
+    ItemStack daw;
+
+    public DawsOptionBpmHolder(ItemStack daw) {
+        this.daw = daw;
         inv = Bukkit.createInventory(this, 9, Component.text("Option/BPM"));
         setup();
     }
@@ -60,7 +63,7 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
             case "SET BPM" -> {
                 int bpm = ItemData.BPM.get(clicked);
                 closeFlag = false;
-                DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(bpm);
+                DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(bpm, daw);
                 player.openInventory(dawsPlayModeHolder.getInventory());
             }
             case "SHIFT RIGHT" -> {
@@ -86,7 +89,7 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
         if (!closeFlag)return;
         closeFlag = false;
         Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
-            DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(60);
+            DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(60, daw);
             player.openInventory(dawsPlayModeHolder.getInventory());
         });
 

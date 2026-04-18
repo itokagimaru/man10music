@@ -18,7 +18,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Objects;
 
 public class DawsPlayModeHolder extends BaseGuiHolder {
-    public DawsPlayModeHolder(int bpm) {
+    ItemStack daw;
+
+    public DawsPlayModeHolder(int bpm, ItemStack daw) {
+        this.daw = daw;
         inv = Bukkit.createInventory(this, 9, Component.text("PlayMode"));
         setup(bpm);
     }
@@ -42,13 +45,13 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             int bpm = ItemData.BPM.get(clicked);
             closeFlag = false;
             player.closeInventory();
-            DawsOptionBpmHolder dawsOptionBpmHolder = new DawsOptionBpmHolder();
+            DawsOptionBpmHolder dawsOptionBpmHolder = new DawsOptionBpmHolder(daw);
             dawsOptionBpmHolder.updateBpmIcons(bpm);
             player.openInventory(dawsOptionBpmHolder.getInventory());
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "PLAY")) {
             int bpm = ItemData.BPM.get(Objects.requireNonNull(clicked_inv.getItem(2)));
             MakeItem.setItemMeta(clicked, "再生停止", null, "elytra", ItemData.BUTTON_ID, "STOP");
-            ItemStack pdcHolder = player.getInventory().getItemInMainHand().clone();
+            ItemStack pdcHolder = daw.clone();
             ItemData.BPM.set(pdcHolder,bpm);
             PlayMusic play = new PlayMusic();
             play.setPrivate(true);
@@ -69,7 +72,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
         if(!closeFlag)return;
         closeFlag = false;
         Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(),() -> {
-            MainMenuHolder mainMenuHolder = new MainMenuHolder();
+            MainMenuHolder mainMenuHolder = new MainMenuHolder(daw);
             player.openInventory(mainMenuHolder.getInventory());
         });
 

@@ -27,14 +27,12 @@ public class ItemUseListener implements Listener {
             return;
         }
         if (item == null) return;
-        if (item.getType() != Material.WOODEN_HOE) return;
-
         if (item.getItemMeta().hasItemModel()) {
             String itemId = ItemData.ITEM_ID.get(item);
             switch (itemId) {
                 case "daw" -> {
                     event.setCancelled(true);
-                    MainMenuHolder mainMenuHolder = new MainMenuHolder();
+                    MainMenuHolder mainMenuHolder = new MainMenuHolder(item);
                     player.openInventory(mainMenuHolder.getInventory());
                 }
                 case "walkman" -> {

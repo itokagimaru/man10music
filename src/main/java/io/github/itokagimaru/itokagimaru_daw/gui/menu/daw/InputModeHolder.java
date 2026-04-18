@@ -22,10 +22,11 @@ import java.util.Objects;
 
 public class InputModeHolder extends BaseGuiHolder {
     final Inventory playerInventory = Bukkit.createInventory(null, 36);
-
+    ItemStack daw;
     int[] musicList;
 
-    public InputModeHolder() {
+    public InputModeHolder(ItemStack daw) {
+        this.daw = daw;
         this.inv = Bukkit.createInventory(this, 54, Component.text("InputMode"));
         setup();
     }
@@ -100,7 +101,7 @@ public class InputModeHolder extends BaseGuiHolder {
     public void open(Player player) {
         InventoryManager inventoryManager = Itokagimaru_daw.getInstance().inventoryManager;
         inventoryManager.saveInventory(player);
-        ItemStack pdcHolder = player.getInventory().getItemInMainHand().clone();
+        ItemStack pdcHolder = this.daw.clone();
         player.getInventory().clear();
         player.getInventory().setContents(playerInventory.getContents());
         musicList = MusicManager.loadMusicForPdc(pdcHolder);
@@ -392,11 +393,10 @@ public class InputModeHolder extends BaseGuiHolder {
         setMusicEndpoint();
         InventoryManager inventoryManager = Itokagimaru_daw.getInstance().inventoryManager;
         inventoryManager.loadInventory(player);
-        ItemStack daw = player.getInventory().getItemInMainHand();
         MusicManager.saveMusicForPdc(daw,musicList);
         //daw.lore(List.of(Component.text(Arrays.toString(musicList))));
         Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
-           MainMenuHolder mainMenuHolder = new MainMenuHolder();
+           MainMenuHolder mainMenuHolder = new MainMenuHolder(daw);
            player.openInventory(mainMenuHolder.getInventory());
         });
     }

@@ -14,7 +14,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Objects;
 
 public class MainMenuHolder extends BaseGuiHolder {
-    public MainMenuHolder() {
+    int defBPM = 60;
+    ItemStack daw;
+    public MainMenuHolder(ItemStack daw) {
+        this.daw = daw;
         this.inv = Bukkit.createInventory(this, 9, Component.text("MainMenu"));
         setup();
     }
@@ -42,22 +45,20 @@ public class MainMenuHolder extends BaseGuiHolder {
         Player clickedPlayer = (Player) event.getWhoClicked();
         ItemStack clickedItem = event.getCurrentItem();
         if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "INPUT MODE")) {
-            InputModeHolder inputModeHolder = new InputModeHolder();
+            InputModeHolder inputModeHolder = new InputModeHolder(daw);
             inputModeHolder.open(clickedPlayer);
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "PLAY MODE")) {
             clickedPlayer.closeInventory();
-            DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(60);
+            DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(defBPM, daw);
             clickedPlayer.openInventory(dawsPlayModeHolder.getInventory());
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "CLOSE")) {
             clickedPlayer.closeInventory();
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "SAVE AND LODE")) {
-            MusicMenuHolder musicMenuHolder = new MusicMenuHolder();
+            MusicMenuHolder musicMenuHolder = new MusicMenuHolder(daw);
             clickedPlayer.openInventory(musicMenuHolder.getInventory());
         }
     }
 
     @Override
-    public void onClose(Player player) {
-    }
-
+    public void onClose(Player player) {}
 }
