@@ -1,6 +1,9 @@
 package io.github.itokagimaru.itokagimaru_daw;
 
 import io.github.itokagimaru.itokagimaru_daw.commands.*;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
+import io.github.itokagimaru.itokagimaru_daw.config.Items;
+import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.db.MySQLManager;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.ClickInventoryListener;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.CloseInventoryListeners;
@@ -27,6 +30,7 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
     public static final int MAX_PAGE = MUSIC_LENGTH / 8;
     private MySQLManager mysql;
     public InventoryManager inventoryManager;
+    private PluginConfigData pluginConfigData;
 
     @Override
     public void onEnable() {
@@ -55,6 +59,7 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
 
         //dataBase
         saveDefaultConfig();
+        pluginConfigData = new PluginConfigData(getConfig());
         mysql = new MySQLManager();
         mysql.init(
                 getConfig().getString("mysql.host"),
@@ -87,4 +92,15 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
         return instance;
     }
 
+    public PluginConfigData getPluginConfigData() {
+        return pluginConfigData;
+    }
+
+    public Items getItemsData() {
+        return pluginConfigData.getItems();
+    }
+
+    public Icons getIconsData() {
+        return pluginConfigData.getIcons();
+    }
 }
