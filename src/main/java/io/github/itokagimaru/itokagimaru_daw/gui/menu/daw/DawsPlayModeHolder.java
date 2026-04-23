@@ -28,7 +28,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
     }
 
     public void setup(int bpm) {
-        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+        Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
 
         ItemStack clock = new ItemStack(Material.CLOCK);
         MakeItem.setItemMetaByColor(clock, "現在のBPM:" + bpm, NamedTextColor.YELLOW, 0, ItemData.BPM, bpm);
@@ -48,7 +48,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             return;
         }
 
-        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+        Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
         if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "OPTION BPM")) {
             int bpm = ItemData.BPM.get(clicked);
             closeFlag = false;

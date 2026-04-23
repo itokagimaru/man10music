@@ -1,8 +1,6 @@
 package io.github.itokagimaru.itokagimaru_daw;
 
 import io.github.itokagimaru.itokagimaru_daw.commands.*;
-import io.github.itokagimaru.itokagimaru_daw.config.Icons;
-import io.github.itokagimaru.itokagimaru_daw.config.Items;
 import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.db.MySQLManager;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.ClickInventoryListener;
@@ -96,11 +94,4 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
         return pluginConfigData;
     }
 
-    public Items getItemsData() {
-        return pluginConfigData.getItems();
-    }
-
-    public Icons getIconsData() {
-        return pluginConfigData.getIcons();
-    }
 }

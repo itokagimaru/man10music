@@ -365,7 +365,7 @@ public class InputModeHolder extends BaseGuiHolder {
     }
 
     private Icons icons() {
-        return Itokagimaru_daw.getInstance().getIconsData();
+        return Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
     }
 
     private int scaleCmd(Icons icons, int noteId) {

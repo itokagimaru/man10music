@@ -25,7 +25,7 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
     }
 
     public void setup() {
-        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+        Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
         ItemStack left = new ItemStack(icons.getTriangleLeft().getMaterial());
         ItemStack right = new ItemStack(icons.getTriangleRight().getMaterial());
         MakeItem.setItemMeta(left, "", null, icons.getTriangleLeft().getCmd(), ItemData.BUTTON_ID, "SHIFT LEFT");
@@ -35,7 +35,7 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
     }
 
     public void updateBpmIcons(int bpm) {
-        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+        Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
         getSelectBpmId(bpm);
         ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         if (selectedBpmId > bpmList.length - 7) selectedBpmId = bpmList.length - 7;

@@ -79,7 +79,7 @@ public class PlayMusic {
             PlayMusicManager.setPlayingMusic(target, play);
             play.playMusic(target,cassetteIcon);
         } else if (requester.getOpenInventory().getTopInventory().getHolder() == requestHolder) {
-            Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+            Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
             ItemStack play = new ItemStack(icons.getTriangleRight().getMaterial());
             MakeItem.setItemMeta(play, "再生", null, icons.getTriangleRight().getCmd(), ItemData.BUTTON_ID, "PLAY");
             requestHolder.getInventory().setItem(4, play);

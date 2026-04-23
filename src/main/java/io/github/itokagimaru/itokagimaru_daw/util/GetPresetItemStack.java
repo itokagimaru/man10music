@@ -16,7 +16,7 @@ public class GetPresetItemStack {
         if (plugin == null) {
             throw new IllegalStateException("プラグインが初期化される前に呼び出されました。");
         }
-        return plugin.getItemsData();
+        return plugin.getPluginConfigData().getItems();
     }
 
     private static ItemStack createItem(Items.Entry entry) {

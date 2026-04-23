@@ -83,7 +83,7 @@ public class RadioPlayHolder extends ItemsPlayModeHolder {
     }
 
     private Icons icons() {
-        return Itokagimaru_daw.getInstance().getIconsData();
+        return Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
     }
 
 }

@@ -5,7 +5,12 @@ mysql:
   user: username
   password: password
 
-
+musicConfig:
+  volume:
+    default: 1
+    autoPlay: 0.5
+  radio:
+    radius: 5
 
 items:
   keyBoard:
