@@ -1,5 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.walkman;
 
+import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
@@ -27,12 +29,13 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
     }
 
     public void setup(Entity target) {
-        ItemStack playIcon = new ItemStack(Material.PAPER);
+        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+        ItemStack playIcon = new ItemStack(icons.getBaseMaterial());
         PlayMusic play = PlayMusicManager.getMusic(target);
         if (play == null) {
-            MakeItem.setItemMeta(playIcon, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
-            ItemStack cassetteIcon = new ItemStack(Material.BARRIER);
-            MakeItem.setItemMeta(cassetteIcon, "未選択", null, "barrier", null, null);
+            MakeItem.setItemMeta(playIcon, "再生", null, icons.getTriangleRight().getCmd(), ItemData.BUTTON_ID, "PLAY");
+            ItemStack cassetteIcon = new ItemStack(icons.getBaseMaterial());
+            MakeItem.setItemMeta(cassetteIcon, "未選択", null, "barrier" , null, null);
             inv.setItem(7, cassetteIcon);
         } else {
             MakeItem.setItemMeta(playIcon, "再生停止", null, "elytra", ItemData.BUTTON_ID, "STOP");
@@ -64,8 +67,8 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
     }
 
     public void removeIcon(){
-        ItemStack bar = new ItemStack(Material.BARRIER);
-        MakeItem.setItemMeta(bar, "未選択", null, null, null, null);
+        ItemStack bar = new ItemStack(icons().getBaseMaterial());
+        MakeItem.setItemMeta(bar, "未選択", null, "barrier", null, null);
         inv.setItem(7, bar);
         inv.setItem(1, null);
     }
@@ -88,7 +91,7 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
         ItemStack clickedItem = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
         PlayMusic play = PlayMusicManager.getMusic(player);
-        MakeItem.setItemMeta(clickedItem, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
+        MakeItem.setItemMeta(clickedItem, "再生", null, icons().getTriangleRight().getCmd(), ItemData.BUTTON_ID, "PLAY");
         AutPlayManager.set(player,false);
         inv.setItem(0,upDateAutoPlayIcon(false));
         play.stopTask(player);
@@ -111,12 +114,18 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
         ItemStack autPlayIcon;
         if (flag) {
             autPlayIcon = new ItemStack(Material.RED_STAINED_GLASS_PANE);
-            MakeItem.setItemMetaByColor(autPlayIcon,"自動再生:ON", NamedTextColor.RED,null,ItemData.BUTTON_ID, "AUTPLAY_ICON");
+            // TODO: 自動再生アイコンはIcons未定義のため、現状のMaterialを維持する。
+            MakeItem.setItemMetaByColor(autPlayIcon,"自動再生:ON", NamedTextColor.RED,0,ItemData.BUTTON_ID, "AUTPLAY_ICON");
         } else {
             autPlayIcon = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-            MakeItem.setItemMetaByColor(autPlayIcon,"自動再生:OFF", NamedTextColor.WHITE,null,ItemData.BUTTON_ID, "AUTPLAY_ICON");
+            // TODO: 自動再生アイコンはIcons未定義のため、現状のMaterialを維持する。
+            MakeItem.setItemMetaByColor(autPlayIcon,"自動再生:OFF", NamedTextColor.WHITE,0,ItemData.BUTTON_ID, "AUTPLAY_ICON");
         }
         return autPlayIcon;
+    }
+
+    private Icons icons() {
+        return Itokagimaru_daw.getInstance().getIconsData();
     }
 
     @Override

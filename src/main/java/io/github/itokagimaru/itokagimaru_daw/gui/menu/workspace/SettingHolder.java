@@ -1,6 +1,9 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
+import io.github.itokagimaru.itokagimaru_daw.config.Items;
+import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.GetPresetItemStack;
@@ -31,16 +34,19 @@ public class SettingHolder extends BaseGuiHolder {
         setup();
     }
     public void setup(){
-        ItemStack remove = new ItemStack(Material.PAPER);
-        MakeItem.setItemMetaByColor(remove, "撤去する", NamedTextColor.RED, "cassette_workspace_item", ItemData.BUTTON_ID, "remove");
+        PluginConfigData config = Itokagimaru_daw.getInstance().getPluginConfigData();
+        Icons icons = config.getIcons();
+        Items items = config.getItems();
+        ItemStack remove = new ItemStack(icons.getBaseMaterial());
+        MakeItem.setItemMetaByColor(remove, "撤去する", NamedTextColor.RED, 0, ItemData.BUTTON_ID, "remove");
         //inv.setItem(12, remove);仕様変更に伴い消しましたが、場合によっては戻すかもなのでこのままで
 
-        ItemStack info = new ItemStack(Material.OAK_SIGN);
-        MakeItem.setItemMetaByColor(info, "問合せ情報", NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "info");
+        ItemStack info = new ItemStack(Material.FLOWER_BANNER_PATTERN);
+        MakeItem.setItemMetaByColor(info, "問合せ情報", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "info");
         inv.setItem(12,info);
 
-        ItemStack flow = new ItemStack(Material.FLOW_BANNER_PATTERN);
-        MakeItem.setItemMetaByColor(flow, "回転させる", NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "rotate");
+        ItemStack flow = new ItemStack(Material.MOJANG_BANNER_PATTERN);
+        MakeItem.setItemMetaByColor(flow, "回転させる", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "rotate");
         inv.setItem(14, flow);
 
     }

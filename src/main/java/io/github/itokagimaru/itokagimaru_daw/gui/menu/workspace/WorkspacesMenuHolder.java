@@ -1,5 +1,9 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace;
 
+import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
+import io.github.itokagimaru.itokagimaru_daw.config.Items;
+import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -25,28 +29,30 @@ public class WorkspacesMenuHolder extends BaseGuiHolder {
         setup();
     }
     public void setup() {
+        PluginConfigData config = Itokagimaru_daw.getInstance().getPluginConfigData();
+        Items items = config.getItems();
+        Icons icons = config.getIcons();
 
         ItemStack setting = new ItemStack(Material.FLOWER_BANNER_PATTERN);
-        MakeItem.setItemMetaByColor(setting, "Setting", NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "setting");
+        MakeItem.setItemMetaByColor(setting, "Setting", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "setting");
         inv.setItem(0, setting);
-
-        ItemStack convert = new ItemStack(Material.PAPER);
-        MakeItem.setItemMetaByColor(convert,"Convert", NamedTextColor.YELLOW, "cassette_tape", ItemData.BUTTON_ID,"convert");
+        ItemStack convert = new ItemStack(items.getCassette().getMaterial());
+        MakeItem.setItemMetaByColor(convert,"Convert", NamedTextColor.YELLOW, items.getCassette().getCmd(), ItemData.BUTTON_ID,"convert");
         convert.lore(List.of(Component.text("楽譜をカセットテープに変換します")));
         inv.setItem(10, convert);
 
-        ItemStack naming = new ItemStack(Material.PAPER);
-        MakeItem.setItemMetaByColor(naming, "Naming", NamedTextColor.YELLOW, "name_tag", ItemData.BUTTON_ID,"naming");
+        ItemStack naming = new ItemStack(Material.NAME_TAG);
+        MakeItem.setItemMetaByColor(naming, "Naming", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID,"naming");
         naming.lore(List.of(Component.text("カセットテープに名前を付けます")));
         inv.setItem(12, naming);
 
-        ItemStack merge = new ItemStack(Material.PAPER);
-        MakeItem.setItemMetaByColor(merge, "Merge", NamedTextColor.YELLOW, "anvil", ItemData.BUTTON_ID,"merge");
+        ItemStack merge = new ItemStack(Material.ANVIL);
+        MakeItem.setItemMetaByColor(merge, "Merge", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID,"merge");
         merge.lore(List.of(Component.text("カセットテープを結合します")));
         inv.setItem(14, merge);
 
-        ItemStack changeBpm = new ItemStack(Material.PAPER);
-        MakeItem.setItemMetaByColor(changeBpm,"ChangeBPM", NamedTextColor.YELLOW,"clock",ItemData.BUTTON_ID,"changeBpm");
+        ItemStack changeBpm = new ItemStack(Material.CLOCK);
+        MakeItem.setItemMetaByColor(changeBpm,"ChangeBPM", NamedTextColor.YELLOW,0,ItemData.BUTTON_ID,"changeBpm");
         changeBpm.lore(List.of(Component.text("カセットテープのBPMを設定,変更します")));
         inv.setItem(16, changeBpm);
     }

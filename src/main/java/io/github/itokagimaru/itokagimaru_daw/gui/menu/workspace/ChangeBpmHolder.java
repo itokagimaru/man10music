@@ -1,6 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -42,14 +43,16 @@ public class ChangeBpmHolder extends BaseGuiHolder {
     }
 
     public void setup(){
+        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+
         for (int i = 0; i < 9; i++){
             inv.setItem(i,null);
         }
         inv.setItem(1,nullIcon);
-        ItemStack left = new ItemStack(Material.PAPER);
-        ItemStack right = new ItemStack(Material.PAPER);
-        MakeItem.setItemMeta(left, "", null, "next_b_left", ItemData.BUTTON_ID, "SHIFT LEFT");
-        MakeItem.setItemMeta(right, "", null, "next_b_right", ItemData.BUTTON_ID, "SHIFT RIGHT");
+        ItemStack left = new ItemStack(icons.getTriangleLeft().getMaterial());
+        ItemStack right = new ItemStack(icons.getTriangleRight().getMaterial());
+        MakeItem.setItemMeta(left, "", null, icons.getTriangleLeft().getCmd(), ItemData.BUTTON_ID, "SHIFT LEFT");
+        MakeItem.setItemMeta(right, "", null, icons.getTriangleRight().getCmd(), ItemData.BUTTON_ID, "SHIFT RIGHT");
         inv.setItem(3, left);
         inv.setItem(8, right);
     }

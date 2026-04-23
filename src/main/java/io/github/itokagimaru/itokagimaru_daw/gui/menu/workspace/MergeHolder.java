@@ -1,6 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.FakeEnchant;
@@ -96,8 +97,10 @@ public class MergeHolder extends BaseGuiHolder {
             int bpm = getBpm();
             if(bpm == 0)return;
             int[] mergeMusic = merge();
-            ItemStack mergedCassette = new ItemStack(Material.PAPER);
-            MakeItem.setItemMeta(mergedCassette, "記録済みのカセットテープ", null, "cassette_tape",ItemData.ITEM_ID, "recordCassette");
+            Icons iconData = Itokagimaru_daw.getInstance().getIconsData();
+            ItemStack mergedCassette = new ItemStack(iconData.getBaseMaterial());
+            // TODO: 結合済みカセットの専用cmdはIcons未定義のため、blank cmdを利用する。
+            MakeItem.setItemMeta(mergedCassette, "記録済みのカセットテープ", null, iconData.getNoteBlank().getCmd(),ItemData.ITEM_ID, "recordCassette");
             ItemData.IS_NAMED.set(mergedCassette, (byte) 1);
             ItemData.IS_MERGED.set(mergedCassette, (byte) 1);
             ItemData.BPM.set(mergedCassette, bpm);

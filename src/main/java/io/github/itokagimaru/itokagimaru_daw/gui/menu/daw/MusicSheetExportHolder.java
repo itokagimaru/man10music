@@ -18,7 +18,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class MusicSheetExportHolder extends BaseGuiHolder {
-    public MusicSheetExportHolder(){
+    ItemStack daw;
+
+    public MusicSheetExportHolder(ItemStack daw){
+        this.daw = daw;
         inv = Bukkit.createInventory(this, 9, Component.text("MusicSheetSave"));
         setup();
     }
@@ -40,6 +43,7 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
         ItemStack clicked = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
         if (Objects.equals(ItemData.ITEM_ID.get(clicked), "BLANK SHEET")){
+            if(("SELECT SHEET").equals(ItemData.ITEM_ID.get(inv.getItem(4)))) return;
             setup();
             ItemStack exportedSheet = clicked.clone();
             clicked.setAmount(0);
@@ -57,7 +61,7 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "DECISION")) {
             ItemStack check = inv.getItem(4);
             if (Objects.equals(ItemData.ITEM_ID.get(check), "SELECT SHEET")) {
-                ItemStack returnItem = SheetMusicManager.makeSheetMusic(player);
+                ItemStack returnItem = SheetMusicManager.makeSheetMusic(player, daw);
                 if(returnItem == null) return;
                 player.getInventory().addItem(returnItem);
                 check.setAmount(0);
@@ -79,7 +83,7 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
             }
         }
         Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
-            MusicMenuHolder musicMenuHolder = new MusicMenuHolder();
+            MusicMenuHolder musicMenuHolder = new MusicMenuHolder(daw);
             player.openInventory(musicMenuHolder.getInventory());
         });
     }

@@ -27,76 +27,23 @@ public class ItemUseListener implements Listener {
             return;
         }
         if (item == null) return;
-        if (item.getType() != Material.WOODEN_HOE) return;
 
-        if (item.getItemMeta().hasItemModel()) {
-            String itemId = ItemData.ITEM_ID.get(item);
-            switch (itemId) {
-                case "daw" -> {
-                    event.setCancelled(true);
-                    MainMenuHolder mainMenuHolder = new MainMenuHolder();
-                    player.openInventory(mainMenuHolder.getInventory());
-                }
-                case "walkman" -> {
-                    event.setCancelled(true);
-                    SwapItems.mainAndHead(player);
-                    Location location = player.getLocation();
-                    location.setPitch(0);
-                    player.teleport(location);
-                    ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder(player);
-                    player.openInventory(itemsPlayModeHolder.getInventory());
-                }
-//                case "CASSETTE WORKSPACE" -> {
-//                    event.setCancelled(true);
-//                    Location location = player.getLocation();
-//                    if(location.getBlock().getType().isSolid()){
-//                        player.sendMessage("ここには設置できません");
-//                        return;
-//                    }
-//                    Block blockUnder = location.clone().subtract(0, 1, 0).getBlock();
-//                    if (!blockUnder.getType().isSolid()) {
-//                        player.sendMessage("空中には設置できません");
-//                        return;
-//                    }
-//
-//                    boolean existsFrame = location.getWorld().getNearbyEntities(location, 0.5, 0.5, 0.5).stream().anyMatch(
-//                            e -> e instanceof GlowItemFrame
-//                    );
-//
-//                    if (existsFrame) {
-//                        player.sendMessage("すでに額縁があります");
-//                        return;
-//                    }
-//                    ItemStack icon = new ItemStack(Material.PAPER);
-//                    MakeItem.setItemMeta(icon,"",null,"cassette_workspace",ItemData.ITEM_ID,"CASSETTE_WORKSPACE");
-//                    GlowItemFrame frame = (GlowItemFrame) location.getWorld().spawn(location, GlowItemFrame.class);
-//                    frame.setFacingDirection(BlockFace.UP,true);
-//                    frame.setItem(icon);
-//                    frame.setFixed(true);
-//                    frame.setInvulnerable(true);
-//                }
+        String itemId = ItemData.ITEM_ID.get(item);
+        switch (itemId) {
+            case "daw" -> {
+                event.setCancelled(true);
+                MainMenuHolder mainMenuHolder = new MainMenuHolder(item);
+                player.openInventory(mainMenuHolder.getInventory());
             }
-//            if (Objects.equals(data, NamespacedKey.minecraft("itokagimaru_daw"))) {
-//                MainMenuHolder mainMenuHolder = new MainMenuHolder();
-//                player.openInventory(mainMenuHolder.getInventory());
-//            } else if (Objects.equals(data, NamespacedKey.minecraft("blank_sheet_music"))) {
-//                item.setItemMeta(SheetMusicManager.makeSheetMusic(player));
-//            } else if (Objects.equals(data, NamespacedKey.minecraft("written_sheet_music"))) {
-//                SheetMusicManager.loadSheetMusic(player, item);
-//            } else if (Objects.equals(data, NamespacedKey.minecraft("cassette_tape"))) {
-//                if (ItemData.BPM.get(item) != -1) return;
-//                ItemsOptionBpmHolder itemsOptionBpmHolder = new ItemsOptionBpmHolder();
-//                itemsOptionBpmHolder.updateBpmIcons(60);
-//                player.openInventory(itemsOptionBpmHolder.getInventory());
-//            } else if (Objects.equals(data, NamespacedKey.minecraft("walkman"))) {
-//                SwapItems.mainAndHead(player);
-//                Location location = player.getLocation();
-//                location.setPitch(0);
-//                player.teleport(location);
-//                ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder();
-//                player.openInventory(itemsPlayModeHolder.getInventory());
-//            }
-//        }
+            case "walkman" -> {
+                event.setCancelled(true);
+                SwapItems.mainAndHead(player);
+                Location location = player.getLocation();
+                location.setPitch(0);
+                player.teleport(location);
+                ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder(player);
+                player.openInventory(itemsPlayModeHolder.getInventory());
+            }
         }
     }
 }

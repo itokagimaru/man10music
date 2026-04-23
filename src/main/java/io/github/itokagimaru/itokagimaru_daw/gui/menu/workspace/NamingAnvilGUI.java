@@ -1,6 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import net.kyori.adventure.text.Component;
@@ -46,12 +47,14 @@ public class NamingAnvilGUI {
         AnvilGUIOpening.anvilOpening.put(player.getUniqueId(), this);
     }
     public void setup(){
+        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
         ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         MakeItem.setItemMetaByColor(green, "名前を入力", NamedTextColor.GREEN,null,ItemData.BUTTON_ID,"decision");
         green.lore(List.of(Component.text("クリックで決定")));
         anvilInv.setItem(0,green);
-        ItemStack bar = new ItemStack(Material.BARRIER);
-        MakeItem.setItemMeta(bar,"",null,null,null,null);
+        ItemStack bar = new ItemStack(icons.getBaseMaterial());
+        // TODO: Anvil補助アイコンの専用cmdはIcons未定義のため、blank cmdを利用する。
+        MakeItem.setItemMeta(bar,"",null,icons.getNoteBlank().getCmd(),null,null);
         anvilInv.setItem(1,bar);
     }
 

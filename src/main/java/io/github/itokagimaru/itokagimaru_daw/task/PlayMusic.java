@@ -1,6 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.task;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.daw.DawsPlayModeHolder;
@@ -10,8 +11,6 @@ import io.github.itokagimaru.itokagimaru_daw.manager.ParticleManager;
 import io.github.itokagimaru.itokagimaru_daw.manager.PlayMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
 import io.github.itokagimaru.itokagimaru_daw.util.PlaySound;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -80,8 +79,9 @@ public class PlayMusic {
             PlayMusicManager.setPlayingMusic(target, play);
             play.playMusic(target,cassetteIcon);
         } else if (requester.getOpenInventory().getTopInventory().getHolder() == requestHolder) {
-            ItemStack play = new ItemStack(Material.PAPER);
-            MakeItem.setItemMeta(play, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
+            Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+            ItemStack play = new ItemStack(icons.getTriangleRight().getMaterial());
+            MakeItem.setItemMeta(play, "再生", null, icons.getTriangleRight().getCmd(), ItemData.BUTTON_ID, "PLAY");
             requestHolder.getInventory().setItem(4, play);
         }
     }
