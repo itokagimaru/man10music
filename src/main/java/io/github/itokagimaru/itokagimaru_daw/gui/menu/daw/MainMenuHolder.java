@@ -1,5 +1,9 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
+import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
+import io.github.itokagimaru.itokagimaru_daw.config.Items;
+import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -23,20 +27,24 @@ public class MainMenuHolder extends BaseGuiHolder {
     }
 
     public void setup() {
-        ItemStack sheetMusic = new ItemStack(Material.WOODEN_HOE);
-        MakeItem.setItemMetaByColor(sheetMusic,"save&lode",NamedTextColor.YELLOW,"written_sheet_music",ItemData.BUTTON_ID,"SAVE AND LODE");
+        PluginConfigData config = Itokagimaru_daw.getInstance().getPluginConfigData();
+        Icons icons = config.getIcons();
+        Items items = config.getItems();
+
+        ItemStack sheetMusic = new ItemStack(items.getSheetMusicWritten().getMaterial());
+        MakeItem.setItemMetaByColor(sheetMusic,"save&lode",NamedTextColor.YELLOW,items.getSheetMusicWritten().getCmd(),ItemData.BUTTON_ID,"SAVE AND LODE");
         this.inv.setItem(1, sheetMusic);
 
         ItemStack writable = new ItemStack(Material.WRITABLE_BOOK);
-        MakeItem.setItemMetaByColor(writable, "打ち込みモード", NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "INPUT MODE");
+        MakeItem.setItemMetaByColor(writable, "打ち込みモード", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "INPUT MODE");
         this.inv.setItem(3, writable);
 
         ItemStack disc = new ItemStack(Material.MUSIC_DISC_13);
-        MakeItem.setItemMetaByColor(disc, "再生モード", NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "PLAY MODE");
+        MakeItem.setItemMetaByColor(disc, "再生モード", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "PLAY MODE");
         this.inv.setItem(5, disc);
 
         ItemStack bar = new ItemStack(Material.BARRIER);
-        MakeItem.setItemMetaByColor(bar, "しゅうりょう", NamedTextColor.DARK_RED, null, ItemData.BUTTON_ID, "CLOSE");
+        MakeItem.setItemMetaByColor(bar, "しゅうりょう", NamedTextColor.DARK_RED, 0, ItemData.BUTTON_ID, "CLOSE");
         this.inv.setItem(8, bar);
     }
 

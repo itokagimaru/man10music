@@ -1,5 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.radio;
 
+import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.walkman.ItemsPlayModeHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.AutPlayManager;
@@ -31,7 +33,7 @@ public class RadioPlayHolder extends ItemsPlayModeHolder {
 
     public void setSettingItem(){
         ItemStack setting = new ItemStack(Material.FLOWER_BANNER_PATTERN);
-        MakeItem.setItemMetaByColor(setting, "Setting", NamedTextColor.YELLOW, null, ItemData.BUTTON_ID, "setting");
+        MakeItem.setItemMetaByColor(setting, "Setting", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "setting");
         inv.setItem(0, setting);
     }
     @Override
@@ -69,7 +71,7 @@ public class RadioPlayHolder extends ItemsPlayModeHolder {
     public void stopMusic(InventoryClickEvent event){
         ItemStack clickedItem = event.getCurrentItem();
         PlayMusic play = PlayMusicManager.getMusic(fream);
-        MakeItem.setItemMeta(clickedItem, "再生", null, "next_b_right", ItemData.BUTTON_ID, "PLAY");
+        MakeItem.setItemMeta(clickedItem, "再生", null, icons().getTriangleRight().getCmd(), ItemData.BUTTON_ID, "PLAY");
         AutPlayManager.set(fream,false);
         inv.setItem(0,upDateAutoPlayIcon(false));
         play.stopTask(fream);
@@ -78,6 +80,10 @@ public class RadioPlayHolder extends ItemsPlayModeHolder {
     @Override
     public ItemStack upDateAutoPlayIcon(boolean flag){
         return new ItemStack(Material.AIR);
+    }
+
+    private Icons icons() {
+        return Itokagimaru_daw.getInstance().getIconsData();
     }
 
 }

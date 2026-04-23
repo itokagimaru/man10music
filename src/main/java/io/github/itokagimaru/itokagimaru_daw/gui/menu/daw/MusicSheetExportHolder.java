@@ -43,6 +43,7 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
         ItemStack clicked = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
         if (Objects.equals(ItemData.ITEM_ID.get(clicked), "BLANK SHEET")){
+            if(("SELECT SHEET").equals(ItemData.ITEM_ID.get(inv.getItem(4)))) return;
             setup();
             ItemStack exportedSheet = clicked.clone();
             clicked.setAmount(0);

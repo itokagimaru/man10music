@@ -1,6 +1,7 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
+import io.github.itokagimaru.itokagimaru_daw.config.Icons;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -24,20 +25,23 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
     }
 
     public void setup() {
-        ItemStack left = new ItemStack(Material.PAPER);
-        ItemStack right = new ItemStack(Material.PAPER);
-        MakeItem.setItemMeta(left, "", null, "next_b_left", ItemData.BUTTON_ID, "SHIFT LEFT");
-        MakeItem.setItemMeta(right, "", null, "next_b_right", ItemData.BUTTON_ID, "SHIFT RIGHT");
+        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+        ItemStack left = new ItemStack(icons.getTriangleLeft().getMaterial());
+        ItemStack right = new ItemStack(icons.getTriangleRight().getMaterial());
+        MakeItem.setItemMeta(left, "", null, icons.getTriangleLeft().getCmd(), ItemData.BUTTON_ID, "SHIFT LEFT");
+        MakeItem.setItemMeta(right, "", null, icons.getTriangleRight().getCmd(), ItemData.BUTTON_ID, "SHIFT RIGHT");
         inv.setItem(0, left);
         inv.setItem(8, right);
     }
 
     public void updateBpmIcons(int bpm) {
+        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
         getSelectBpmId(bpm);
         ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         if (selectedBpmId > bpmList.length - 7) selectedBpmId = bpmList.length - 7;
         for (int i = 0; i < 7; i++) {
-            MakeItem.setItemMetaByColor(green, "set:" + bpmList[selectedBpmId + i], NamedTextColor.GREEN, null, ItemData.BPM, bpmList[selectedBpmId + i]);
+            // TODO: BPM候補アイコンの専用cmdはIcons未定義のため、blank cmdを利用する。
+            MakeItem.setItemMetaByColor(green, "set:" + bpmList[selectedBpmId + i], NamedTextColor.GREEN, icons.getNoteBlank().getCmd(), ItemData.BPM, bpmList[selectedBpmId + i]);
             ItemData.BUTTON_ID.set(green, "SET BPM");
             inv.setItem(i + 1, green);
         }
@@ -67,14 +71,18 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
                 player.openInventory(dawsPlayModeHolder.getInventory());
             }
             case "SHIFT RIGHT" -> {
-                getSelectBpmId(ItemData.BPM.get(inv.getItem(1)));
+                ItemStack firstBpmItem = inv.getItem(1);
+                if (firstBpmItem == null) return;
+                getSelectBpmId(ItemData.BPM.get(firstBpmItem));
                 selectedBpmId += 1;
                 if (selectedBpmId > bpmList.length - 7) selectedBpmId = bpmList.length - 7;
                 int bpm = bpmList[selectedBpmId];
                 updateBpmIcons(bpm);
             }
             case "SHIFT LEFT" -> {
-                getSelectBpmId(ItemData.BPM.get(inv.getItem(1)));
+                ItemStack firstBpmItem = inv.getItem(1);
+                if (firstBpmItem == null) return;
+                getSelectBpmId(ItemData.BPM.get(firstBpmItem));
                 selectedBpmId -= 1;
                 if (selectedBpmId < 0) selectedBpmId = 0;
                 int bpm = bpmList[selectedBpmId];
