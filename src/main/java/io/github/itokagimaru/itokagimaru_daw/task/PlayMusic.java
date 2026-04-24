@@ -19,12 +19,13 @@ import org.bukkit.scheduler.BukkitTask;
 
 
 public class PlayMusic {
-    //HashMap<UUID, BukkitTask> tasks = new HashMap<>();
     BukkitTask task;
     ItemStack cassetteIcon;
     boolean isPrivate = true;
     Player requester;
     BaseGuiHolder requestHolder;
+    float volume;
+    Double soundRange;
 
     public void setPrivate(boolean bool){
         isPrivate = bool;
@@ -39,7 +40,9 @@ public class PlayMusic {
         }
     }
 
-    public void playMusic(Entity target, ItemStack pdcHolder) {
+    public void playMusic(Entity target, ItemStack pdcHolder, float volume, Double soundRange) {
+        this.volume = volume;
+        this.soundRange = soundRange;
         cassetteIcon = pdcHolder.clone();
         int[] loadedMusic = ItemData.MUSIC_SAVED_RED.get(pdcHolder);
         int bpm = ItemData.BPM.get(pdcHolder);
@@ -51,13 +54,7 @@ public class PlayMusic {
                 if (loadedMusic[count] == -1) {
                     stopTask(target);
                 } else if (loadedMusic[count] != 0) {
-                    float volume;
-                    if (AutPlayManager.get(target)) {
-                        volume =(float) 0.25;
-                    } else {
-                        volume =(float) 0.5;
-                    }
-                    PlaySound.playNote(target, loadedMusic[count], volume, isPrivate);
+                    PlaySound.playNote(target, loadedMusic[count], volume, soundRange, isPrivate);
                     if(target instanceof Player player){
                         ParticleManager.playNote(player, isPrivate);
                     }
@@ -77,7 +74,7 @@ public class PlayMusic {
             play.setPrivate(isPrivate);
             play.setRequester(requester);
             PlayMusicManager.setPlayingMusic(target, play);
-            play.playMusic(target,cassetteIcon);
+            play.playMusic(target,cassetteIcon, volume, soundRange);
         } else if (requester.getOpenInventory().getTopInventory().getHolder() == requestHolder) {
             Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
             ItemStack play = new ItemStack(icons.getTriangleRight().getMaterial());

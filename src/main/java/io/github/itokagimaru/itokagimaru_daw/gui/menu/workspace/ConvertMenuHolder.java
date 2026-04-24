@@ -1,9 +1,6 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
-import io.github.itokagimaru.itokagimaru_daw.config.Icons;
-import io.github.itokagimaru.itokagimaru_daw.config.Items;
-import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.manager.MusicManager;
@@ -115,10 +112,8 @@ public class ConvertMenuHolder extends BaseGuiHolder {
             if(!(ItemData.ITEM_ID.get(sourceItem).equals("musicIcon")))return;
             ItemStack destinationItem = inv.getItem(5).clone();
             if(!(ItemData.ITEM_ID.get(destinationItem).equals("cassetteIcon")))return;
-            PluginConfigData config = Itokagimaru_daw.getInstance().getPluginConfigData();
-            Items items = config.getItems();
-            ItemStack item = new ItemStack(items.getCassette().getMaterial());
-            MakeItem.setItemMeta(item, "記録済みのカセットテープ", null, items.getCassette().getCmd(), ItemData.BPM, bpm);
+            ItemStack item = new ItemStack(itemsData().getCassette().getMaterial());
+            MakeItem.setItemMeta(item, "記録済みのカセットテープ", null, itemsData().getCassette().getCmd(), ItemData.BPM, bpm);
             ItemData.BUTTON_ID.set(item, "RECORD ITEM");
             ItemData.ITEM_ID.set(item, "recordCassette");
             int[] musicList = MusicManager.loadMusicForPdc(sourceItem);

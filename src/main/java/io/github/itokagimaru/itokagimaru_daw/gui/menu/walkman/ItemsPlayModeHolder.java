@@ -29,7 +29,7 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
     }
 
     public void setup(Entity target) {
-        Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
+        Icons icons = iconsData();
         ItemStack playIcon = new ItemStack(icons.getBaseMaterial());
         PlayMusic play = PlayMusicManager.getMusic(target);
         if (play == null) {
@@ -84,7 +84,7 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
         play.setPrivate(false);
         play.setRequester(player);
         PlayMusicManager.setPlayingMusic(player, play);
-        play.playMusic(player,clicked_inv.getItem(7));
+        play.playMusic(player,clicked_inv.getItem(7), musicData().getAutoPlayVolume(), musicData().getSoundRange());
     }
 
     public void stopMusic(InventoryClickEvent event){
@@ -125,7 +125,7 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
     }
 
     private Icons icons() {
-        return Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
+        return iconsData();
     }
 
     @Override

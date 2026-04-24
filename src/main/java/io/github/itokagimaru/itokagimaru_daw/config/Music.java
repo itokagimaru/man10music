@@ -3,26 +3,32 @@ package io.github.itokagimaru.itokagimaru_daw.config;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public final class Music {
-    private final double defaultVolume;
-    private final double autoPlayVolume;
-    private final int radioRadius;
+    private final int maxLength;
+    private final float defaultVolume;
+    private final float autoPlayVolume;
+    private final Double soundRange;
 
     public Music(FileConfiguration config) {
-        this.defaultVolume = config.getDouble("musicConfig.volume.default", 1.0D);
-        this.autoPlayVolume = config.getDouble("musicConfig.volume.autoPlay", 0.5D);
-        this.radioRadius = config.getInt("musicConfig.radio.radius", 5);
+        this.maxLength = config.getInt("musicConfig.music.maxLength", 16384);
+        this.defaultVolume = (float) config.getDouble("musicConfig.volume.default", 1.0D);
+        this.autoPlayVolume = (float) config.getDouble("musicConfig.volume.autoPlay", 0.5D);
+        this.soundRange = config.getDouble("musicConfig.volume.radius", 5);
     }
 
-    public double getDefaultVolume() {
+    public int getMaxLength() {
+        return maxLength;
+    }
+
+    public float getDefaultVolume() {
         return defaultVolume;
     }
 
-    public double getAutoPlayVolume() {
+    public float getAutoPlayVolume() {
         return autoPlayVolume;
     }
 
-    public int getRadioRadius() {
-        return radioRadius;
+    public Double getSoundRange() {
+        return soundRange;
     }
 }
 

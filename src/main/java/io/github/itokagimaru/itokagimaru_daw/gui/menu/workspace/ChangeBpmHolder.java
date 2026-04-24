@@ -43,7 +43,7 @@ public class ChangeBpmHolder extends BaseGuiHolder {
     }
 
     public void setup(){
-        Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
+        Icons icons = iconsData();
 
         for (int i = 0; i < 9; i++){
             inv.setItem(i,null);

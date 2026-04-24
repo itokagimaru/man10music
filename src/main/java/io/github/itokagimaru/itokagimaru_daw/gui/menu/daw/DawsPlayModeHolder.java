@@ -28,7 +28,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
     }
 
     public void setup(int bpm) {
-        Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
+        Icons icons = iconsData();
 
         ItemStack clock = new ItemStack(Material.CLOCK);
         MakeItem.setItemMetaByColor(clock, "現在のBPM:" + bpm, NamedTextColor.YELLOW, 0, ItemData.BPM, bpm);
@@ -48,7 +48,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             return;
         }
 
-        Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
+        Icons icons = iconsData();
         if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "OPTION BPM")) {
             int bpm = ItemData.BPM.get(clicked);
             closeFlag = false;
@@ -64,7 +64,6 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             int bpm = ItemData.BPM.get(bpmItem);
 
             ItemStack stopIcon = new ItemStack(Material.ELYTRA);
-            // TODO: STOP専用cmdはIcons未定義のため、cmd未設定で運用する。
             MakeItem.setItemMeta(stopIcon, "再生停止", null, 0, ItemData.BUTTON_ID, "STOP");
             inv.setItem(4, stopIcon);
 
@@ -74,7 +73,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             play.setPrivate(true);
             play.setRequester(player);
             PlayMusicManager.setPlayingMusic(player, play);
-            play.playMusic(player, pdcHolder);
+            play.playMusic(player, pdcHolder, musicData().getDefaultVolume(), musicData().getSoundRange());
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "STOP")) {
             PlayMusic play = PlayMusicManager.getMusic(player);
 
