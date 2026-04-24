@@ -47,7 +47,7 @@ public class NamingAnvilGUI {
         AnvilGUIOpening.anvilOpening.put(player.getUniqueId(), this);
     }
     public void setup(){
-        Icons icons = Itokagimaru_daw.getInstance().getIconsData();
+        Icons icons = Itokagimaru_daw.getInstance().getPluginConfigData().getIcons();
         ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         MakeItem.setItemMetaByColor(green, "名前を入力", NamedTextColor.GREEN,null,ItemData.BUTTON_ID,"decision");
         green.lore(List.of(Component.text("クリックで決定")));

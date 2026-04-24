@@ -64,7 +64,7 @@ public class RadioPlayHolder extends ItemsPlayModeHolder {
         play.setRequester(player);
         AutPlayManager.set(fream,true);
         PlayMusicManager.setPlayingMusic(fream, play);
-        play.playMusic(fream,clicked_inv.getItem(7));
+        play.playMusic(fream,clicked_inv.getItem(7), musicData().getAutoPlayVolume(), musicData().getSoundRange());
     }
 
     @Override
@@ -83,7 +83,7 @@ public class RadioPlayHolder extends ItemsPlayModeHolder {
     }
 
     private Icons icons() {
-        return Itokagimaru_daw.getInstance().getIconsData();
+        return iconsData();
     }
 
 }

@@ -1,8 +1,6 @@
 package io.github.itokagimaru.itokagimaru_daw;
 
 import io.github.itokagimaru.itokagimaru_daw.commands.*;
-import io.github.itokagimaru.itokagimaru_daw.config.Icons;
-import io.github.itokagimaru.itokagimaru_daw.config.Items;
 import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.db.MySQLManager;
 import io.github.itokagimaru.itokagimaru_daw.gui.listener.ClickInventoryListener;
@@ -26,14 +24,22 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
     public static Itokagimaru_daw instance;
 
     public static final HashMap<UUID, ItemStack[]> inv = new HashMap<>();
-    public static final int MUSIC_LENGTH = 16384;//=2^14,>=2^3
-    public static final int MAX_PAGE = MUSIC_LENGTH / 8;
+    public static int MUSIC_LENGTH = 16384;//=2^14,>=2^3
+    public static int MAX_PAGE = MUSIC_LENGTH / 8;
     private MySQLManager mysql;
     public InventoryManager inventoryManager;
     private PluginConfigData pluginConfigData;
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+        pluginConfigData = new PluginConfigData(getConfig());
+        int configuredMusicLength = pluginConfigData.getMusic().getMaxLength();
+        if (configuredMusicLength > 0) {
+            MUSIC_LENGTH = configuredMusicLength;
+            MAX_PAGE = MUSIC_LENGTH / 8;
+        }
+
         // listener
         registerListeners(
                 this,
@@ -58,8 +64,6 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
         getSLF4JLogger().info("コマンドを登録しました。");
 
         //dataBase
-        saveDefaultConfig();
-        pluginConfigData = new PluginConfigData(getConfig());
         mysql = new MySQLManager();
         mysql.init(
                 getConfig().getString("mysql.host"),
@@ -96,11 +100,4 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
         return pluginConfigData;
     }
 
-    public Items getItemsData() {
-        return pluginConfigData.getItems();
-    }
-
-    public Icons getIconsData() {
-        return pluginConfigData.getIcons();
-    }
 }

@@ -1,9 +1,6 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
-import io.github.itokagimaru.itokagimaru_daw.config.Icons;
-import io.github.itokagimaru.itokagimaru_daw.config.Items;
-import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.GetPresetItemStack;
@@ -34,10 +31,7 @@ public class SettingHolder extends BaseGuiHolder {
         setup();
     }
     public void setup(){
-        PluginConfigData config = Itokagimaru_daw.getInstance().getPluginConfigData();
-        Icons icons = config.getIcons();
-        Items items = config.getItems();
-        ItemStack remove = new ItemStack(icons.getBaseMaterial());
+        ItemStack remove = new ItemStack(iconsData().getBaseMaterial());
         MakeItem.setItemMetaByColor(remove, "撤去する", NamedTextColor.RED, 0, ItemData.BUTTON_ID, "remove");
         //inv.setItem(12, remove);仕様変更に伴い消しましたが、場合によっては戻すかもなのでこのままで
 

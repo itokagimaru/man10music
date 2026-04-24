@@ -97,7 +97,7 @@ public class MergeHolder extends BaseGuiHolder {
             int bpm = getBpm();
             if(bpm == 0)return;
             int[] mergeMusic = merge();
-            Icons iconData = Itokagimaru_daw.getInstance().getIconsData();
+            Icons iconData = iconsData();
             ItemStack mergedCassette = new ItemStack(iconData.getBaseMaterial());
             // TODO: 結合済みカセットの専用cmdはIcons未定義のため、blank cmdを利用する。
             MakeItem.setItemMeta(mergedCassette, "記録済みのカセットテープ", null, iconData.getNoteBlank().getCmd(),ItemData.ITEM_ID, "recordCassette");

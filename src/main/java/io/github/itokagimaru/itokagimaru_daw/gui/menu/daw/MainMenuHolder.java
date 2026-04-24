@@ -1,9 +1,6 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.daw;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
-import io.github.itokagimaru.itokagimaru_daw.config.Icons;
-import io.github.itokagimaru.itokagimaru_daw.config.Items;
-import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -27,12 +24,8 @@ public class MainMenuHolder extends BaseGuiHolder {
     }
 
     public void setup() {
-        PluginConfigData config = Itokagimaru_daw.getInstance().getPluginConfigData();
-        Icons icons = config.getIcons();
-        Items items = config.getItems();
-
-        ItemStack sheetMusic = new ItemStack(items.getSheetMusicWritten().getMaterial());
-        MakeItem.setItemMetaByColor(sheetMusic,"save&lode",NamedTextColor.YELLOW,items.getSheetMusicWritten().getCmd(),ItemData.BUTTON_ID,"SAVE AND LODE");
+        ItemStack sheetMusic = new ItemStack(itemsData().getSheetMusicWritten().getMaterial());
+        MakeItem.setItemMetaByColor(sheetMusic,"save&lode",NamedTextColor.YELLOW,itemsData().getSheetMusicWritten().getCmd(),ItemData.BUTTON_ID,"SAVE AND LODE");
         this.inv.setItem(1, sheetMusic);
 
         ItemStack writable = new ItemStack(Material.WRITABLE_BOOK);

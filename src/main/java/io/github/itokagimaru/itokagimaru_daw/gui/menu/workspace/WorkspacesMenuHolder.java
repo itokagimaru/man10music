@@ -1,9 +1,6 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.workspace;
 
 import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
-import io.github.itokagimaru.itokagimaru_daw.config.Icons;
-import io.github.itokagimaru.itokagimaru_daw.config.Items;
-import io.github.itokagimaru.itokagimaru_daw.config.PluginConfigData;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
@@ -29,15 +26,11 @@ public class WorkspacesMenuHolder extends BaseGuiHolder {
         setup();
     }
     public void setup() {
-        PluginConfigData config = Itokagimaru_daw.getInstance().getPluginConfigData();
-        Items items = config.getItems();
-        Icons icons = config.getIcons();
-
         ItemStack setting = new ItemStack(Material.FLOWER_BANNER_PATTERN);
         MakeItem.setItemMetaByColor(setting, "Setting", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "setting");
         inv.setItem(0, setting);
-        ItemStack convert = new ItemStack(items.getCassette().getMaterial());
-        MakeItem.setItemMetaByColor(convert,"Convert", NamedTextColor.YELLOW, items.getCassette().getCmd(), ItemData.BUTTON_ID,"convert");
+        ItemStack convert = new ItemStack(itemsData().getCassette().getMaterial());
+        MakeItem.setItemMetaByColor(convert,"Convert", NamedTextColor.YELLOW, itemsData().getCassette().getCmd(), ItemData.BUTTON_ID,"convert");
         convert.lore(List.of(Component.text("楽譜をカセットテープに変換します")));
         inv.setItem(10, convert);
 

@@ -7,8 +7,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public class PlaySound {
-    static Double soundRange = 5.0;// 音の聞こえる範囲。音を鳴らす位置を中心とした正方形範囲
-    public static void playNote(Entity target, int soundId, float volume, boolean isPrivet) {
+    public static void playNote(Entity target, int soundId, float volume,Double soundRange, boolean isPrivet) {
         float pitch = 1;
         soundId -= 2;//soundIdの正規化(諸事情で引数側が3からになってます
         if(soundId < 0) return;
@@ -29,7 +28,7 @@ public class PlaySound {
         }
         for (Entity entity : target.getWorld().getNearbyEntities(target.getLocation(),soundRange,soundRange,soundRange)){
             if(entity instanceof Player player){
-                player.playSound(player.getLocation(), "soundid" + playSound, SoundCategory.RECORDS, volume, pitch);
+                player.playSound(target.getLocation(), "soundid" + playSound, SoundCategory.RECORDS, volume, pitch);
             }
         }
 

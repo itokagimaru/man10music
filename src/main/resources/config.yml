@@ -5,7 +5,13 @@ mysql:
   user: username
   password: password
 
-
+musicConfig:
+  music:
+    maxLength: 16384
+  volume:
+    default: 1
+    autoPlay: 0.5
+    radius: 5
 
 items:
   keyBoard:
