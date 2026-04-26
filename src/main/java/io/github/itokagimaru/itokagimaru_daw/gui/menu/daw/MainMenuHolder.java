@@ -17,8 +17,11 @@ import java.util.Objects;
 public class MainMenuHolder extends BaseGuiHolder {
     int defBPM = 60;
     ItemStack daw;
-    public MainMenuHolder(ItemStack daw) {
+    private final int mainSlot;
+
+    public MainMenuHolder(ItemStack daw, int mainSlot) {
         this.daw = daw;
+        this.mainSlot = mainSlot;
         this.inv = Bukkit.createInventory(this, 9, Component.text("MainMenu"));
         setup();
     }
@@ -46,16 +49,16 @@ public class MainMenuHolder extends BaseGuiHolder {
         Player clickedPlayer = (Player) event.getWhoClicked();
         ItemStack clickedItem = event.getCurrentItem();
         if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "INPUT MODE")) {
-            InputModeHolder inputModeHolder = new InputModeHolder(daw);
+            InputModeHolder inputModeHolder = new InputModeHolder(daw, mainSlot);
             inputModeHolder.open(clickedPlayer);
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "PLAY MODE")) {
             clickedPlayer.closeInventory();
-            DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(defBPM, daw);
+            DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(defBPM, daw, mainSlot);
             clickedPlayer.openInventory(dawsPlayModeHolder.getInventory());
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "CLOSE")) {
             clickedPlayer.closeInventory();
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "SAVE AND LODE")) {
-            MusicMenuHolder musicMenuHolder = new MusicMenuHolder(daw);
+            MusicMenuHolder musicMenuHolder = new MusicMenuHolder(daw, mainSlot);
             clickedPlayer.openInventory(musicMenuHolder.getInventory());
         }
     }

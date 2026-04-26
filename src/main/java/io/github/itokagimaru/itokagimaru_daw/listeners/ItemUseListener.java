@@ -26,24 +26,37 @@ public class ItemUseListener implements Listener {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             return;
         }
-        if (item == null) return;
-
+        if (item == null || item.getType() == Material.AIR) {
+            ItemStack head = player.getInventory().getHelmet();
+            if (head == null || head.getType() == Material.AIR) return;
+            if (("walkman").equals(ItemData.ITEM_ID.get(head))) {
+                useWalkman(player);
+                return;
+            }
+        }
         String itemId = ItemData.ITEM_ID.get(item);
         switch (itemId) {
             case "daw" -> {
                 event.setCancelled(true);
-                MainMenuHolder mainMenuHolder = new MainMenuHolder(item);
+                int mainSlot = player.getInventory().getHeldItemSlot();
+                MainMenuHolder mainMenuHolder = new MainMenuHolder(item, mainSlot);
                 player.openInventory(mainMenuHolder.getInventory());
             }
             case "walkman" -> {
                 event.setCancelled(true);
                 SwapItems.mainAndHead(player);
-                Location location = player.getLocation();
-                location.setPitch(0);
-                player.teleport(location);
-                ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder(player);
-                player.openInventory(itemsPlayModeHolder.getInventory());
+                useWalkman(player);
             }
         }
+
+
+    }
+
+    private static void useWalkman(Player player) {
+        Location location = player.getLocation();
+        location.setPitch(0);
+        player.teleport(location);
+        ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder(player);
+        player.openInventory(itemsPlayModeHolder.getInventory());
     }
 }

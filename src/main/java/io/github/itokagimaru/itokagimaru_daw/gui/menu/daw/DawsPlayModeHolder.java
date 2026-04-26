@@ -20,9 +20,11 @@ import java.util.Objects;
 
 public class DawsPlayModeHolder extends BaseGuiHolder {
     ItemStack daw;
+    private final int mainSlot;
 
-    public DawsPlayModeHolder(int bpm, ItemStack daw) {
+    public DawsPlayModeHolder(int bpm, ItemStack daw, int mainSlot) {
         this.daw = daw;
+        this.mainSlot = mainSlot;
         inv = Bukkit.createInventory(this, 9, Component.text("PlayMode"));
         setup(bpm);
     }
@@ -53,7 +55,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
             int bpm = ItemData.BPM.get(clicked);
             closeFlag = false;
             player.closeInventory();
-            DawsOptionBpmHolder dawsOptionBpmHolder = new DawsOptionBpmHolder(daw);
+            DawsOptionBpmHolder dawsOptionBpmHolder = new DawsOptionBpmHolder(daw, mainSlot);
             dawsOptionBpmHolder.updateBpmIcons(bpm);
             player.openInventory(dawsOptionBpmHolder.getInventory());
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "PLAY")) {
@@ -92,7 +94,7 @@ public class DawsPlayModeHolder extends BaseGuiHolder {
         if(!closeFlag)return;
         closeFlag = false;
         Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(),() -> {
-            MainMenuHolder mainMenuHolder = new MainMenuHolder(daw);
+            MainMenuHolder mainMenuHolder = new MainMenuHolder(daw, mainSlot);
             player.openInventory(mainMenuHolder.getInventory());
         });
 
