@@ -17,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -24,6 +25,7 @@ public class InputModeHolder extends BaseGuiHolder {
     final Inventory playerInventory = Bukkit.createInventory(null, 36);
     ItemStack daw;
     int[] musicList;
+    private final int mainSlot;
 
     private enum ButtonId {
         CLOSE("CLOSE"),
@@ -81,8 +83,9 @@ public class InputModeHolder extends BaseGuiHolder {
             Map.entry("ラ#/A#", new NoteSpec(10, 1, 5, false, false, false))
     );
 
-    public InputModeHolder(ItemStack daw) {
+    public InputModeHolder(ItemStack daw, int mainSlot) {
         this.daw = daw;
+        this.mainSlot = mainSlot;
         this.inv = Bukkit.createInventory(this, 54, Component.text("InputMode"));
         setup();
     }
@@ -99,7 +102,7 @@ public class InputModeHolder extends BaseGuiHolder {
             MakeItem.setItemMeta(base, "", null, scaleCmd(icons, i), null, null);
             this.inv.setItem(i * 9, base);
         }
-        ItemStack gray = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemStack gray = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
         MakeItem.setItemMeta(gray, "", null, 0, ItemData.BUTTON_ID, "flager");
         for (int i = 0; i < 36; i++) {
             playerInventory.setItem(i, gray);
@@ -136,7 +139,6 @@ public class InputModeHolder extends BaseGuiHolder {
         for (int i = 0; i < whiteName.length; i++) {
             if (!whiteName[i].equals("null")) {
                 ItemStack white = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
-                // TODO: 鍵盤(白鍵)の専用cmdはIcons未定義のためblank cmdを利用する。
                 MakeItem.setItemMeta(white, whiteName[i], null, 0, ItemData.BUTTON_ID, whiteName[i]);
                 playerInventory.setItem(i + 26, white);
             }
@@ -359,8 +361,10 @@ public class InputModeHolder extends BaseGuiHolder {
         MusicManager.saveMusicForPdc(daw,musicList);
         //daw.lore(List.of(Component.text(Arrays.toString(musicList))));
         Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
-           MainMenuHolder mainMenuHolder = new MainMenuHolder(daw);
-           player.openInventory(mainMenuHolder.getInventory());
+            player.closeInventory();
+            player.getInventory().setItem(mainSlot, daw);
+            MainMenuHolder mainMenuHolder = new MainMenuHolder(daw, mainSlot);
+            player.openInventory(mainMenuHolder.getInventory());
         });
     }
 

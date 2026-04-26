@@ -19,9 +19,11 @@ import java.util.Objects;
 
 public class MusicSheetExportHolder extends BaseGuiHolder {
     ItemStack daw;
+    private final int mainSlot;
 
-    public MusicSheetExportHolder(ItemStack daw){
+    public MusicSheetExportHolder(ItemStack daw, int mainSlot){
         this.daw = daw;
+        this.mainSlot = mainSlot;
         inv = Bukkit.createInventory(this, 9, Component.text("MusicSheetSave"));
         setup();
     }
@@ -83,7 +85,7 @@ public class MusicSheetExportHolder extends BaseGuiHolder {
             }
         }
         Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
-            MusicMenuHolder musicMenuHolder = new MusicMenuHolder(daw);
+            MusicMenuHolder musicMenuHolder = new MusicMenuHolder(daw, mainSlot);
             player.openInventory(musicMenuHolder.getInventory());
         });
     }

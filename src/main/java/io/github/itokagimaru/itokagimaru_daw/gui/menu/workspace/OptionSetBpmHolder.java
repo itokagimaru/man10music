@@ -18,8 +18,8 @@ public class OptionSetBpmHolder extends DawsOptionBpmHolder {
 
     UUID frameUuid;
 
-    public OptionSetBpmHolder(ItemStack daw) {
-        super(daw);
+    public OptionSetBpmHolder() {
+        super(null, 0);
     }
 
     public void setUuid(UUID uuid){

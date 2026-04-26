@@ -137,7 +137,7 @@ public class ConvertMenuHolder extends BaseGuiHolder {
             setup();
         } else if (("option").equals(buttonId)) {
             int bpm = ItemData.BPM.get(clicked);
-            OptionSetBpmHolder optionSetBpmHolder = new OptionSetBpmHolder(null);
+            OptionSetBpmHolder optionSetBpmHolder = new OptionSetBpmHolder();
             optionSetBpmHolder.updateBpmIcons(bpm);
             optionSetBpmHolder.setReturnItem(inv.getItem(2).clone(),inv.getItem(5).clone());
             optionSetBpmHolder.setUuid(frameUuid);
