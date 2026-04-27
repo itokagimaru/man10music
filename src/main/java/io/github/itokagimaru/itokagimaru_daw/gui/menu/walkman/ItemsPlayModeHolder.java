@@ -1,6 +1,5 @@
 package io.github.itokagimaru.itokagimaru_daw.gui.menu.walkman;
 
-import io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw;
 import io.github.itokagimaru.itokagimaru_daw.config.Icons;
 import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
 import io.github.itokagimaru.itokagimaru_daw.gui.menu.BaseGuiHolder;
@@ -114,11 +113,9 @@ public class ItemsPlayModeHolder extends BaseGuiHolder {
         ItemStack autPlayIcon;
         if (flag) {
             autPlayIcon = new ItemStack(Material.RED_STAINED_GLASS_PANE);
-            // TODO: 自動再生アイコンはIcons未定義のため、現状のMaterialを維持する。
             MakeItem.setItemMetaByColor(autPlayIcon,"自動再生:ON", NamedTextColor.RED,0,ItemData.BUTTON_ID, "AUTPLAY_ICON");
         } else {
             autPlayIcon = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-            // TODO: 自動再生アイコンはIcons未定義のため、現状のMaterialを維持する。
             MakeItem.setItemMetaByColor(autPlayIcon,"自動再生:OFF", NamedTextColor.WHITE,0,ItemData.BUTTON_ID, "AUTPLAY_ICON");
         }
         return autPlayIcon;

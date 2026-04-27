@@ -52,9 +52,8 @@ public class NamingAnvilGUI {
         MakeItem.setItemMetaByColor(green, "名前を入力", NamedTextColor.GREEN,null,ItemData.BUTTON_ID,"decision");
         green.lore(List.of(Component.text("クリックで決定")));
         anvilInv.setItem(0,green);
-        ItemStack bar = new ItemStack(icons.getBaseMaterial());
-        // TODO: Anvil補助アイコンの専用cmdはIcons未定義のため、blank cmdを利用する。
-        MakeItem.setItemMeta(bar,"",null,icons.getNoteBlank().getCmd(),null,null);
+        ItemStack bar = new ItemStack(Material.BARRIER);
+        MakeItem.setItemMeta(bar,"",null,0,null,null);
         anvilInv.setItem(1,bar);
     }
 
