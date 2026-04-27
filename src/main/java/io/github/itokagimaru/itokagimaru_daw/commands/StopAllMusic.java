@@ -1,19 +1,13 @@
 package io.github.itokagimaru.itokagimaru_daw.commands;
 
-import io.github.itokagimaru.itokagimaru_daw.data.ItemData;
-import io.github.itokagimaru.itokagimaru_daw.util.GetPresetItemStack;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import io.github.itokagimaru.itokagimaru_daw.manager.PlayMusicManager;
+import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-
-public class GetCassetteWorkSpace implements CommandExecutor {
+public class StopAllMusic implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -21,10 +15,11 @@ public class GetCassetteWorkSpace implements CommandExecutor {
             return false;
         }
         if (!player.hasPermission("itokagimaru_daw.admin")) return true;
-
-        player.give(GetPresetItemStack.workSpace());
+        for (PlayMusic play : PlayMusicManager.getMusicList()) {
+            play.stopTask(null);
+        }
+        PlayMusicManager.removeMusic();
 
         return true;
     }
-
 }

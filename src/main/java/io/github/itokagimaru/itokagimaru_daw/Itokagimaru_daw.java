@@ -57,10 +57,9 @@ public final class Itokagimaru_daw extends JavaPlugin implements Listener {
         registerCommand("getSheetMusic", new GetSheetMusicItem());
         registerCommand("getPlayItem", new GetPlayItem());
         registerCommand("getCassetteTape", new GetCassetteTape());
-        registerCommand("setCassettesName", new SetCassetteName());
-        registerCommand("cassetteTransfer", new CassetteTransfer());
         registerCommand("getCassetteWorkSpace", new GetCassetteWorkSpace());
         registerCommand("getRadio", new GetRadio());
+        registerCommand("stopAllMusic", new StopAllMusic());
         getSLF4JLogger().info("コマンドを登録しました。");
 
         //dataBase

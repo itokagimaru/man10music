@@ -2,6 +2,11 @@ name: itokagimaru_daw
 version: '1.0-SNAPSHOT'
 main: io.github.itokagimaru.itokagimaru_daw.Itokagimaru_daw
 api-version: '1.21'
+
+permissions:
+  itokagimaru_daw.admin:
+    default: op
+
 commands:
   getDawItem:
     description: /getDawItem でdawを入手できるよ
@@ -18,12 +23,6 @@ commands:
   getCassetteWorkSpace:
     description: /getCassetteWorkSpace でカセットテープ編集台を入手できるよ
     usage: /getCassetteWorkSpace
-  setCassettesName:
-    description: /setCassettesName でカセットテープに曲名を設定できるよ
-    usage: /setCassettesName
-  cassetteTransfer:
-    description: /cassetteTransfer で旧pdcで記録されていたmusicを新pdcに引っ越しさせるよ
-    usage: /cassetteTransfer
   getRadio:
     description: /getRadio でラジカセを入手できるよ
     usage: /getRadio

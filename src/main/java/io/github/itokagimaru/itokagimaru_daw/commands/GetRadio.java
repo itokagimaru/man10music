@@ -15,6 +15,7 @@ public class GetRadio implements CommandExecutor {
             sender.sendMessage("Only players can execute this command");
             return false;
         }
+        if (!player.hasPermission("itokagimaru_daw.admin")) return true;
 
         player.give(GetPresetItemStack.radio());
 
