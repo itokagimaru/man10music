@@ -82,4 +82,8 @@ public class PlayMusic {
             requestHolder.getInventory().setItem(4, play);
         }
     }
+
+    public void stopTask(){
+        task.cancel();
+    }
 }

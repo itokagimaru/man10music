@@ -16,7 +16,7 @@ public class StopAllMusic implements CommandExecutor {
         }
         if (!player.hasPermission("itokagimaru_daw.admin")) return true;
         for (PlayMusic play : PlayMusicManager.getMusicList()) {
-            play.stopTask(null);
+            play.stopTask();
         }
         PlayMusicManager.removeMusic();
 

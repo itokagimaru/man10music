@@ -42,8 +42,7 @@ public class DawsOptionBpmHolder extends BaseGuiHolder {
         ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         if (selectedBpmId > bpmList.length - 7) selectedBpmId = bpmList.length - 7;
         for (int i = 0; i < 7; i++) {
-            // TODO: BPM候補アイコンの専用cmdはIcons未定義のため、blank cmdを利用する。
-            MakeItem.setItemMetaByColor(green, "set:" + bpmList[selectedBpmId + i], NamedTextColor.GREEN, icons.getNoteBlank().getCmd(), ItemData.BPM, bpmList[selectedBpmId + i]);
+            MakeItem.setItemMetaByColor(green, "set:" + bpmList[selectedBpmId + i], NamedTextColor.GREEN, 0, ItemData.BPM, bpmList[selectedBpmId + i]);
             ItemData.BUTTON_ID.set(green, "SET BPM");
             inv.setItem(i + 1, green);
         }

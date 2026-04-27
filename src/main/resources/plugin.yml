@@ -26,3 +26,6 @@ commands:
   getRadio:
     description: /getRadio でラジカセを入手できるよ
     usage: /getRadio
+  stopAllMusic:
+    description: /stopAllMusic で全ての音楽を止めるよ
+    usage: /stopAllMusic
