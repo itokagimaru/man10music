@@ -12,6 +12,7 @@ import io.github.itokagimaru.itokagimaru_daw.manager.PlayMusicManager;
 import io.github.itokagimaru.itokagimaru_daw.task.PlayMusic;
 import io.github.itokagimaru.itokagimaru_daw.util.GetPresetItemStack;
 import io.github.itokagimaru.itokagimaru_daw.util.MakeItem;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.Player;
@@ -35,6 +36,7 @@ public class PlayerInteractEntityListener implements Listener {
                     itemFrame.setItem(null);
                     itemFrame.remove();
                     player.give(GetPresetItemStack.workSpace());
+                    player.give(new ItemStack(Material.GLOW_ITEM_FRAME));
                     return;
                 }
                 UUID uuid = itemFrame.getUniqueId();
@@ -63,6 +65,7 @@ public class PlayerInteractEntityListener implements Listener {
                         play.stopTask(itemFrame);
                     }
                     player.give(GetPresetItemStack.radio());
+                    player.give(new ItemStack(Material.GLOW_ITEM_FRAME));
                     return;
                 }
                 RadioPlayHolder radioPlayHolder = new RadioPlayHolder(itemFrame);
