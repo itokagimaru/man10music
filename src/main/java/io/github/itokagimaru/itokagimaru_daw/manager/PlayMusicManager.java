@@ -16,7 +16,13 @@ public class PlayMusicManager {
     public static PlayMusic getMusic(Entity target) {
         return playing.get(target.getUniqueId());
     }
+    public static PlayMusic[] getMusicList() {
+        return playing.values().toArray(new PlayMusic[0]);
+    }
     public static void removeMusic(Entity target) {
         playing.remove(target.getUniqueId());
+    }
+    public static void removeMusic() {
+        playing.clear();
     }
 }
