@@ -17,7 +17,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -37,6 +36,8 @@ public class InputModeHolder extends BaseGuiHolder {
         GO_FIRST("GO FIRST"),
         GO_END("GO END"),
         ALL_DELETE("ALL DELETE"),
+        INSERT_REST("INSERT REST"),
+        CUT_NOTE("CUT NOTE"),
         UNKNOWN("");
 
         private final String id;
@@ -155,7 +156,15 @@ public class InputModeHolder extends BaseGuiHolder {
 
         ItemStack structure = new ItemStack(Material.STRUCTURE_VOID);
         MakeItem.setItemMeta(structure, "全削除", null, 0, ItemData.BUTTON_ID, "ALL DELETE");
-        playerInventory.setItem(6, structure);
+        playerInventory.setItem(7, structure);
+
+        ItemStack insertRest = new ItemStack(Material.WRITABLE_BOOK);
+        MakeItem.setItemMetaByColor(insertRest, "休符の挿入", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "INSERT REST");
+        playerInventory.setItem(5, insertRest);
+
+        ItemStack cutNote = new ItemStack(Material.SHEARS);
+        MakeItem.setItemMetaByColor(cutNote, "ノートの切り取り", NamedTextColor.RED, 0, ItemData.BUTTON_ID, "CUT NOTE");
+        playerInventory.setItem(6, cutNote);
     }
 
     public void open(Player player) {
@@ -344,6 +353,28 @@ public class InputModeHolder extends BaseGuiHolder {
                 }
                 inputGuiUpdate(topnote, page);
             }
+            case INSERT_REST -> {
+                Integer page = getCurrentPage(clickedInv);
+                Integer topnote = getCurrentTopNote(player);
+                if (page == null || topnote == null || musicList == null) {
+                    return;
+                }
+                int select = getSelectedCursor(clickedInv);
+                int index = getMusicIndex(page, select);
+                insertRestKeepingLength(index);
+                inputGuiUpdate(topnote, page);
+            }
+            case CUT_NOTE -> {
+                Integer page = getCurrentPage(clickedInv);
+                Integer topnote = getCurrentTopNote(player);
+                if (page == null || topnote == null || musicList == null) {
+                    return;
+                }
+                int select = getSelectedCursor(clickedInv);
+                int index = getMusicIndex(page, select);
+                cutNoteKeepingLength(index);
+                inputGuiUpdate(topnote, page);
+            }
             case UNKNOWN -> {
                 if (isNoteKey(clicked)) {
                     handleNoteInput(player, clickedInv, clicked);
@@ -450,7 +481,7 @@ public class InputModeHolder extends BaseGuiHolder {
             return;
         }
 
-        int index = (page - 1) * 8 + select - 1;
+        int index = getMusicIndex(page, select);
 
         if (spec.restToggle()) {
             musicList[index] = musicList[index] != 0 ? 0 : 1;
@@ -466,5 +497,37 @@ public class InputModeHolder extends BaseGuiHolder {
             add = 0;
         }
         musicList[index] = spec.baseValue() + (12 * add);
+    }
+
+    private int getMusicIndex(int page, int select) {
+        return (page - 1) * 8 + select - 1;
+    }
+
+    private void insertRestKeepingLength(int index) {
+        if (musicList == null || musicList.length == 0) {
+            return;
+        }
+        if (index < 0 || index >= musicList.length) {
+            return;
+        }
+
+        for (int i = musicList.length - 1; i > index; i--) {
+            musicList[i] = musicList[i - 1];
+        }
+        musicList[index] = 0;
+    }
+
+    private void cutNoteKeepingLength(int index) {
+        if (musicList == null || musicList.length == 0) {
+            return;
+        }
+        if (index < 0 || index >= musicList.length) {
+            return;
+        }
+
+        for (int i = index; i < musicList.length - 1; i++) {
+            musicList[i] = musicList[i + 1];
+        }
+        musicList[musicList.length - 1] = 0;
     }
 }
