@@ -1,0 +1,75 @@
+package io.github.itokagimaru.mun10music.gui.menu.daw;
+
+import io.github.itokagimaru.mun10music.Itokagimaru_daw;
+import io.github.itokagimaru.mun10music.data.ItemData;
+import io.github.itokagimaru.mun10music.gui.menu.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.util.MakeItem;
+import io.github.itokagimaru.mun10music.manager.SheetMusicManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.Objects;
+
+public class MusicSheetImportHolder extends BaseGuiHolder {
+    ItemStack daw;
+    private final int mainSlot;
+
+    public MusicSheetImportHolder(ItemStack daw, int mainSlot){
+        this.daw = daw;
+        this.mainSlot = mainSlot;
+        inv = Bukkit.createInventory(this, 9, Component.text("MusicSheetLoad"));
+        setup();
+    }
+    public void setup(){
+        ItemStack air = new ItemStack(Material.AIR);
+        for (int i = 0; i < 9;i++){
+            inv.setItem(i, air);
+        }
+        ItemStack bar = new ItemStack(Material.BARRIER);
+        MakeItem.setItemMetaByColor(bar,"未選択", NamedTextColor.RED,null, null,null);
+        bar.lore(List.of(Component.text("\"記述済みの楽譜\"を選択").color(NamedTextColor.WHITE)));
+        inv.setItem(4, bar);
+    }
+
+    @Override
+    public void onClick(InventoryClickEvent event){
+        event.setCancelled(true);
+        ItemStack clicked = event.getCurrentItem();
+        Player player = (Player) event.getWhoClicked();
+        if (Objects.equals(ItemData.ITEM_ID.get(clicked), "WRITTEN MUSIC")) {
+            ItemStack importedSheet = clicked.clone();
+            ItemData.ITEM_ID.set(importedSheet,"SELECT MUSIC");
+            inv.setItem(4, importedSheet);
+            ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
+            MakeItem.setItemMeta(green,"決定",null,null, ItemData.BUTTON_ID,"DECISION");
+            inv.setItem(7, green);
+            ItemStack red =  new ItemStack(Material.RED_STAINED_GLASS_PANE);
+            MakeItem.setItemMeta(red,"キャンセル",null,null, ItemData.BUTTON_ID,"CANCEL");
+            inv.setItem(1, red);
+        } else if (Objects.equals(ItemData.ITEM_ID.get(clicked), "SELECT SHEET")) {
+            setup();
+        } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "DECISION")) {
+            SheetMusicManager.loadSheetMusic(daw, inv.getItem(4));
+            player.closeInventory();
+        } else if (Objects.equals(ItemData.BUTTON_ID.get(clicked), "CANCEL")) {
+            player.closeInventory();
+        }
+    }
+    @Override
+    public void onClose(Player player) {
+        if (!closeFlag) return;
+        closeFlag = false;
+        Bukkit.getScheduler().runTask(Itokagimaru_daw.getInstance(), () -> {
+            MusicMenuHolder musicMenuHolder = new MusicMenuHolder(daw, mainSlot);
+            player.openInventory(musicMenuHolder.getInventory());
+        });
+    }
+}
+
+
