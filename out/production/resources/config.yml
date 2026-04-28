@@ -1,0 +1,68 @@
+mysql:
+  host: localhost
+  port: 3306
+  database: minecraft
+  user: username
+  password: password
+
+musicConfig:
+  music:
+    maxLength: 16384
+  volume:
+    default: 1
+    autoPlay: 0.5
+    radius: 5
+
+items:
+  keyBoard:
+    material: wooden_hoe
+    cmd: 1
+  walkMan:
+    material: wooden_hoe
+    cmd: 2
+  cassette:
+    material: paper
+    cmd: 1
+  sheetMusic:
+    blank:
+      material: paper
+      cmd: 2
+    written:
+      material: paper
+      cmd: 3
+  cassetteWorkspace:
+    item:
+      material: paper
+      cmd: 4
+    block:
+      material: paper
+      cmd: 5
+  radio:
+    item:
+      material: paper
+      cmd: 6
+    block:
+      material: paper
+      cmd: 7
+
+icons:
+  material: paper
+  triangle:
+    up: 8
+    down: 9
+    left: 10
+    right: 11
+    select: 12
+  sheetMusic:
+    scale:
+      null-F#: 13
+      F-E: 14
+      D#-D: 15
+      C#-C: 16
+      B-A#: 17
+      A-G#: 18
+      G-F#: 19
+    note:
+      blank: 20
+      up: 21
+      down: 22
