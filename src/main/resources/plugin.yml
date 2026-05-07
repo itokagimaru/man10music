@@ -8,24 +8,6 @@ permissions:
     default: op
 
 commands:
-  getDawItem:
-    description: /getDawItem でdawを入手できるよ
-    usage: /getDawItem
-  getSheetMusic:
-    description: /getSheetMusic で空白の楽譜を入手できるよ
-    usage: /getSheetMusic
-  getPlayItem:
-    description: /getPlayItem でラジカセを入手できるよ
-    usage: /getPlayItem
-  getCassetteTape:
-    description: /getCassetteTape でカセットテープを入手できるよ
-    usage: /getCassetteTape
-  getCassetteWorkSpace:
-    description: /getCassetteWorkSpace でカセットテープ編集台を入手できるよ
-    usage: /getCassetteWorkSpace
-  getRadio:
-    description: /getRadio でラジカセを入手できるよ
-    usage: /getRadio
-  stopAllMusic:
-    description: /stopAllMusic で全ての音楽を止めるよ
-    usage: /stopAllMusic
+  mmusic:
+    description: /mmusicコマンドのヘルプを表示
+    usage: /mmusic [help]
