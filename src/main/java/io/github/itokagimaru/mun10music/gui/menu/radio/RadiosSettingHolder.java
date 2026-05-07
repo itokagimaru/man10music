@@ -8,9 +8,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public class RadiosSettingHolder extends SettingHolder {
-    public RadiosSettingHolder(){
-        super();
+    public RadiosSettingHolder(UUID fremaeUUID){
+        super(fremaeUUID);
     }
 
     @Override
@@ -21,7 +23,7 @@ public class RadiosSettingHolder extends SettingHolder {
         Entity entity = world.getEntity(frameUuid);
         if (!(entity instanceof GlowItemFrame fream)) return;
         Bukkit.getScheduler().runTask(Man10Music.getInstance(),() -> {
-            RadioPlayHolder radioPlayHolder = new RadioPlayHolder(fream);
+            RadioPlayHolder radioPlayHolder = new RadioPlayHolder(player, fream);
             radioPlayHolder.setFream(fream);
             player.openInventory(radioPlayHolder.getInventory());
         });

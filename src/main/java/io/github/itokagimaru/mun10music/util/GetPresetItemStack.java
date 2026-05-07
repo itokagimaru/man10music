@@ -34,6 +34,7 @@ public class GetPresetItemStack {
         ItemStack stack = createItem(itemsData().getCassette());
         stack.editMeta(meta -> {
             meta.customName(Component.text("カセットテープ").color(NamedTextColor.AQUA));
+            meta.setMaxStackSize(64);
         });
         ItemData.ITEM_ID.set(stack,"CASSETTE TAPE");
         return stack;

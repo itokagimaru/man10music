@@ -2,7 +2,10 @@ package io.github.itokagimaru.mun10music.gui.menu.workspace;
 
 import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.data.ItemData;
-import io.github.itokagimaru.mun10music.gui.menu.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.manager.CassetteManager;
+import io.github.itokagimaru.mun10music.manager.music.PublishedMusic;
+import io.github.itokagimaru.mun10music.manager.music.PublishedMusicManager;
 import io.github.itokagimaru.mun10music.util.FakeEnchant;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import io.github.itokagimaru.mun10music.util.PlaySound;
@@ -18,8 +21,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class MergeHolder extends BaseGuiHolder {
     int NUM_OF_ICONS = 5;
@@ -28,9 +33,6 @@ public class MergeHolder extends BaseGuiHolder {
     boolean itemReturnFlag = true;
 
     UUID frameUuid;
-    public void setUuid(UUID uuid){
-        frameUuid = uuid;
-    }
 
     ItemStack NULL_ICON = makeNullIcon();
     public ItemStack makeNullIcon() {
@@ -40,7 +42,7 @@ public class MergeHolder extends BaseGuiHolder {
         return nullIcon;
     }
 
-    public MergeHolder() {
+    public MergeHolder(UUID frameUuid) {
         closeFlag = true;
         inv = Bukkit.createInventory(this, 9, "Merge Menu");
         setup();
@@ -92,104 +94,70 @@ public class MergeHolder extends BaseGuiHolder {
             int slot = event.getRawSlot() - SLOT_OFFSET;
             removeCassetteIcon(player,slot);
         } else if (("decision").equals(buttonID)){
-            if (getLength() < 2)return;
-            int bpm = getBpm();
-            if(bpm == 0)return;
-            int[] mergeMusic = merge();
-            ItemStack mergedCassette = new ItemStack(itemsData().getCassette().getMaterial());
-            MakeItem.setItemMeta(mergedCassette, "記録済みのカセットテープ", null, itemsData().getCassette().getCmd(),ItemData.ITEM_ID, "recordCassette");
-            ItemData.IS_NAMED.set(mergedCassette, (byte) 1);
-            ItemData.IS_MERGED.set(mergedCassette, (byte) 1);
-            ItemData.BPM.set(mergedCassette, bpm);
-            ItemData.MUSIC_SAVED_RED.set(mergedCassette, mergeMusic);
-            mergedCassette.lore(makeLore(bpm, player));
-            ItemMeta meta = mergedCassette.getItemMeta();
-            meta.setMaxStackSize(1);
-            mergedCassette.setItemMeta(meta);
-            FakeEnchant.addFakeEnchant(mergedCassette);
-            player.give(mergedCassette);
-            PlaySound.playAnvilUse(player);
-            setup();
+            int len = getLength();
+            if (len < 2) {
+                player.sendMessage(Component.text(len).color(NamedTextColor.RED).decorate(TextDecoration.BOLD));
+                return;
+            }
+            int[] mergeMusicsID = merge();
+            player.sendMessage(Component.text("結合中..." + Arrays.toString(mergeMusicsID)).color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD));
+            List<CompletableFuture<PublishedMusic>> futures = new ArrayList<>();
+            for (int publicId : mergeMusicsID) {
+                if (publicId <= 0) continue;
+                futures.add(PublishedMusicManager.loadPublishedByPublicId(Man10Music.getInstance().getMySQLManager(), publicId)
+                        .thenApply(music -> music == null ? null : new PublishedMusic(publicId, music)));
+            }
+            CompletableFuture
+                    .allOf(futures.toArray(new CompletableFuture[0]))
+                    .thenAccept(v -> {
+                        List<PublishedMusic> mergeMusics = new ArrayList<>();
+                        for (CompletableFuture<PublishedMusic> future : futures) {
+                            PublishedMusic published = future.join();
+                            if (published != null) mergeMusics.add(published);
+                        }
+
+                        Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
+                            if (!player.isOnline()) return;
+                            if (mergeMusics.isEmpty()) return;
+                            ItemStack mergedCassette = CassetteManager.makeMergedCassetteItem(mergeMusics);
+                            FakeEnchant.addFakeEnchant(mergedCassette);
+                            player.give(mergedCassette);
+                            PlaySound.playAnvilUse(player);
+                            setup();
+                        });
+                    });
         }
     }
 
     public int getLength(){
         int len = 0;
         for (ItemStack stack : icons){
-            if (stack == NULL_ICON)continue;
+            if (stack.equals(NULL_ICON))continue;
             len++;
         }
         return len;
     }
 
-    public int getBpm(){
-        int bpm = 0;
-        for (ItemStack stack : icons){
-            if(stack == NULL_ICON)continue;
-            if(bpm == 0){
-                bpm = ItemData.BPM.get(stack);
-            }else if (bpm != ItemData.BPM.get(stack)){
-                bpm = 0;
-                break;
-            }
-        }
-        return bpm;
-    }
-
     public int[] merge(){
-        int[] music;
-        int[] mergeMusic = new int[Man10Music.MUSIC_LENGTH];
-        int writePos = 0;
-        outer: for (ItemStack stack : icons){
-            if(stack == NULL_ICON)continue;
-            music = ItemData.MUSIC_SAVED_RED.get(stack);
-            inner: for (int note : music){
-                if (writePos >= Man10Music.MUSIC_LENGTH)break outer;
-                if (note == -1)break inner;
-                mergeMusic[writePos] = note;
-                writePos++;
+        int[] musicIDs = new int[NUM_OF_ICONS];
+        int i = 0;
+        for (ItemStack stack : icons) {
+            if (stack == NULL_ICON || ItemData.IS_MERGED.get(stack) == (byte) 1)continue;
+            for (int publishedID : ItemData.PUBLISHED_MUSIC_IDS.get(stack)) {
+                if(i >= NUM_OF_ICONS) continue;
+                musicIDs[i] = publishedID;
+                Man10Music.getInstance().getLogger().info("merge musics id: " + publishedID);
+                i++;
             }
         }
-        mergeMusic[writePos] = -1;
-        return mergeMusic;
-    }
-
-    public List<Component> makeLore(int bpm, Player player){
-        @Nullable List<Component> lore = new ArrayList<>();
-        int i = 0;
-        String recorder;
-        String musicName;
-
-        for (ItemStack stack : icons){
-            if(stack == NULL_ICON)continue;
-            recorder = ItemData.RECORDER.get(stack);
-            musicName = ItemData.MUSIC_NAME.get(stack);
-            i++;
-            lore.addLast(Component.text(String.valueOf(i) + ".\"").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
-                    .append(Component.text(musicName).color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
-                            .append(Component.text("\"").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)))
-            );
-            lore.addLast(Component.text("    recorded by ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
-                    .append(Component.text(recorder).color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
-                            .append(Component.text(".").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)))
-            );
-        }
-        lore.addLast(Component.text("BPM: ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
-                .append(Component.text(bpm).color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, true))
-        );
-        lore.addLast(Component.text("merged by ").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)
-                .append(Component.text(player.getName()).color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, true)
-                        .append(Component.text(".").color(NamedTextColor.GRAY).decoration(TextDecoration.BOLD, false)))
-        );
-        return lore;
+        return musicIDs;
     }
 
     @Override
     public void onClose(Player  player) {
         if (!closeFlag)return;
         closeFlag = false;
-        WorkspacesMenuHolder workspacesMenuHolder = new WorkspacesMenuHolder();
-        workspacesMenuHolder.setUuid(frameUuid);
+        WorkspacesMenuHolder workspacesMenuHolder = new WorkspacesMenuHolder(frameUuid);
         for (ItemStack stack : icons){
             if(stack == NULL_ICON)continue;
             player.give(stack);

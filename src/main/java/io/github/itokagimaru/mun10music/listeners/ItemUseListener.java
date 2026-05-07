@@ -17,7 +17,7 @@ public class ItemUseListener implements Listener {
     @EventHandler
     public static void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        ItemStack item = event.getItem();
+        ItemStack item = player.getInventory().getItemInMainHand();
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             return;
         }
@@ -28,13 +28,13 @@ public class ItemUseListener implements Listener {
                 useWalkman(player);
                 return;
             }
+            return;
         }
         String itemId = ItemData.ITEM_ID.get(item);
         switch (itemId) {
             case "daw" -> {
                 event.setCancelled(true);
-                int mainSlot = player.getInventory().getHeldItemSlot();
-                MainMenuHolder mainMenuHolder = new MainMenuHolder(item, mainSlot);
+                MainMenuHolder mainMenuHolder = new MainMenuHolder();
                 player.openInventory(mainMenuHolder.getInventory());
             }
             case "walkman" -> {
@@ -51,7 +51,7 @@ public class ItemUseListener implements Listener {
         Location location = player.getLocation();
         location.setPitch(0);
         player.teleport(location);
-        ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder(player);
+        ItemsPlayModeHolder itemsPlayModeHolder = new ItemsPlayModeHolder(player, player);
         player.openInventory(itemsPlayModeHolder.getInventory());
     }
 }

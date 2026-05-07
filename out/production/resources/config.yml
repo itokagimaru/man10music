@@ -7,9 +7,9 @@ mysql:
 
 musicConfig:
   music:
-    maxLength: 16384
+    maxLength: 8192
   volume:
-    default: 1
+    default: 2
     autoPlay: 0.5
     radius: 5
 

@@ -1,4 +1,4 @@
-package io.github.itokagimaru.mun10music.gui.menu.workspace;
+package io.github.itokagimaru.mun10music.gui.menu.daw;
 
 import org.bukkit.entity.Player;
 

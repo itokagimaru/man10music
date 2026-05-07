@@ -39,8 +39,7 @@ public class PlayerInteractEntityListener implements Listener {
                     return;
                 }
                 UUID uuid = itemFrame.getUniqueId();
-                WorkspacesMenuHolder workspacesMenuHolder = new WorkspacesMenuHolder();
-                workspacesMenuHolder.setUuid(uuid);
+                WorkspacesMenuHolder workspacesMenuHolder = new WorkspacesMenuHolder(uuid);
                 player.openInventory(workspacesMenuHolder.getInventory());
             } else if (("CASSETTE_WORKSPACE_ITEM").equals(ItemData.ITEM_ID.get(item))) {
                 if (itemFrame.getFacing() != BlockFace.UP) return;
@@ -67,8 +66,7 @@ public class PlayerInteractEntityListener implements Listener {
                     player.give(new ItemStack(Material.GLOW_ITEM_FRAME));
                     return;
                 }
-                RadioPlayHolder radioPlayHolder = new RadioPlayHolder(itemFrame);
-                radioPlayHolder.setFream(itemFrame);
+                RadioPlayHolder radioPlayHolder = new RadioPlayHolder(player, itemFrame);
                 player.openInventory(radioPlayHolder.getInventory());
             } else if (("RADIO_ITEM").equals(ItemData.ITEM_ID.get(item))) {
                 if (itemFrame.getFacing() != BlockFace.UP) return;

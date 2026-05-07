@@ -1,7 +1,7 @@
 package io.github.itokagimaru.mun10music.gui.menu.workspace;
 
 import io.github.itokagimaru.mun10music.data.ItemData;
-import io.github.itokagimaru.mun10music.gui.menu.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,12 +15,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class WorkspacesMenuHolder extends BaseGuiHolder {
-    UUID frameUuid;
-    public void setUuid(UUID uuid){
-        frameUuid = uuid;
-    }
+    private final UUID frameUuid;
 
-    public WorkspacesMenuHolder() {
+    public WorkspacesMenuHolder(UUID frameUuid) {
+        this.frameUuid = frameUuid;
         inv = Bukkit.createInventory(this, 27, Component.text("WorkspacesMenuHolder"));
         setup();
     }
@@ -32,11 +30,6 @@ public class WorkspacesMenuHolder extends BaseGuiHolder {
         MakeItem.setItemMetaByColor(convert,"Convert", NamedTextColor.YELLOW, itemsData().getCassette().getCmd(), ItemData.BUTTON_ID,"convert");
         convert.lore(List.of(Component.text("楽譜をカセットテープに変換します")));
         inv.setItem(10, convert);
-
-        ItemStack naming = new ItemStack(Material.NAME_TAG);
-        MakeItem.setItemMetaByColor(naming, "Naming", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID,"naming");
-        naming.lore(List.of(Component.text("カセットテープに名前を付けます")));
-        inv.setItem(12, naming);
 
         ItemStack merge = new ItemStack(Material.ANVIL);
         MakeItem.setItemMetaByColor(merge, "Merge", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID,"merge");
@@ -56,30 +49,16 @@ public class WorkspacesMenuHolder extends BaseGuiHolder {
         String buttonId = ItemData.BUTTON_ID.get(clicked);
         switch (buttonId) {
             case "setting" -> {
-                SettingHolder settingHolder = new SettingHolder();
-                settingHolder.setUuid(frameUuid);
+                SettingHolder settingHolder = new SettingHolder(frameUuid);
                 player.openInventory(settingHolder.getInventory());
             }
             case "convert" -> {
-                ConvertMenuHolder convertMenuHolder = new ConvertMenuHolder(60);
-                convertMenuHolder.setUuid(frameUuid);
-                player.openInventory(convertMenuHolder.getInventory());
-            }
-            case "naming" -> {
-                NamingCassetteMenuHolder namingCassetteMenuHolder = new NamingCassetteMenuHolder();
-                namingCassetteMenuHolder.setUuid(frameUuid);
-                player.openInventory(namingCassetteMenuHolder.getInventory());
+                ConvertMusicListHolder convertMusicListHolder = new ConvertMusicListHolder(player, frameUuid);
+                player.openInventory(convertMusicListHolder.getInventory());
             }
             case "merge" -> {
-                MergeHolder mergeHolder = new MergeHolder();
-                mergeHolder.setUuid(frameUuid);
+                MergeHolder mergeHolder = new MergeHolder(frameUuid);
                 player.openInventory(mergeHolder.getInventory());
-            }
-            case "changeBpm" -> {
-                ChangeBpmHolder changeBpmHolder = new ChangeBpmHolder();
-                changeBpmHolder.setUuid(frameUuid);
-                player.openInventory(changeBpmHolder.getInventory());
-
             }
         }
     }

@@ -95,9 +95,12 @@ public class Man10Music extends JavaPlugin implements Listener {
         return instance;
     }
 
+    public MySQLManager getMySQLManager() {
+        return mysql;
+    }
+
     public PluginConfigData getPluginConfigData() {
         return pluginConfigData;
     }
 
 }
-

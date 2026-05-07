@@ -2,7 +2,7 @@ package io.github.itokagimaru.mun10music.gui.menu.workspace;
 
 import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.data.ItemData;
-import io.github.itokagimaru.mun10music.gui.menu.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.util.GetPresetItemStack;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import net.kyori.adventure.text.Component;
@@ -20,12 +20,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 public class SettingHolder extends BaseGuiHolder {
-    public UUID frameUuid;
-    public void setUuid(UUID uuid){
-        frameUuid = uuid;
-    }
+    protected final UUID frameUuid;
 
-    public SettingHolder(){
+    public SettingHolder(UUID freameUUID){
+        this.frameUuid = freameUUID;
         closeFlag = true;
         inv = Bukkit.createInventory(this, 27, Component.text("Setting"));
         setup();
@@ -84,8 +82,7 @@ public class SettingHolder extends BaseGuiHolder {
         if(!closeFlag)return;
         closeFlag = false;
         Bukkit.getScheduler().runTask(Man10Music.getInstance(),() -> {
-            WorkspacesMenuHolder workspacesMenuHolder = new WorkspacesMenuHolder();
-            workspacesMenuHolder.setUuid(frameUuid);
+            WorkspacesMenuHolder workspacesMenuHolder = new WorkspacesMenuHolder(frameUuid);
             player.openInventory(workspacesMenuHolder.getInventory());
         });
     }
