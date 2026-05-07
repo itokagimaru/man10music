@@ -12,6 +12,7 @@ import io.github.itokagimaru.mun10music.listeners.PlayerQuitListener;
 import io.github.itokagimaru.mun10music.manager.InventoryManager;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -53,13 +54,7 @@ public class Man10Music extends JavaPlugin implements Listener {
         getSLF4JLogger().info("イベントリスナーを登録しました。");
 
         // command
-        registerCommand("getDawItem", new GetDawItem());
-        registerCommand("getSheetMusic", new GetSheetMusicItem());
-        registerCommand("getPlayItem", new GetPlayItem());
-        registerCommand("getCassetteTape", new GetCassetteTape());
-        registerCommand("getCassetteWorkSpace", new GetCassetteWorkSpace());
-        registerCommand("getRadio", new GetRadio());
-        registerCommand("stopAllMusic", new StopAllMusic());
+        registerCommandWithTabCompleter("mmusic", new Mmusic(), new Mmusic());
         getSLF4JLogger().info("コマンドを登録しました。");
 
         //dataBase
@@ -75,10 +70,14 @@ public class Man10Music extends JavaPlugin implements Listener {
         instance = this;
     }
 
-    private void registerCommand(String name, CommandExecutor executor) {
+    private void registerCommandWithTabCompleter(String name, CommandExecutor executor, TabCompleter tabCompleter) {
         PluginCommand command = getCommand(name);
-        if (command == null) throw new RuntimeException(String.format("コマンド %s が見つかりませんでした。", name));
+        if (command == null) {
+            getSLF4JLogger().warn("コマンド {} が見つかりませんでした", name);
+            return;
+        }
         command.setExecutor(executor);
+        command.setTabCompleter(tabCompleter);
     }
 
     private void registerListeners(Listener... listeners) {
