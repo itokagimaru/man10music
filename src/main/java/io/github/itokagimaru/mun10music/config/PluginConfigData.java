@@ -3,11 +3,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 public final class PluginConfigData {
     private final Items items;
     private final Icons icons;
-    private final Music music;
+    private final Musics musics;
     public PluginConfigData(FileConfiguration config) {
         this.items = new Items(config);
         this.icons = new Icons(config);
-        this.music = new Music(config);
+        this.musics = new Musics(config);
     }
     public Items getItems() {
         return items;
@@ -15,7 +15,7 @@ public final class PluginConfigData {
     public Icons getIcons() {
         return icons;
     }
-    public Music getMusic() {
-        return music;
+    public Musics getMusic() {
+        return musics;
     }
 }

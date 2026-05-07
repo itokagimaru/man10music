@@ -1,9 +1,9 @@
-package io.github.itokagimaru.mun10music.gui.menu;
+package io.github.itokagimaru.mun10music.gui.menu.base;
 
 import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.config.Icons;
 import io.github.itokagimaru.mun10music.config.Items;
-import io.github.itokagimaru.mun10music.config.Music;
+import io.github.itokagimaru.mun10music.config.Musics;
 import io.github.itokagimaru.mun10music.config.PluginConfigData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,7 +17,7 @@ public abstract class BaseGuiHolder implements InventoryHolder {
     private final PluginConfigData pluginConfigData;
     private final Items items;
     private final Icons icons;
-    private final Music music;
+    private final Musics musics;
 
     protected BaseGuiHolder() {
         Man10Music plugin = Man10Music.getInstance();
@@ -27,7 +27,7 @@ public abstract class BaseGuiHolder implements InventoryHolder {
         this.pluginConfigData = plugin.getPluginConfigData();
         this.items = pluginConfigData.getItems();
         this.icons = pluginConfigData.getIcons();
-        this.music = pluginConfigData.getMusic();
+        this.musics = pluginConfigData.getMusic();
     }
 
     public abstract void onClick(InventoryClickEvent event);
@@ -46,8 +46,8 @@ public abstract class BaseGuiHolder implements InventoryHolder {
         return icons;
     }
 
-    protected final Music musicData() {
-        return music;
+    protected final Musics musicData() {
+        return musics;
     }
 
     @Override

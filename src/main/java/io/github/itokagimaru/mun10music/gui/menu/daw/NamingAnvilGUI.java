@@ -1,8 +1,9 @@
-package io.github.itokagimaru.mun10music.gui.menu.workspace;
+package io.github.itokagimaru.mun10music.gui.menu.daw;
 
 import io.github.itokagimaru.mun10music.Man10Music;
-import io.github.itokagimaru.mun10music.config.Icons;
 import io.github.itokagimaru.mun10music.data.ItemData;
+import io.github.itokagimaru.mun10music.manager.music.Music;
+import io.github.itokagimaru.mun10music.manager.music.MusicManager;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,30 +16,19 @@ import org.bukkit.inventory.MenuType;
 import org.bukkit.inventory.view.AnvilView;
 
 import java.util.List;
-import java.util.UUID;
 
 public class NamingAnvilGUI {
     AnvilView anvilInv;
-    ItemStack cassette;
-    UUID freamUuid;
     Boolean closeFlag = true;//onCloseを動かすかどうかのflag
+    Music music;
 
-    public void setCassette(ItemStack stack){
-        cassette = stack;
+    public NamingAnvilGUI(Music music) {
+        this.music = music;
     }
-
-    public void setFreamUuid(UUID uuid){
-        freamUuid = uuid;
-    }
-
-    public void setUuid(UUID uuid){
-        freamUuid = uuid;
-    }
-
 
     public void open(Player player){
         anvilInv = MenuType.ANVIL.builder()
-                .title(Component.text("InputNameOfCassette")) // GUI の上部タイトル
+                .title(Component.text("InputNameOfMusic")) // GUI の上部タイトル
                 .location(player.getLocation()) // プレイヤー視点位置
                 .checkReachable(false) // 本物のブロック必要なし
                 .build(player);// プレイヤー向けにビュー作成
@@ -47,7 +37,6 @@ public class NamingAnvilGUI {
         AnvilGUIOpening.anvilOpening.put(player.getUniqueId(), this);
     }
     public void setup(){
-        Icons icons = Man10Music.getInstance().getPluginConfigData().getIcons();
         ItemStack green = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         MakeItem.setItemMetaByColor(green, "名前を入力", NamedTextColor.GREEN,null,ItemData.BUTTON_ID,"decision");
         green.lore(List.of(Component.text("クリックで決定")));
@@ -67,18 +56,23 @@ public class NamingAnvilGUI {
             anvilInv.setItem(1,null);
             event.setCancelled(true);
             closeFlag = false;
+            music.setTitle(input);
             Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
-                NamingCassetteMenuHolder namingCassetteMenuHolder = new NamingCassetteMenuHolder();
-                namingCassetteMenuHolder.setName(input);
-                namingCassetteMenuHolder.setCassette(cassette);
-                namingCassetteMenuHolder.setUuid(freamUuid);
-                player.openInventory(namingCassetteMenuHolder.getInventory());
-        });
+                MusicManager.saveMusicToDb(Man10Music.getInstance().getMySQLManager(), music)
+                        .thenAccept(musicID -> Bukkit.getScheduler().runTask(Man10Music.getInstance(), () ->
+                        {
+                            if (musicID >= 0) {
+                                MusicEditMenuHolder musicEditMenuHolder = new MusicEditMenuHolder(music);
+                                player.openInventory(musicEditMenuHolder.getInventory());
+                            } else {
+                                player.sendMessage(Component.text("楽曲の保存に失敗しました").color(NamedTextColor.RED));
+                                player.closeInventory();
+                            }
+                        }));
+            });
         }else{
             event.setCancelled(true);
         }
-
-
     }
 
     public void onClose(Player player){
@@ -87,10 +81,8 @@ public class NamingAnvilGUI {
         if (!closeFlag)return;
         closeFlag = false;
         Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
-            NamingCassetteMenuHolder namingCassetteMenuHolder = new NamingCassetteMenuHolder();
-            namingCassetteMenuHolder.setCassette(cassette);
-            namingCassetteMenuHolder.setUuid(freamUuid);
-            player.openInventory(namingCassetteMenuHolder.getInventory());
+            MusicEditMenuHolder musicEditMenuHolder = new MusicEditMenuHolder(music);
+            player.openInventory(musicEditMenuHolder.getInventory());
         });
     }
 }

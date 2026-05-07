@@ -3,9 +3,10 @@ package io.github.itokagimaru.mun10music.gui.menu.daw;
 import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.config.Icons;
 import io.github.itokagimaru.mun10music.data.ItemData;
-import io.github.itokagimaru.mun10music.gui.menu.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.manager.InventoryManager;
-import io.github.itokagimaru.mun10music.manager.MusicManager;
+import io.github.itokagimaru.mun10music.manager.music.Music;
+import io.github.itokagimaru.mun10music.manager.music.MusicManager;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -22,9 +23,8 @@ import java.util.Objects;
 
 public class InputModeHolder extends BaseGuiHolder {
     final Inventory playerInventory = Bukkit.createInventory(null, 36);
-    ItemStack daw;
     int[] musicList;
-    private final int mainSlot;
+    Music music;
 
     private enum ButtonId {
         CLOSE("CLOSE"),
@@ -84,9 +84,9 @@ public class InputModeHolder extends BaseGuiHolder {
             Map.entry("ラ#/A#", new NoteSpec(10, 1, 5, false, false, false))
     );
 
-    public InputModeHolder(ItemStack daw, int mainSlot) {
-        this.daw = daw;
-        this.mainSlot = mainSlot;
+    public InputModeHolder(Music music) {
+        this.music = music;
+        this.musicList = music.getMusic();
         this.inv = Bukkit.createInventory(this, 54, Component.text("InputMode"));
         setup();
     }
@@ -170,10 +170,8 @@ public class InputModeHolder extends BaseGuiHolder {
     public void open(Player player) {
         InventoryManager inventoryManager = Man10Music.getInstance().inventoryManager;
         inventoryManager.saveInventory(player);
-        ItemStack pdcHolder = this.daw.clone();
         player.getInventory().clear();
         player.getInventory().setContents(playerInventory.getContents());
-        musicList = MusicManager.loadMusicForPdc(pdcHolder);
         inputGuiUpdate(0, 1);
         player.openInventory(this.inv);
     }
@@ -389,14 +387,13 @@ public class InputModeHolder extends BaseGuiHolder {
         setMusicEndpoint();
         InventoryManager inventoryManager = Man10Music.getInstance().inventoryManager;
         inventoryManager.loadInventory(player);
-        MusicManager.saveMusicForPdc(daw,musicList);
-        //daw.lore(List.of(Component.text(Arrays.toString(musicList))));
         Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
             player.closeInventory();
-            player.getInventory().setItem(mainSlot, daw);
-            MainMenuHolder mainMenuHolder = new MainMenuHolder(daw, mainSlot);
+            MainMenuHolder mainMenuHolder = new MainMenuHolder();
             player.openInventory(mainMenuHolder.getInventory());
         });
+        music.setMusic(musicList);
+        MusicManager.saveMusicToDb(Man10Music.getInstance().getMySQLManager(), music);
     }
 
     private Icons icons() {

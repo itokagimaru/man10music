@@ -1,8 +1,8 @@
 package io.github.itokagimaru.mun10music.gui.listener;
 
-import io.github.itokagimaru.mun10music.gui.menu.BaseGuiHolder;
-import io.github.itokagimaru.mun10music.gui.menu.workspace.AnvilGUIOpening;
-import io.github.itokagimaru.mun10music.gui.menu.workspace.NamingAnvilGUI;
+import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.gui.menu.daw.AnvilGUIOpening;
+import io.github.itokagimaru.mun10music.gui.menu.daw.NamingAnvilGUI;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

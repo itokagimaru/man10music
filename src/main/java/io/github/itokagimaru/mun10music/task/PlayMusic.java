@@ -3,12 +3,14 @@ package io.github.itokagimaru.mun10music.task;
 import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.config.Icons;
 import io.github.itokagimaru.mun10music.data.ItemData;
-import io.github.itokagimaru.mun10music.gui.menu.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.gui.menu.daw.DawsPlayModeHolder;
 import io.github.itokagimaru.mun10music.gui.menu.walkman.ItemsPlayModeHolder;
 import io.github.itokagimaru.mun10music.manager.AutPlayManager;
 import io.github.itokagimaru.mun10music.manager.ParticleManager;
 import io.github.itokagimaru.mun10music.manager.PlayMusicManager;
+import io.github.itokagimaru.mun10music.manager.music.MusicManager;
+import io.github.itokagimaru.mun10music.manager.music.PublishedMusicManager;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import io.github.itokagimaru.mun10music.util.PlaySound;
 import org.bukkit.entity.Entity;
@@ -40,21 +42,27 @@ public class PlayMusic {
         }
     }
 
-    public void playMusic(Entity target, ItemStack pdcHolder, float volume, Double soundRange) {
+    public BaseGuiHolder getRequestHolder() {
+        return requestHolder;
+    }
+
+    public void setRequestHolder(BaseGuiHolder holder) {
+        // ホルダーを明示的に紐付ける
+        requestHolder = holder;
+    }
+
+    public void playMusic(Entity target, int[] music, int bpm, float volume, Double soundRange) {
         this.volume = volume;
         this.soundRange = soundRange;
-        cassetteIcon = pdcHolder.clone();
-        int[] loadedMusic = ItemData.MUSIC_SAVED_RED.get(pdcHolder);
-        int bpm = ItemData.BPM.get(pdcHolder);
         long interval = (1200 / bpm);
         task = new BukkitRunnable() {
             int count = 0;
             @Override
             public void run() {
-                if (loadedMusic[count] == -1) {
+                if (music[count] == -1) {
                     stopTask(target);
-                } else if (loadedMusic[count] != 0) {
-                    PlaySound.playNote(target, loadedMusic[count], volume, soundRange, isPrivate);
+                } else if (music[count] != 0) {
+                    PlaySound.playNote(target, music[count], volume, soundRange, isPrivate);
                     if(target instanceof Player player){
                         ParticleManager.playNote(player, isPrivate);
                     }
@@ -63,9 +71,30 @@ public class PlayMusic {
             }
         }.runTaskTimer(Man10Music.getInstance(), 0, interval);
     }
+
+    public void playMusic(Entity target, int musicID, float volume, Double soundRange) {
+        MusicManager.loadMusicFromDb(Man10Music.getInstance().getMySQLManager(), musicID).thenAccept(music -> {
+            if (music == null) return;
+            playMusic(target, music.getMusic(), music.getBpm(), volume, soundRange);
+        });
+    }
+
+    public void playPublishedMusic(Entity target, int musicID, float volume, Double soundRange) {
+        PublishedMusicManager.loadPublishedByPublicId(Man10Music.getInstance().getMySQLManager(), musicID).thenAccept(music -> {
+            if (music == null) return;
+            playMusic(target, music.getMusic(), music.getBpm(), volume, soundRange);
+        });
+    }
+
+
     public ItemStack getCassetteIcon() {
         return cassetteIcon;
     }
+
+    public void setCassetteIcon(ItemStack cassetteIcon) {
+        this.cassetteIcon = cassetteIcon;
+    }
+
     public void stopTask(Entity target) {
         task.cancel();
         PlayMusicManager.removeMusic(target);
@@ -74,7 +103,6 @@ public class PlayMusic {
             play.setPrivate(isPrivate);
             play.setRequester(requester);
             PlayMusicManager.setPlayingMusic(target, play);
-            play.playMusic(target,cassetteIcon, volume, soundRange);
         } else if (requester.getOpenInventory().getTopInventory().getHolder() == requestHolder) {
             Icons icons = Man10Music.getInstance().getPluginConfigData().getIcons();
             ItemStack play = new ItemStack(icons.getTriangleRight().getMaterial());

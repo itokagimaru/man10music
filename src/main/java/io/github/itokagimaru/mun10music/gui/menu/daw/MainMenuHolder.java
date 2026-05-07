@@ -1,7 +1,7 @@
 package io.github.itokagimaru.mun10music.gui.menu.daw;
 
 import io.github.itokagimaru.mun10music.data.ItemData;
-import io.github.itokagimaru.mun10music.gui.menu.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,28 +15,21 @@ import java.util.Objects;
 
 public class MainMenuHolder extends BaseGuiHolder {
     int defBPM = 60;
-    ItemStack daw;
-    private final int mainSlot;
 
-    public MainMenuHolder(ItemStack daw, int mainSlot) {
-        this.daw = daw;
-        this.mainSlot = mainSlot;
+    public MainMenuHolder() {
         this.inv = Bukkit.createInventory(this, 9, Component.text("MainMenu"));
         setup();
     }
 
     public void setup() {
-        ItemStack sheetMusic = new ItemStack(itemsData().getSheetMusicWritten().getMaterial());
-        MakeItem.setItemMetaByColor(sheetMusic,"save&lode",NamedTextColor.YELLOW,itemsData().getSheetMusicWritten().getCmd(),ItemData.BUTTON_ID,"SAVE AND LODE");
-        this.inv.setItem(1, sheetMusic);
 
         ItemStack writable = new ItemStack(Material.WRITABLE_BOOK);
-        MakeItem.setItemMetaByColor(writable, "打ち込みモード", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "INPUT MODE");
-        this.inv.setItem(3, writable);
+        MakeItem.setItemMetaByColor(writable, "編集モード", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "EDIT MODE");
+        this.inv.setItem(2, writable);
 
         ItemStack disc = new ItemStack(Material.MUSIC_DISC_13);
         MakeItem.setItemMetaByColor(disc, "再生モード", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "PLAY MODE");
-        this.inv.setItem(5, disc);
+        this.inv.setItem(6, disc);
 
         ItemStack bar = new ItemStack(Material.BARRIER);
         MakeItem.setItemMetaByColor(bar, "しゅうりょう", NamedTextColor.DARK_RED, 0, ItemData.BUTTON_ID, "CLOSE");
@@ -47,21 +40,19 @@ public class MainMenuHolder extends BaseGuiHolder {
     public void onClick(InventoryClickEvent event) {
         Player clickedPlayer = (Player) event.getWhoClicked();
         ItemStack clickedItem = event.getCurrentItem();
-        if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "INPUT MODE")) {
-            InputModeHolder inputModeHolder = new InputModeHolder(daw, mainSlot);
-            inputModeHolder.open(clickedPlayer);
+        if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "EDIT MODE")) {
+            SelectEditMusicHolder selectEditMusicHolder = new SelectEditMusicHolder(clickedPlayer);
+            clickedPlayer.openInventory(selectEditMusicHolder.getInventory());
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "PLAY MODE")) {
-            clickedPlayer.closeInventory();
-            DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(defBPM, daw, mainSlot);
-            clickedPlayer.openInventory(dawsPlayModeHolder.getInventory());
+            SelectPlayMusicHolder selectPlayMusicHolder = new SelectPlayMusicHolder(clickedPlayer);
+            clickedPlayer.openInventory(selectPlayMusicHolder.getInventory());
         } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "CLOSE")) {
             clickedPlayer.closeInventory();
-        } else if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "SAVE AND LODE")) {
-            MusicMenuHolder musicMenuHolder = new MusicMenuHolder(daw, mainSlot);
-            clickedPlayer.openInventory(musicMenuHolder.getInventory());
         }
     }
 
     @Override
-    public void onClose(Player player) {}
+    public void onClose(Player player) {
+
+    }
 }
