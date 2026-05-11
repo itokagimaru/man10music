@@ -358,39 +358,6 @@ public class InputModeHolder extends BaseGuiHolder {
         };
     }
 
-//    private boolean isNoteKey(ItemStack clicked) {
-//        Material type = clicked.getType();
-//        return type == Material.WHITE_STAINED_GLASS_PANE || type == Material.BLACK_STAINED_GLASS_PANE;
-//    }
-
-//    private void handleNoteInput(Player player, Inventory clickedInv, ItemStack clicked) {
-//        Integer page = getCurrentPage(clickedInv);
-//        Integer topnote = getCurrentTopNote(player);
-//        if (page == null || topnote == null) {
-//            return;
-//        }
-//
-//        int select = getSelectedCursor(clickedInv);
-//        applyNoteSpec(ItemData.BUTTON_ID.get(clicked), page, select, topnote);
-//        inputGuiUpdate(topnote, page);
-//        advanceSelection(player, page, topnote, select);
-//    }
-
-//    private void advanceSelection(int page, int topnote, int select) {
-//        ItemStack updateSelect = new ItemStack(icons().getBaseMaterial());
-//        MakeItem.setItemMeta(updateSelect, "カーソルを移動", null, icons().getTriangleUp().getCmd(), ItemData.BUTTON_ID, "SELECT");
-//        player.getInventory().setItem(select + 9, updateSelect);
-//
-//        if (select >= 8) {
-//            jumpPage(page + 1, topnote);
-//            return;
-//        }
-//
-//        select++;
-//        MakeItem.setItemMeta(updateSelect, "選択中", null, icons().getTriangleSelect().getCmd(), ItemData.BUTTON_ID, "SELECTED");
-//        player.getInventory().setItem(select + 9, updateSelect);
-//    }
-
     private void applyNoteSpec(NoteSpec spec) {
         if (spec == null || musicList == null) {
             return;
