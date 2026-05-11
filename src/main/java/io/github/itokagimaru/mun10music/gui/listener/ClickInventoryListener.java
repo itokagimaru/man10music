@@ -24,8 +24,6 @@ public class ClickInventoryListener implements Listener {
             return;
         }
         if ((event.getView().getTopInventory().getHolder() instanceof BaseGuiHolder baseGuiHolder)) {
-            ItemStack clicked = event.getCurrentItem();
-            if (clicked == null || clicked.getType() == Material.AIR) return;
             event.setCancelled(true);
             baseGuiHolder.onClick(event);
         }

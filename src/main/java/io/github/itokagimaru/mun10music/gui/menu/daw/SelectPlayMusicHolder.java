@@ -1,10 +1,12 @@
 package io.github.itokagimaru.mun10music.gui.menu.daw;
 
+import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.gui.menu.base.BaseMusicListHolder;
 import io.github.itokagimaru.mun10music.manager.music.Music;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -21,6 +23,7 @@ public class SelectPlayMusicHolder extends BaseMusicListHolder {
 
     @Override
     protected void onMusicLeftClick(Player player, int musicID) {
+        closeFlag = false;
         Music music = getMusic(musicID);
         DawsPlayModeHolder dawsPlayModeHolder = new DawsPlayModeHolder(music);
         player.openInventory(dawsPlayModeHolder.getInventory());
@@ -31,6 +34,12 @@ public class SelectPlayMusicHolder extends BaseMusicListHolder {
 
     @Override
     public void onClose(Player player) {
-
+        if (closeFlag) {
+            closeFlag = false;
+            Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
+                MainMenuHolder mainMenuHolder = new MainMenuHolder();
+                player.openInventory(mainMenuHolder.getInventory());
+            });
+        }
     }
 }

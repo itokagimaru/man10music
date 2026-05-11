@@ -79,6 +79,7 @@ public class MergeHolder extends BaseGuiHolder {
     @Override
     public void onClick(InventoryClickEvent event) {
         ItemStack clicked = event.getCurrentItem();
+        if(clicked == null) return;
         Player player = (Player) event.getWhoClicked();
         String itemID = ItemData.ITEM_ID.get(clicked);
         String buttonID = ItemData.BUTTON_ID.get(clicked);

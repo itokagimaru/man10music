@@ -46,6 +46,7 @@ public class WorkspacesMenuHolder extends BaseGuiHolder {
     public void onClick(InventoryClickEvent event){
         Player player = (Player) event.getWhoClicked();
         ItemStack clicked = event.getCurrentItem();
+        if(clicked == null) return;
         String buttonId = ItemData.BUTTON_ID.get(clicked);
         switch (buttonId) {
             case "setting" -> {

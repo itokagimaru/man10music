@@ -95,8 +95,8 @@ public class MusicEditMenuHolder extends BaseGuiHolder {
         if (closeFlag) {
             closeFlag = false;
             Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
-                MainMenuHolder mainMenuHolder = new MainMenuHolder();
-                player.openInventory(mainMenuHolder.getInventory());
+                SelectEditMusicHolder selectEditMusicHolder = new SelectEditMusicHolder(player);
+                player.openInventory(selectEditMusicHolder.getInventory());
             });
         }
     }
