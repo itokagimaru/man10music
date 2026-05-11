@@ -112,7 +112,13 @@ public class MusicAuthorHolder extends BaseGuiHolder {
 
     @Override
     public void onClose(Player player) {
-
+        if (closeFlag) {
+            closeFlag = false;
+            Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
+                MusicEditMenuHolder editMenuHolder = new MusicEditMenuHolder(music);
+                player.openInventory(editMenuHolder.getInventory());
+            });
+        }
     }
 
 

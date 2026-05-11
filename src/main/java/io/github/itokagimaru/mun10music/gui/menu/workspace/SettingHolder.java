@@ -46,6 +46,7 @@ public class SettingHolder extends BaseGuiHolder {
     @Override
     public void onClick(InventoryClickEvent event){
         ItemStack clicked = event.getCurrentItem();
+        if(clicked == null) return;
         String buttonId = ItemData.BUTTON_ID.get(clicked);
         Player player = (Player) event.getWhoClicked();
         World world = player.getWorld();

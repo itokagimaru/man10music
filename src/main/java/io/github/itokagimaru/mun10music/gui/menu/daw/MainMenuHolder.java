@@ -40,6 +40,7 @@ public class MainMenuHolder extends BaseGuiHolder {
     public void onClick(InventoryClickEvent event) {
         Player clickedPlayer = (Player) event.getWhoClicked();
         ItemStack clickedItem = event.getCurrentItem();
+        if(clickedItem == null) return;
         if (Objects.equals(ItemData.BUTTON_ID.get(clickedItem), "EDIT MODE")) {
             SelectEditMusicHolder selectEditMusicHolder = new SelectEditMusicHolder(clickedPlayer);
             clickedPlayer.openInventory(selectEditMusicHolder.getInventory());
