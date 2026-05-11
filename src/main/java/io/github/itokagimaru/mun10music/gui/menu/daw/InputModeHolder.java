@@ -4,7 +4,6 @@ import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.config.Icons;
 import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
-import io.github.itokagimaru.mun10music.manager.InventoryManager;
 import io.github.itokagimaru.mun10music.manager.PacketManager;
 import io.github.itokagimaru.mun10music.manager.music.Music;
 import io.github.itokagimaru.mun10music.manager.music.MusicManager;
@@ -326,8 +325,6 @@ public class InputModeHolder extends BaseGuiHolder {
     public void onClose(Player player) {
         if (!closeFlag) return;
         setMusicEndpoint();
-        InventoryManager inventoryManager = Man10Music.getInstance().inventoryManager;
-        inventoryManager.loadInventory(player);
         Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
             player.closeInventory();
             MainMenuHolder mainMenuHolder = new MainMenuHolder();

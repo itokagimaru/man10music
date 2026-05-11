@@ -7,9 +7,6 @@ import io.github.itokagimaru.mun10music.gui.listener.ClickInventoryListener;
 import io.github.itokagimaru.mun10music.gui.listener.CloseInventoryListeners;
 import io.github.itokagimaru.mun10music.listeners.ItemUseListener;
 import io.github.itokagimaru.mun10music.listeners.PlayerInteractEntityListener;
-import io.github.itokagimaru.mun10music.listeners.PlayerJoinListener;
-import io.github.itokagimaru.mun10music.listeners.PlayerQuitListener;
-import io.github.itokagimaru.mun10music.manager.InventoryManager;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -28,7 +25,6 @@ public class Man10Music extends JavaPlugin implements Listener {
     public static int MUSIC_LENGTH = 16384;//=2^14,>=2^3
     public static int MAX_PAGE = MUSIC_LENGTH / 8;
     private MySQLManager mysql;
-    public InventoryManager inventoryManager;
     private PluginConfigData pluginConfigData;
 
     @Override
@@ -47,9 +43,7 @@ public class Man10Music extends JavaPlugin implements Listener {
                 new ClickInventoryListener(),
                 new ItemUseListener(),
                 new CloseInventoryListeners(),
-                new PlayerQuitListener(),
-                new PlayerInteractEntityListener(),
-                new PlayerJoinListener()
+                new PlayerInteractEntityListener()
         );
         getSLF4JLogger().info("イベントリスナーを登録しました。");
 
@@ -66,7 +60,6 @@ public class Man10Music extends JavaPlugin implements Listener {
                 getConfig().getString("mysql.user"),
                 getConfig().getString("mysql.password")
         );
-        inventoryManager = new InventoryManager(mysql);
         instance = this;
     }
 

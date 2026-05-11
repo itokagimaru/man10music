@@ -9,22 +9,6 @@ import java.sql.Statement;
 
 public class MySQLManager {
     private HikariDataSource ds;
-    private void createInventoryTable() {
-        String sql =
-                "CREATE TABLE IF NOT EXISTS player_data (" +
-                        "uuid CHAR(36) PRIMARY KEY," +
-                        "inventory MEDIUMBLOB NOT NULL" +
-                        ");";
-
-        try (Connection con = ds.getConnection();
-             Statement stmt = con.createStatement()) {
-
-            stmt.executeUpdate(sql);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void createMusicTable() {
         String sql =
@@ -98,7 +82,6 @@ public class MySQLManager {
         cfg.setPassword(pass);
 
         ds = new HikariDataSource(cfg);
-        createInventoryTable();
         createMusicTable();
         createAuthorityTable();
         createPublishedMusicTable();
