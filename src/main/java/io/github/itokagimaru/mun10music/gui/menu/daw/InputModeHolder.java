@@ -7,43 +7,38 @@ import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.manager.PacketManager;
 import io.github.itokagimaru.mun10music.manager.music.Music;
 import io.github.itokagimaru.mun10music.manager.music.MusicManager;
+import io.github.itokagimaru.mun10music.manager.music.Track;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class InputModeHolder extends BaseGuiHolder {
-    final Inventory playerInventory = Bukkit.createInventory(null, 36);
     int[] musicList;
     Music music;
+    Track track;
+
     int selectedSlot = 0;
     int page = 1;
-    int topNote = 1;
-    Player clickedPlayer;
+    int topNote = 0;
 
     HashMap<Integer, BottomIcon> bottomIcons = new HashMap<Integer, BottomIcon>();
 
+    private static final List<Track> TRACK_ORDER = List.of(Track.RED, Track.AQUA, Track.GREEN, Track.YELLOW);
+
     private enum ButtonId {
-        CLOSE("CLOSE"),
-        UP_NOTE("UP NOTE"),
-        DOWN_NOTE("DOWN NOTE"),
-        SELECT("SELECT"),
-        NEXT_PAGE("NEXT PAGE"),
-        BACK_PAGE("BACK PAGE"),
-        GO_FIRST("GO FIRST"),
-        GO_END("GO END"),
-        ALL_DELETE("ALL DELETE"),
-        INSERT_REST("INSERT REST"),
-        CUT_NOTE("CUT NOTE"),
         UNKNOWN("");
 
         private final String id;
@@ -90,68 +85,49 @@ public class InputModeHolder extends BaseGuiHolder {
             Map.entry("ラ#/A#", new NoteSpec(10, 1, 5, false, false, false))
     );
 
-    public InputModeHolder(Music music) {
+    public InputModeHolder(Music music, Track track) {
         this.music = music;
-        this.musicList = music.getMusic();
-        this.inv = Bukkit.createInventory(this, 54, Component.text("InputMode"));
+        this.musicList = music.getMusic(track);
+        this.track = track;
+        this.inv = Bukkit.createInventory(this, 54, Component.text("InputMode").color(NamedTextColor.WHITE));
         setup();
+    }
+
+    private NamedTextColor getTitleColor(Track track) {
+        switch (track) {
+            case RED -> {return NamedTextColor.RED;}
+            case AQUA -> {return NamedTextColor.AQUA;}
+            case GREEN -> {return NamedTextColor.GREEN;}
+            case YELLOW -> {return NamedTextColor.YELLOW;}
+            default -> {return NamedTextColor.WHITE;}
+        }
     }
 
     public void setup() {
         Icons icons = icons();
         ItemStack base = new ItemStack(icons.getBaseMaterial());
 
-        for (int i = 0; i <= 53; i++) {
-            MakeItem.setItemMeta(base, "", null, icons.getNoteBlank().getCmd(), null, null);
-            this.inv.setItem(i, base);
-        }
-        for (int i = 0; i <= 5; i++) {
-            MakeItem.setItemMeta(base, "", null, scaleCmd(icons, i), null, null);
-            this.inv.setItem(i * 9, base);
-        }
-
         ItemStack gray = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
         MakeItem.setItemMeta(gray, "", null, 0, null, null);
         for (int i = 0; i < 36; i++) {
-            bottomIcons.put(i, new BottomIcon(gray.clone(), () -> {}));
+            bottomIcons.put(i, new BottomIcon(gray.clone(), event -> {}));
         }
 
-        setSelectedSlot(0);
-
-        MakeItem.setItemMeta(base, "1ページへ", null, icons.getTriangleLeft().getCmd(), ItemData.BUTTON_ID, "GO FIRST");
-        bottomIcons.put(27, new BottomIcon(base.clone(), () -> {
-            jumpPage(1);
-        }));
-
-        MakeItem.setItemMeta(base, "前のページへ", null, icons.getTriangleLeft().getCmd(), ItemData.BUTTON_ID, "BACK PAGE");
-        bottomIcons.put(28, new BottomIcon(base.clone(), this::jumpBackPage));
-
-        MakeItem.setItemMeta(base, "次のページへ", null, icons.getTriangleRight().getCmd(), ItemData.BUTTON_ID, "NEXT PAGE");
-        bottomIcons.put(30, new BottomIcon(base.clone(), this::jumpNextPage));
-
-        MakeItem.setItemMeta(base, "最後のページへ", null, icons.getTriangleRight().getCmd(), ItemData.BUTTON_ID, "GO END");
-        bottomIcons.put(31, new BottomIcon(base.clone(), () -> {
-            setMusicEndpoint();
-            int endPage = getMusicFinalPage();
-            jumpPage(endPage);
-        }));
-
         MakeItem.setItemMeta(base, "上へスクロール", null, icons.getTriangleUp().getCmd(), ItemData.BUTTON_ID, "UP NOTE");
-        bottomIcons.put(9, new BottomIcon(base.clone(), () -> {
+        bottomIcons.put(9, new BottomIcon(base.clone(), event -> {
             inputGuiUpdate(-1);
         }));
         MakeItem.setItemMeta(base, "下へスクロール", null, icons.getTriangleDown().getCmd(), ItemData.BUTTON_ID, "DOWN NOTE");
-        bottomIcons.put(18, new BottomIcon(base.clone(), () -> {
+        bottomIcons.put(18, new BottomIcon(base.clone(), event -> {
             inputGuiUpdate(1);
         }));
 
-        ItemStack sign = new ItemStack(Material.OAK_HANGING_SIGN);
-        MakeItem.setItemMeta(sign, "現在1ページ目", null, 0, ItemData.PAGE, 1);
-        bottomIcons.put(29, new BottomIcon(sign.clone(), null));
-
         ItemStack bar = new ItemStack(Material.BARRIER);
         MakeItem.setItemMetaByColor(bar, "しゅうりょう", NamedTextColor.DARK_RED, 0, ItemData.BUTTON_ID, "CLOSE");
-        bottomIcons.put(35, new BottomIcon(bar.clone(), this::close));
+        bottomIcons.put(35, new BottomIcon(bar.clone(), event -> {
+            Player player = (Player) event.getWhoClicked();
+            player.closeInventory();
+        }));
 
         String[] whiteName = {"休符", "null", "ド/C", "レ/D", "ミ/E", "ファ/F", "ソ/G", "ラ/A", "シ/B"};
         for (int i = 0; i < whiteName.length; i++) {
@@ -159,7 +135,7 @@ public class InputModeHolder extends BaseGuiHolder {
                 ItemStack white = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
                 MakeItem.setItemMeta(white, whiteName[i], null, 0, ItemData.BUTTON_ID, whiteName[i]);
                 final NoteSpec noteSpec = NOTE_SPECS.get(whiteName[i]);
-                bottomIcons.put(i + 17, new BottomIcon(white.clone(), () -> {
+                bottomIcons.put(i + 17, new BottomIcon(white.clone(), event -> {
                     applyNoteSpec(noteSpec);
                     moveNextSelectedSlot();
                 }));
@@ -172,7 +148,7 @@ public class InputModeHolder extends BaseGuiHolder {
                 ItemStack black = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
                 MakeItem.setItemMeta(black, blackName[i], null, 0, ItemData.BUTTON_ID, blackName[i]);
                 final NoteSpec noteSpec = NOTE_SPECS.get(blackName[i]);
-                bottomIcons.put(i + 10, new BottomIcon(black.clone(), () -> {
+                bottomIcons.put(i + 10, new BottomIcon(black.clone(), event -> {
                     applyNoteSpec(noteSpec);
                     moveNextSelectedSlot();
                 }));
@@ -181,7 +157,7 @@ public class InputModeHolder extends BaseGuiHolder {
 
         ItemStack structure = new ItemStack(Material.STRUCTURE_VOID);
         MakeItem.setItemMeta(structure, "全削除", null, 0, ItemData.BUTTON_ID, "ALL DELETE");
-        bottomIcons.put(34, new BottomIcon(structure.clone(), () -> {
+        bottomIcons.put(33, new BottomIcon(structure.clone(), event -> {
             int[] reset = new int[Man10Music.MUSIC_LENGTH];
             Arrays.fill(reset, 0);
             musicList = reset;
@@ -191,7 +167,7 @@ public class InputModeHolder extends BaseGuiHolder {
 
         ItemStack insertRest = new ItemStack(Material.WRITABLE_BOOK);
         MakeItem.setItemMetaByColor(insertRest, "休符の挿入", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "INSERT REST");
-        bottomIcons.put(32, new BottomIcon(insertRest.clone(), () -> {
+        bottomIcons.put(29, new BottomIcon(insertRest.clone(), event -> {
             int index = getMusicIndex();
             insertRestKeepingLength(index);
             inputGuiUpdate(0);
@@ -200,10 +176,39 @@ public class InputModeHolder extends BaseGuiHolder {
 
         ItemStack cutNote = new ItemStack(Material.SHEARS);
         MakeItem.setItemMetaByColor(cutNote, "ノートの切り取り", NamedTextColor.RED, 0, ItemData.BUTTON_ID, "CUT NOTE");
-        bottomIcons.put(33, new BottomIcon(cutNote.clone(), () -> {
+        bottomIcons.put(31, new BottomIcon(cutNote.clone(), event -> {
             int index = getMusicIndex();
             cutNoteKeepingLength(index);
             inputGuiUpdate(0);
+        }));
+        setTrackIcon();
+        jumpPage(1);
+    }
+
+    private void setTrackIcon() {
+        ItemStack trackItem = new ItemStack(iconsData().getBaseMaterial());
+        Track prevTrack = getPrevTrack(this.track);
+        Track nextTrack = getNextTrack(this.track);
+
+        trackItem.editMeta(meta -> {
+            meta.customName(Component.text("現在のトラック: " + getTrackLabel(this.track))
+                    .color(getTitleColor(this.track)));
+            Component leftLore = Component.text("左クリック").color(NamedTextColor.GRAY)
+                    .append(Component.text(getTrackLabel(prevTrack) + "トラックへ")
+                            .color(getTitleColor(prevTrack)));
+            Component rightLore = Component.text("右クリック").color(NamedTextColor.GRAY)
+                    .append(Component.text(getTrackLabel(nextTrack) + "トラックへ")
+                            .color(getTitleColor(nextTrack)));
+
+            meta.setItemModel(getTrackModelKey(this.track));
+            meta.lore(List.of(leftLore, rightLore));
+        });
+        bottomIcons.put(28, new BottomIcon(trackItem.clone(), event -> {
+            if (event.isLeftClick()){
+                changeTrack((Player) event.getWhoClicked(), prevTrack);
+            } else if (event.isRightClick()) {
+                changeTrack((Player) event.getWhoClicked(), nextTrack);
+            }
         }));
     }
 
@@ -214,33 +219,32 @@ public class InputModeHolder extends BaseGuiHolder {
     }
 
     public void inputGuiUpdate(int offset) {
-        int noteId;
-
         if (musicList == null) {
             return;
         }
         topNote += offset;
 
-        ItemStack paper = new ItemStack(icons().getBaseMaterial());
+        ItemStack icon = new ItemStack(icons().getBaseMaterial());
         for (int i = 0; i <= 53; i++) {
-            MakeItem.setItemMeta(paper, "", null, icons().getNoteBlank().getCmd(), null, null);
-            this.inv.setItem(i, paper);
+            MakeItem.setItemMeta(icon, "", null, icons().getNoteBlank().getCmd(), null, null);
+            this.inv.setItem(i, icon);
         }
+        int noteId;
         for (int i = 0; i <= 5; i++) {
             noteId = topNote + i;
-            paper.setAmount(7 - (noteId + 2) / 6);
+            icon.setAmount(7 - (noteId + 2) / 6);
             while (noteId >= 7) noteId -= 6;
-            MakeItem.setItemMeta(paper, "", null, scaleCmd(icons(), noteId), ItemData.TOP_NOTE, topNote);
-            this.inv.setItem(i * 9, paper);
+            MakeItem.setItemMeta(icon, "", null, scaleCmd(icons(), noteId), ItemData.TOP_NOTE, topNote);
+            this.inv.setItem(i * 9, icon);
         }
-        paper.setAmount(1);
+        icon.setAmount(1);
         for (int i = 0; i < 8; i++) {
             int note = musicList[i + ((page - 1) * 8)];
             if (note != 0) {
                 if (note % 2 == 1) {
-                    MakeItem.setItemMeta(paper, "", null, icons().getNoteUp().getCmd(), null, null);
+                    MakeItem.setItemMeta(icon, "", null, icons().getNoteUp(track).getCmd(), null, null);
                 } else {
-                    MakeItem.setItemMeta(paper, "", null, icons().getNoteDown().getCmd(), null, null);
+                    MakeItem.setItemMeta(icon, "", null, icons().getNoteDown(track).getCmd(), null, null);
                 }
                 if (note > topNote * 2 && note <= (topNote + 6) * 2) {
                     note -= topNote * 2;
@@ -249,21 +253,45 @@ public class InputModeHolder extends BaseGuiHolder {
                     if (note % 2 == 1) {
                         note += 1;
                     }
-                    this.inv.setItem(i + 1 + (9 * note / 2 - 9), paper);
+                    this.inv.setItem(i + 1 + (9 * note / 2 - 9), icon);
                 }
             }
         }
     }
 
     public void jumpPage(int page) {
-        this.page = page;
         if (page < 1 || page > Man10Music.MAX_PAGE) return;
-        ItemStack pageViewer = new ItemStack(Material.OAK_HANGING_SIGN);
-        MakeItem.setItemMeta(pageViewer, "現在" + page + "ページ目", null, 0, ItemData.PAGE, page);
-        bottomIcons.put(29, new BottomIcon(pageViewer.clone(), () -> {}));
+        this.page = page;
+        ItemStack sign = getSign(page);
+        bottomIcons.put(27, new BottomIcon(sign.clone(), event -> {
+            switch (event.getClick()) {
+                case RIGHT -> jumpNextPage();
+                case LEFT -> jumpBackPage();
+                case SHIFT_RIGHT -> {
+                    setMusicEndpoint();
+                    int endPage = getMusicFinalPage();
+                    jumpPage(endPage);
+                }
+                case SHIFT_LEFT -> jumpPage(1);
+            }
+        }));
         inputGuiUpdate(0);
         setSelectedSlot(0);
-        updateFakeItemInPlayerInventorySlot(clickedPlayer);
+    }
+
+    private static @NonNull ItemStack getSign(int page) {
+        ItemStack sign = new ItemStack(Material.OAK_HANGING_SIGN);
+        sign.editMeta(meta -> {
+            meta.customName(Component.text("現在 " + page +" ページ目"));
+            meta.lore(List.of(
+                    Component.text("右クリック            : ").color(NamedTextColor.YELLOW).append(Component.text("次のページへ").color(NamedTextColor.WHITE)),
+                    Component.text("左クリック            : ").color(NamedTextColor.YELLOW).append(Component.text("前のページへ").color(NamedTextColor.WHITE)),
+                    Component.text("シフト + 右クリック : ").color(NamedTextColor.YELLOW).append(Component.text("最後のページへ").color(NamedTextColor.WHITE)),
+                    Component.text("シフト + 左クリック : ").color(NamedTextColor.YELLOW).append(Component.text("最初のページへ").color(NamedTextColor.WHITE))
+            ));
+            meta.setMaxStackSize(99);
+        });
+        return sign;
     }
 
     private void jumpNextPage() {
@@ -300,21 +328,20 @@ public class InputModeHolder extends BaseGuiHolder {
     @Override
     public void onClick(InventoryClickEvent event) {
         event.setCancelled(true);
-        clickedPlayer = (Player) event.getWhoClicked();
         int rawSlot = event.getRawSlot();
 
         int slot = rawSlot - 54;
         if (slot < 0) slot += 45;
 
         if (0 > slot) onClickInTopInventory(event);
-        else onClickInBottomInventory(slot);
-        updateFakeItemInPlayerInventorySlot(clickedPlayer);
+        else onClickInBottomInventory(event, slot);
+        updateFakeItemInPlayerInventorySlot((Player) event.getWhoClicked());
     }
 
-    private void onClickInBottomInventory(int slot) {
+    private void onClickInBottomInventory(InventoryClickEvent event, int slot) {
         BottomIcon bottomIcon = bottomIcons.get(slot);
         if (bottomIcon != null) {
-            bottomIcon.runClickAction();
+            bottomIcon.runClickAction(event);
         }
     }
 
@@ -324,19 +351,26 @@ public class InputModeHolder extends BaseGuiHolder {
     @Override
     public void onClose(Player player) {
         if (!closeFlag) return;
+        closeFlag = false;
         setMusicEndpoint();
+        music.setMusic(track, musicList);
+        MusicManager.saveMusicToDb(Man10Music.getInstance().getMySQLManager(), music);
         Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
-            player.closeInventory();
             MainMenuHolder mainMenuHolder = new MainMenuHolder();
             player.openInventory(mainMenuHolder.getInventory());
-            player.updateInventory();
+            Bukkit.getScheduler().runTask(Man10Music.getInstance(), player::updateInventory);
         });
-        music.setMusic(musicList);
-        MusicManager.saveMusicToDb(Man10Music.getInstance().getMySQLManager(), music);
     }
 
-    private void close(){
-        clickedPlayer.closeInventory();
+    private void changeTrack(Player player, Track track) {
+        setMusicEndpoint();
+        music.setMusic(this.track, musicList);
+        MusicManager.saveMusicToDb(Man10Music.getInstance().getMySQLManager(), music);
+        musicList = music.getMusic(track);
+        this.track = track;
+        setTrackIcon();
+        jumpPage(1);
+        updateFakeItemInPlayerInventorySlot(player);
     }
 
     private Icons icons() {
@@ -422,12 +456,12 @@ public class InputModeHolder extends BaseGuiHolder {
         MakeItem.setItemMeta(select, "カーソルを移動", null, icons().getTriangleUp().getCmd(), null, null);
         for (int i = 0; i < 8; i++){
             if (i == selectedSlot){
-                bottomIcons.put(i + 1, new BottomIcon(selected, () -> {
+                bottomIcons.put(i + 1, new BottomIcon(selected, event -> {
                 }));
 
             } else {
                 int finalI = i;
-                bottomIcons.put(i + 1, new BottomIcon(select, () -> {
+                bottomIcons.put(i + 1, new BottomIcon(select, event -> {
                     setSelectedSlot(finalI);
                 }));
             }
@@ -452,12 +486,50 @@ public class InputModeHolder extends BaseGuiHolder {
             PacketManager.setFakeItemInPlayerSlot(player, fakeItemInPlayerInventorySlot);
         });
     }
+
+    private Track getPrevTrack(Track current) {
+        if (current == null) return Track.RED;
+        int index = TRACK_ORDER.indexOf(current);
+        int prevIndex = (index - 1);
+        if (prevIndex < 0 ) return TRACK_ORDER.getLast();
+        return TRACK_ORDER.get(prevIndex);
+    }
+
+    private Track getNextTrack(Track current) {
+        if (current == null) return Track.RED;
+        int index = TRACK_ORDER.indexOf(current);
+        int nextIndex = (index + 1);
+        if (nextIndex >= TRACK_ORDER.size()) return TRACK_ORDER.getFirst();
+        return TRACK_ORDER.get(nextIndex);
+    }
+
+    private String getTrackLabel(Track track) {
+        if (track == null) return "Unknown";
+        return switch (track) {
+            case RED -> "Red";
+            case AQUA -> "Aqua";
+            case GREEN -> "Green";
+            case YELLOW -> "Yellow";
+            default -> "Unknown";
+        };
+    }
+
+    private NamespacedKey getTrackModelKey(Track track) {
+        if (track == null) return NamespacedKey.minecraft("barrier");
+        return switch (track) {
+            case RED -> NamespacedKey.minecraft("redstone_block");
+            case AQUA -> NamespacedKey.minecraft("diamond_block");
+            case GREEN -> NamespacedKey.minecraft("emerald_block");
+            case YELLOW -> NamespacedKey.minecraft("gold_block");
+            default -> NamespacedKey.minecraft("barrier");
+        };
+    }
 }
 
 class BottomIcon {
     private final ItemStack icon;
-    private final Runnable clickAction;
-    BottomIcon(ItemStack icon, Runnable clickAction) {
+    private final Consumer<InventoryClickEvent> clickAction;
+    BottomIcon(ItemStack icon, Consumer<InventoryClickEvent> clickAction) {
         this.icon = icon;
         this.clickAction = clickAction;
     }
@@ -466,8 +538,12 @@ class BottomIcon {
         return icon;
     }
 
-    public void runClickAction() {
+    public Consumer<InventoryClickEvent> getClickAction() {
+        return clickAction;
+    }
+
+    public void runClickAction(InventoryClickEvent event) {
         if (clickAction == null) return;
-        clickAction.run();
+        clickAction.accept(event);
     }
 }

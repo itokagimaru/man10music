@@ -17,16 +17,19 @@ import java.util.concurrent.CompletableFuture;
 public class PublishedMusicManager {
 
     public static CompletableFuture<Integer> savePublishedMusic(MySQLManager mysql, Music music) {
-        if (mysql == null || music == null || music.getMusic() == null) {
+        if (mysql == null || music == null) {
             return CompletableFuture.completedFuture(-1);
         }
 
         return CompletableFuture.supplyAsync(() -> {
-            byte[] musicBytes = MusicDataCodec.toByteArray(music.getMusic());
+            byte[] musicRedBytes = MusicDataCodec.toByteArray(music.getMusic(Track.RED));
+            byte[] musicAquaBytes = MusicDataCodec.toByteArray(music.getMusic(Track.AQUA));
+            byte[] musicGreenBytes = MusicDataCodec.toByteArray(music.getMusic(Track.GREEN));
+            byte[] musicYellowBytes = MusicDataCodec.toByteArray(music.getMusic(Track.YELLOW));
             String relatesYaml = MusicDataCodec.toYamlRelates(music.getRelates());
 
             String insertSql =
-                    "INSERT INTO published_music (music_id, composer, relates, music, name, bpm) VALUES (?, ?, ?, ?, ?, ?)";
+                    "INSERT INTO published_music (music_id, composer, relates, music_red, music_aqua, music_green, music_yellow, name, bpm) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (Connection con = mysql.getConn();
                  PreparedStatement ps = con.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
@@ -34,9 +37,12 @@ public class PublishedMusicManager {
                 ps.setInt(1, music.getId());
                 ps.setString(2, music.getComposerUUID().toString());
                 ps.setString(3, relatesYaml);
-                ps.setBytes(4, musicBytes);
-                ps.setString(5, music.getTitle());
-                ps.setInt(6, music.getBpm());
+                ps.setBytes(4, musicRedBytes);
+                ps.setBytes(5, musicAquaBytes);
+                ps.setBytes(6, musicGreenBytes);
+                ps.setBytes(7, musicYellowBytes);
+                ps.setString(8, music.getTitle());
+                ps.setInt(9, music.getBpm());
 
                 ps.executeUpdate();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -52,7 +58,7 @@ public class PublishedMusicManager {
     }
 
     public static CompletableFuture<Integer> isNewPublishedMusic(MySQLManager mysql, Music music) {
-        if (mysql == null || music == null || music.getMusic() == null) {
+        if (mysql == null || music == null) {
             return CompletableFuture.completedFuture(-1);
         }
 
@@ -69,7 +75,7 @@ public class PublishedMusicManager {
 
         return CompletableFuture.supplyAsync(() -> {
             String sql =
-                    "SELECT music_id, composer, relates, music, name, bpm FROM published_music WHERE public_id = ?";
+                    "SELECT music_id, composer, relates, music_red, music_aqua, music_green, music_yellow, name, bpm FROM published_music WHERE public_id = ?";
 
             try (Connection con = mysql.getConn();
                  PreparedStatement ps = con.prepareStatement(sql)) {
@@ -79,16 +85,21 @@ public class PublishedMusicManager {
 
                 if (!rs.next()) return null;
 
-                byte[] musicBytes = rs.getBytes("music");
-                int[] music = MusicDataCodec.toIntArray(musicBytes);
+                int[] musicRed = MusicDataCodec.toIntArray(rs.getBytes("music_red"));
+                int[] musicAqua = MusicDataCodec.toIntArray(rs.getBytes("music_aqua"));
+                int[] musicGreen = MusicDataCodec.toIntArray(rs.getBytes("music_green"));
+                int[] musicYellow = MusicDataCodec.toIntArray(rs.getBytes("music_yellow"));
                 List<UUID> relates = MusicDataCodec.fromYamlRelates(rs.getString("relates"));
 
-                return new Music(
+                return Music.fromDb(
                         rs.getInt("music_id"),
                         rs.getString("composer"),
                         relates,
                         rs.getString("name"),
-                        music,
+                        musicRed,
+                        musicAqua,
+                        musicGreen,
+                        musicYellow,
                         rs.getInt("bpm")
                 );
 
@@ -104,7 +115,7 @@ public class PublishedMusicManager {
 
         return CompletableFuture.supplyAsync(() -> {
             String sql =
-                    "SELECT public_id, music_id, composer, relates, music, name, bpm FROM published_music WHERE music_id = ? ORDER BY public_id ASC";
+                    "SELECT public_id, music_id, composer, relates, music_red, music_aqua, music_green, music_yellow, name, bpm FROM published_music WHERE music_id = ? ORDER BY public_id ASC";
 
             try (Connection con = mysql.getConn();
                  PreparedStatement ps = con.prepareStatement(sql)) {
@@ -114,16 +125,21 @@ public class PublishedMusicManager {
 
                 List<PublishedMusic> result = new ArrayList<>();
                 while (rs.next()) {
-                    byte[] musicBytes = rs.getBytes("music");
-                    int[] music = MusicDataCodec.toIntArray(musicBytes);
+                    int[] musicRed = MusicDataCodec.toIntArray(rs.getBytes("music_red"));
+                    int[] musicAqua = MusicDataCodec.toIntArray(rs.getBytes("music_aqua"));
+                    int[] musicGreen = MusicDataCodec.toIntArray(rs.getBytes("music_green"));
+                    int[] musicYellow = MusicDataCodec.toIntArray(rs.getBytes("music_yellow"));
                     List<UUID> relates = MusicDataCodec.fromYamlRelates(rs.getString("relates"));
 
-                    Music musicData = new Music(
+                    Music musicData = Music.fromDb(
                             rs.getInt("music_id"),
                             rs.getString("composer"),
                             relates,
                             rs.getString("name"),
-                            music,
+                            musicRed,
+                            musicAqua,
+                            musicGreen,
+                            musicYellow,
                             rs.getInt("bpm")
                     );
 
@@ -142,6 +158,9 @@ public class PublishedMusicManager {
         if (left.getId() != right.getId()) return false;
         if (!left.getTitle().equals(right.getTitle())) return false;
         if (left.getBpm() != right.getBpm()) return false;
-        return Arrays.equals(left.getMusic(), right.getMusic());
+        if (!Arrays.equals(left.getMusic(Track.RED), right.getMusic(Track.RED))) return false;
+        if (!Arrays.equals(left.getMusic(Track.AQUA), right.getMusic(Track.AQUA))) return false;
+        if (!Arrays.equals(left.getMusic(Track.GREEN), right.getMusic(Track.GREEN))) return false;
+        return Arrays.equals(left.getMusic(Track.YELLOW), right.getMusic(Track.YELLOW));
     }
 }

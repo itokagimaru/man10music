@@ -99,7 +99,7 @@ public abstract class BasePlayMusicHolder extends BaseGuiHolder {
         currentPlay.setRequester(player);
         onCreatePlay(player, currentPlay);
         PlayMusicManager.setPlayingMusic(target, currentPlay);
-        currentPlay.playMusic(target, musics.get(currentIndex).getMusic(), musics.get(currentIndex).getBpm(), musicData().getDefaultVolume(), musicData().getSoundRange());
+        currentPlay.playMusic(target, musics.get(currentIndex), musicData().getDefaultVolume(), musicData().getSoundRange());
     }
 
     protected void onCreatePlay(Player player, PlayMusic play) {

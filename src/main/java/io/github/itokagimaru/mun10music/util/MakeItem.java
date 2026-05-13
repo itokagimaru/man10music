@@ -57,6 +57,7 @@ public class MakeItem {
             if (key != null && val != null) {
                 key.set(meta.getPersistentDataContainer(), val);
             }
+            meta.setMaxStackSize(64);
             itemstack.setItemMeta(meta);
         }
     }

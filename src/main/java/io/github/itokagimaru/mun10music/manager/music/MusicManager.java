@@ -36,7 +36,7 @@ public class MusicManager {
     public static CompletableFuture<Music> loadMusicFromDb(MySQLManager mysql, int musicId) {
         return CompletableFuture.supplyAsync(() -> {
             String sql =
-                    "SELECT id, composer, relates, music, name, bpm FROM music_table WHERE id = ?";
+                    "SELECT id, composer, relates, music_red, music_aqua, music_green, music_yellow, name, bpm FROM music_table WHERE id = ?";
 
             try (Connection con = mysql.getConn();
                  PreparedStatement ps = con.prepareStatement(sql)) {
@@ -46,16 +46,21 @@ public class MusicManager {
 
                 if (!rs.next()) return null;
 
-                byte[] musicBytes = rs.getBytes("musics");
-                int[] music = MusicDataCodec.toIntArray(musicBytes);
+                int[] musicRed = MusicDataCodec.toIntArray(rs.getBytes("music_red"));
+                int[] musicAqua = MusicDataCodec.toIntArray(rs.getBytes("music_aqua"));
+                int[] musicGreen = MusicDataCodec.toIntArray(rs.getBytes("music_green"));
+                int[] musicYellow = MusicDataCodec.toIntArray(rs.getBytes("music_yellow"));
                 List<UUID> relates = MusicDataCodec.fromYamlRelates(rs.getString("relates"));
 
-                return new Music(
+                return Music.fromDb(
                         rs.getInt("id"),
                         rs.getString("composer"),
                         relates,
                         rs.getString("name"),
-                        music,
+                        musicRed,
+                        musicAqua,
+                        musicGreen,
+                        musicYellow,
                         rs.getInt("bpm")
                 );
 
@@ -68,31 +73,38 @@ public class MusicManager {
 
     public static CompletableFuture<Integer> saveMusicToDb(MySQLManager mysql, Music music) {
         return CompletableFuture.supplyAsync(() -> {
-            if (mysql == null || music == null || music.getMusic() == null) {
+            if (mysql == null || music == null) {
                 // 失敗理由をログに残す
-                Man10Music.getInstance().getLogger().warning("saveMusicToDb失敗: mysql/musicがnull、または楽曲配列がnullです");
+                Man10Music.getInstance().getLogger().warning("saveMusicToDb失敗: mysql/musicがnullです");
                 return -1;
             }
 
-            int[] normalized = music.getMusic();
-            if (normalized.length != Man10Music.MUSIC_LENGTH) {
-                normalized = Arrays.copyOf(normalized, Man10Music.MUSIC_LENGTH);
-            }
-            byte[] musicBytes = MusicDataCodec.toByteArray(normalized);
+            int[] musicRed = normalizeMusicArray(music.getMusic(Track.RED));
+            int[] musicAqua = normalizeMusicArray(music.getMusic(Track.AQUA));
+            int[] musicGreen = normalizeMusicArray(music.getMusic(Track.GREEN));
+            int[] musicYellow = normalizeMusicArray(music.getMusic(Track.YELLOW));
+
+            byte[] musicRedBytes = MusicDataCodec.toByteArray(musicRed);
+            byte[] musicAquaBytes = MusicDataCodec.toByteArray(musicAqua);
+            byte[] musicGreenBytes = MusicDataCodec.toByteArray(musicGreen);
+            byte[] musicYellowBytes = MusicDataCodec.toByteArray(musicYellow);
             String relatesYaml = MusicDataCodec.toYamlRelates(music.getRelates());
 
             try (Connection con = mysql.getConn()) {
                 if (music.getId() > 0) {
                     String updateSql =
-                            "UPDATE music_table SET composer = ?, relates = ?, music = ?, name = ?, bpm = ? WHERE id = ?";
+                            "UPDATE music_table SET composer = ?, relates = ?, music_red = ?, music_aqua = ?, music_green = ?, music_yellow = ?, name = ?, bpm = ? WHERE id = ?";
 
                     try (PreparedStatement ps = con.prepareStatement(updateSql)) {
                         ps.setString(1, music.getComposerUUID().toString());
                         ps.setString(2, relatesYaml);
-                        ps.setBytes(3, musicBytes);
-                        ps.setString(4, music.getTitle());
-                        ps.setInt(5, music.getBpm());
-                        ps.setInt(6, music.getId());
+                        ps.setBytes(3, musicRedBytes);
+                        ps.setBytes(4, musicAquaBytes);
+                        ps.setBytes(5, musicGreenBytes);
+                        ps.setBytes(6, musicYellowBytes);
+                        ps.setString(7, music.getTitle());
+                        ps.setInt(8, music.getBpm());
+                        ps.setInt(9, music.getId());
 
                         ps.executeUpdate();
                         return music.getId();
@@ -100,14 +112,17 @@ public class MusicManager {
                 }
 
                 String insertSql =
-                        "INSERT INTO music_table (composer, relates, music, name, bpm) VALUES (?, ?, ?, ?, ?)";
+                        "INSERT INTO music_table (composer, relates, music_red, music_aqua, music_green, music_yellow, name, bpm) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
                 try (PreparedStatement ps = con.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
                     ps.setString(1, music.getComposerUUID().toString());
                     ps.setString(2, relatesYaml);
-                    ps.setBytes(3, musicBytes);
-                    ps.setString(4, music.getTitle());
-                    ps.setInt(5, music.getBpm());
+                    ps.setBytes(3, musicRedBytes);
+                    ps.setBytes(4, musicAquaBytes);
+                    ps.setBytes(5, musicGreenBytes);
+                    ps.setBytes(6, musicYellowBytes);
+                    ps.setString(7, music.getTitle());
+                    ps.setInt(8, music.getBpm());
 
                     ps.executeUpdate();
                     try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -132,9 +147,8 @@ public class MusicManager {
 
         List<UUID> relates = new ArrayList<>();
         String title = "未設定";
-        int[] music = new int[Man10Music.MUSIC_LENGTH];
         int bpm = 60;
-        Music newMusic = new Music(-1, player.getUniqueId().toString(), relates, title, music, bpm);
+        Music newMusic = Music.create(player.getUniqueId(), relates, title, bpm, Man10Music.MUSIC_LENGTH);
 
         AuthorityTableManager authorityManager = new AuthorityTableManager(mysql);
         // saveMusicToDbで新規作成し、ID確定後に権限テーブルへ登録する
@@ -145,12 +159,15 @@ public class MusicManager {
 
             return authorityManager.grant(player, generatedId).thenApply(granted -> {
                 if (!granted) return null;
-                return new Music(
+                return Music.fromDb(
                         generatedId,
                         player.getUniqueId().toString(),
                         relates,
                         title,
-                        music,
+                        newMusic.getMusic(Track.RED),
+                        newMusic.getMusic(Track.AQUA),
+                        newMusic.getMusic(Track.GREEN),
+                        newMusic.getMusic(Track.YELLOW),
                         bpm
                 );
             });
@@ -181,5 +198,11 @@ public class MusicManager {
                 }
             });
         });
+    }
+
+    private static int[] normalizeMusicArray(int[] music) {
+        if (music == null) return new int[Man10Music.MUSIC_LENGTH];
+        if (music.length != Man10Music.MUSIC_LENGTH) return Arrays.copyOf(music, Man10Music.MUSIC_LENGTH);
+        return music;
     }
 }
