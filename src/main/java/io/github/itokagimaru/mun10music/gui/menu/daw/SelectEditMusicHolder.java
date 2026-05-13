@@ -54,6 +54,7 @@ public class SelectEditMusicHolder extends BaseMusicListHolder {
                 MusicManager.createMusicForPlayer(plugin.getMySQLManager(), player)
                         .thenRun(() -> Bukkit.getScheduler().runTask(plugin, () -> {
                             musicListSetup(player);
+                            setup();
                         }));
             }
         }
@@ -72,8 +73,8 @@ public class SelectEditMusicHolder extends BaseMusicListHolder {
     protected void onMusicRightClick(Player player, int musicID) {
         Music music = getMusic(musicID);
         closeFlag = false;
-        InputModeHolder inputModeHolder = new InputModeHolder(music);
-        inputModeHolder.open(player);
+        SelectEditTrackHolder selectEditTrackHolder = new SelectEditTrackHolder(music);
+        player.openInventory(selectEditTrackHolder.getInventory());
     }
 
     @Override

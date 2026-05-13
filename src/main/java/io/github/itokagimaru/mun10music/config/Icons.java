@@ -1,4 +1,5 @@
 package io.github.itokagimaru.mun10music.config;
+import io.github.itokagimaru.mun10music.manager.music.Track;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import java.util.Locale;
@@ -31,11 +32,17 @@ public final class Icons {
     private final Entry scaleAToGSharp;
     private final Entry scaleGToFSharp;
     private final Entry noteBlank;
-    private final Entry noteUp;
-    private final Entry noteDown;
+    private final Entry noteUpRED;
+    private final Entry noteDownRED;
+    private final Entry noteUpAqua;
+    private final Entry noteDownAqua;
+    private final Entry noteUpGreen;
+    private final Entry noteDownGreen;
+    private final Entry noteUpYellow;
+    private final Entry noteDownYellow;
     public Icons(FileConfiguration config) {
         // 生成時にmaterialを解決して固定
-        this.baseMaterial = toMaterial(config.getString("icons.material"), Material.PAPER);
+        this.baseMaterial = toMaterial(config.getString("icons.material"), Material.WOODEN_HOE);
         this.triangleUp = readEntry(config, "icons.triangle.up", 8);
         this.triangleDown = readEntry(config, "icons.triangle.down", 9);
         this.triangleLeft = readEntry(config, "icons.triangle.left", 10);
@@ -49,8 +56,14 @@ public final class Icons {
         this.scaleAToGSharp = readEntry(config, "icons.sheetMusic.scale.A-G#", 18);
         this.scaleGToFSharp = readEntry(config, "icons.sheetMusic.scale.G-F#", 19);
         this.noteBlank = readEntry(config, "icons.sheetMusic.note.blank", 20);
-        this.noteUp = readEntry(config, "icons.sheetMusic.note.up", 21);
-        this.noteDown = readEntry(config, "icons.sheetMusic.note.down", 22);
+        this.noteUpRED = readEntry(config, "icons.sheetMusic.note.red.up", 21);
+        this.noteDownRED = readEntry(config, "icons.sheetMusic.note.red.down", 22);
+        this.noteUpAqua = readEntry(config, "icons.sheetMusic.note.aqua.up", 23);
+        this.noteDownAqua = readEntry(config, "icons.sheetMusic.note.aqua.down", 24);
+        this.noteUpGreen = readEntry(config, "icons.sheetMusic.note.green.up", 25);
+        this.noteDownGreen = readEntry(config, "icons.sheetMusic.note.green.down", 26);
+        this.noteUpYellow = readEntry(config, "icons.sheetMusic.note.yellow.up", 27);
+        this.noteDownYellow = readEntry(config, "icons.sheetMusic.note.yellow.down", 28);
     }
     private Entry readEntry(FileConfiguration config, String path, int defaultCmd) {
         int cmd = config.getInt(path, defaultCmd);
@@ -105,10 +118,22 @@ public final class Icons {
     public Entry getNoteBlank() {
         return noteBlank;
     }
-    public Entry getNoteUp() {
-        return noteUp;
+    public Entry getNoteUp(Track track) {
+        return switch (track) {
+            case RED -> noteUpRED;
+            case AQUA -> noteUpAqua;
+            case GREEN -> noteUpGreen;
+            case YELLOW -> noteUpYellow;
+            default -> noteUpRED;
+        };
     }
-    public Entry getNoteDown() {
-        return noteDown;
+    public Entry getNoteDown(Track track) {
+        return switch (track) {
+            case RED -> noteDownRED;
+            case AQUA -> noteDownAqua;
+            case GREEN -> noteDownGreen;
+            case YELLOW -> noteDownYellow;
+            default -> noteDownRED;
+        };
     }
 }

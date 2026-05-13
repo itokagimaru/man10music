@@ -9,8 +9,10 @@ import io.github.itokagimaru.mun10music.gui.menu.walkman.ItemsPlayModeHolder;
 import io.github.itokagimaru.mun10music.manager.AutPlayManager;
 import io.github.itokagimaru.mun10music.manager.ParticleManager;
 import io.github.itokagimaru.mun10music.manager.PlayMusicManager;
+import io.github.itokagimaru.mun10music.manager.music.Music;
 import io.github.itokagimaru.mun10music.manager.music.MusicManager;
 import io.github.itokagimaru.mun10music.manager.music.PublishedMusicManager;
+import io.github.itokagimaru.mun10music.manager.music.Track;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import io.github.itokagimaru.mun10music.util.PlaySound;
 import org.bukkit.entity.Entity;
@@ -51,38 +53,57 @@ public class PlayMusic {
         requestHolder = holder;
     }
 
-    public void playMusic(Entity target, int[] music, int bpm, float volume, Double soundRange) {
+    public void playMusic(Entity target, int[] musicRed, int[] musicAqua, int[] musicGreen, int[] musicYellow, int bpm, float volume, Double soundRange) {
         this.volume = volume;
         this.soundRange = soundRange;
         long interval = (1200 / bpm);
+        int maxLength = getMaxLength(musicRed, musicAqua, musicGreen, musicYellow);
+
         task = new BukkitRunnable() {
             int count = 0;
+
             @Override
             public void run() {
-                if (music[count] == -1) {
+                if (count >= maxLength) {
                     stopTask(target);
-                } else if (music[count] != 0) {
-                    PlaySound.playNote(target, music[count], volume, soundRange, isPrivate);
-                    if(target instanceof Player player){
-                        ParticleManager.playNote(player, isPrivate);
-                    }
+                    return;
                 }
+
+                playTrack(target, musicRed, count);
+                playTrack(target, musicAqua, count);
+                playTrack(target, musicGreen, count);
+                playTrack(target, musicYellow, count);
+
                 count++;
             }
         }.runTaskTimer(Man10Music.getInstance(), 0, interval);
     }
 
+    public void playMusic(Entity target, Music music, float volume, Double soundRange) {
+        if (music == null) return;
+        playMusic(
+                target,
+                music.getMusic(Track.RED),
+                music.getMusic(Track.AQUA),
+                music.getMusic(Track.GREEN),
+                music.getMusic(Track.YELLOW),
+                music.getBpm(),
+                volume,
+                soundRange
+        );
+    }
+
     public void playMusic(Entity target, int musicID, float volume, Double soundRange) {
         MusicManager.loadMusicFromDb(Man10Music.getInstance().getMySQLManager(), musicID).thenAccept(music -> {
             if (music == null) return;
-            playMusic(target, music.getMusic(), music.getBpm(), volume, soundRange);
+            playMusic(target, music, volume, soundRange);
         });
     }
 
     public void playPublishedMusic(Entity target, int musicID, float volume, Double soundRange) {
         PublishedMusicManager.loadPublishedByPublicId(Man10Music.getInstance().getMySQLManager(), musicID).thenAccept(music -> {
             if (music == null) return;
-            playMusic(target, music.getMusic(), music.getBpm(), volume, soundRange);
+            playMusic(target, music, volume, soundRange);
         });
     }
 
@@ -113,5 +134,28 @@ public class PlayMusic {
 
     public void stopTask(){
         task.cancel();
+    }
+
+    private void playTrack(Entity target, int[] music, int index) {
+        if (music == null || index >= music.length) return;
+
+        int note = music[index];
+        if (note == -1) {
+            return;
+        }
+        if (note != 0) {
+            PlaySound.playNote(target, note, volume, soundRange, isPrivate);
+            if (target instanceof Player player) {
+                ParticleManager.playNote(player, isPrivate);
+            }
+        }
+    }
+
+    private int getMaxLength(int[] musicRed, int[] musicAqua, int[] musicGreen, int[] musicYellow) {
+        int redLength = musicRed == null ? 0 : musicRed.length;
+        int aquaLength = musicAqua == null ? 0 : musicAqua.length;
+        int greenLength = musicGreen == null ? 0 : musicGreen.length;
+        int yellowLength = musicYellow == null ? 0 : musicYellow.length;
+        return Math.max(Math.max(redLength, aquaLength), Math.max(greenLength, yellowLength));
     }
 }

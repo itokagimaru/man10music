@@ -62,8 +62,8 @@ public class MusicEditMenuHolder extends BaseGuiHolder {
         switch (buttonId) {
             case "EDIT" -> {
                 closeFlag = false;
-                InputModeHolder inputModeHolder = new InputModeHolder(music);
-                inputModeHolder.open(player);
+                SelectEditTrackHolder selectEditTrackHolder = new SelectEditTrackHolder(music);
+                player.openInventory(selectEditTrackHolder.getInventory());
             }
             case "TITLE" -> {
                 closeFlag = false;

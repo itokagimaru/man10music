@@ -16,7 +16,10 @@ public class MySQLManager {
                         "id INT AUTO_INCREMENT PRIMARY KEY," +
                         "composer CHAR(36) NOT NULL," +
                         "relates TEXT," +
-                        "music MEDIUMBLOB NOT NULL," +
+                        "music_red MEDIUMBLOB NOT NULL," +
+                        "music_aqua MEDIUMBLOB NOT NULL," +
+                        "music_green MEDIUMBLOB NOT NULL," +
+                        "music_yellow MEDIUMBLOB NOT NULL," +
                         "name VARCHAR(100) NOT NULL," +
                         "bpm INT NOT NULL" +
                         ");";
@@ -56,7 +59,10 @@ public class MySQLManager {
                         "music_id INT NOT NULL," +
                         "composer CHAR(36) NOT NULL," +
                         "relates TEXT," +
-                        "music MEDIUMBLOB NOT NULL," +
+                        "music_red MEDIUMBLOB NOT NULL," +
+                        "music_aqua MEDIUMBLOB NOT NULL," +
+                        "music_green MEDIUMBLOB NOT NULL," +
+                        "music_yellow MEDIUMBLOB NOT NULL," +
                         "name VARCHAR(100) NOT NULL," +
                         "bpm INT NOT NULL" +
                         ");";

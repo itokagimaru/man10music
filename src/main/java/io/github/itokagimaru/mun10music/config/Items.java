@@ -36,15 +36,15 @@ public final class Items {
 
     public Items(FileConfiguration config) {
         // 生成時に文字列をMaterialへ変換して保持
-        this.keyBoard = readEntry(config, "items.keyBoard", Material.WOODEN_HOE, 1);
-        this.walkMan = readEntry(config, "items.walkMan", Material.WOODEN_HOE, 2);
-        this.cassette = readEntry(config, "items.cassette", Material.PAPER, 1);
-        this.sheetMusicBlank = readEntry(config, "items.sheetMusic.blank", Material.PAPER, 2);
-        this.sheetMusicWritten = readEntry(config, "items.sheetMusic.written", Material.PAPER, 3);
-        this.cassetteWorkspaceItem = readEntry(config, "items.cassetteWorkspace.item", Material.PAPER, 4);
-        this.cassetteWorkspaceBlock = readEntry(config, "items.cassetteWorkspace.block", Material.PAPER, 5);
-        this.radioItem = readEntry(config, "items.radio.item", Material.PAPER, 6);
-        this.radioBlock = readEntry(config, "items.radio.block", Material.PAPER, 7);
+        this.keyBoard = readEntry(config, "items.keyBoard", Material.STONE_HOE, 1);
+        this.walkMan = readEntry(config, "items.walkMan", Material.STONE_HOE, 2);
+        this.cassetteWorkspaceItem = readEntry(config, "items.cassetteWorkspace.item", Material.STONE_HOE, 3);
+        this.cassetteWorkspaceBlock = readEntry(config, "items.cassetteWorkspace.block", Material.STONE_HOE, 4);
+        this.radioItem = readEntry(config, "items.radio.item", Material.STONE_HOE, 5);
+        this.radioBlock = readEntry(config, "items.radio.block", Material.STONE_HOE, 6);
+        this.cassette = readEntry(config, "items.cassette", Material.IRON_NUGGET, 1);
+        this.sheetMusicBlank = readEntry(config, "items.sheetMusic.blank", Material.IRON_NUGGET, 2);
+        this.sheetMusicWritten = readEntry(config, "items.sheetMusic.written", Material.IRON_NUGGET, 3);
     }
 
     private Entry readEntry(FileConfiguration config, String path, Material defaultMaterial, int defaultCmd) {

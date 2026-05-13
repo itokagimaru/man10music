@@ -91,7 +91,7 @@ public class AuthorityTableManager {
             if (mysql == null || player == null) return Collections.emptyList();
 
             String sql =
-                    "SELECT m.id, m.composer, m.relates, m.music, m.name, m.bpm " +
+                    "SELECT m.id, m.composer, m.relates, m.music_red, m.music_aqua, m.music_green, m.music_yellow, m.name, m.bpm " +
                     "FROM authority_table a " +
                     "INNER JOIN music_table m ON a.music_id = m.id " +
                     "WHERE a.uuid = ? " +
@@ -105,16 +105,21 @@ public class AuthorityTableManager {
 
                 List<Music> musics = new ArrayList<>();
                 while (rs.next()) {
-                    byte[] musicBytes = rs.getBytes("music");
-                    int[] music = MusicDataCodec.toIntArray(musicBytes);
+                    int[] musicRed = MusicDataCodec.toIntArray(rs.getBytes("music_red"));
+                    int[] musicAqua = MusicDataCodec.toIntArray(rs.getBytes("music_aqua"));
+                    int[] musicGreen = MusicDataCodec.toIntArray(rs.getBytes("music_green"));
+                    int[] musicYellow = MusicDataCodec.toIntArray(rs.getBytes("music_yellow"));
                     List<UUID> relates = MusicDataCodec.fromYamlRelates(rs.getString("relates"));
 
-                    musics.add(new Music(
+                    musics.add(Music.fromDb(
                             rs.getInt("id"),
                             rs.getString("composer"),
                             relates,
                             rs.getString("name"),
-                            music,
+                            musicRed,
+                            musicAqua,
+                            musicGreen,
+                            musicYellow,
                             rs.getInt("bpm")
                     ));
                 }
