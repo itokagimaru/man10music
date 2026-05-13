@@ -29,17 +29,12 @@ public class WorkspacesMenuHolder extends BaseGuiHolder {
         ItemStack convert = new ItemStack(itemsData().getCassette().getMaterial());
         MakeItem.setItemMetaByColor(convert,"Convert", NamedTextColor.YELLOW, itemsData().getCassette().getCmd(), ItemData.BUTTON_ID,"convert");
         convert.lore(List.of(Component.text("楽譜をカセットテープに変換します")));
-        inv.setItem(10, convert);
+        inv.setItem(12, convert);
 
         ItemStack merge = new ItemStack(Material.ANVIL);
         MakeItem.setItemMetaByColor(merge, "Merge", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID,"merge");
         merge.lore(List.of(Component.text("カセットテープを結合します")));
-        inv.setItem(14, merge);
-
-        ItemStack changeBpm = new ItemStack(Material.CLOCK);
-        MakeItem.setItemMetaByColor(changeBpm,"ChangeBPM", NamedTextColor.YELLOW,0,ItemData.BUTTON_ID,"changeBpm");
-        changeBpm.lore(List.of(Component.text("カセットテープのBPMを設定,変更します")));
-        inv.setItem(16, changeBpm);
+        inv.setItem(15, merge);
     }
 
     @Override

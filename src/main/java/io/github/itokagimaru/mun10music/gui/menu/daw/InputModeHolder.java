@@ -4,10 +4,13 @@ import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.config.Icons;
 import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.manager.AutPlayManager;
 import io.github.itokagimaru.mun10music.manager.PacketManager;
+import io.github.itokagimaru.mun10music.manager.PlayMusicManager;
 import io.github.itokagimaru.mun10music.manager.music.Music;
 import io.github.itokagimaru.mun10music.manager.music.MusicManager;
 import io.github.itokagimaru.mun10music.manager.music.Track;
+import io.github.itokagimaru.mun10music.task.PlayMusic;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +34,22 @@ public class InputModeHolder extends BaseGuiHolder {
     Music music;
     Track track;
 
+    boolean isPlaying = false; //操作を受け付けるか
+
     int selectedSlot = 0;
     int page = 1;
     int topNote = 0;
+    private int getNowSelectedSlot() {
+        return selectedSlot;
+    }
+
+    private int getNowPage() {
+        return page;
+    }
+
+    private int getNowTopNote() {
+        return topNote;
+    }
 
     HashMap<Integer, BottomIcon> bottomIcons = new HashMap<Integer, BottomIcon>();
 
@@ -181,6 +198,7 @@ public class InputModeHolder extends BaseGuiHolder {
             cutNoteKeepingLength(index);
             inputGuiUpdate(0);
         }));
+        setPlayIcon();
         setTrackIcon();
         jumpPage(1);
     }
@@ -212,7 +230,58 @@ public class InputModeHolder extends BaseGuiHolder {
         }));
     }
 
+    private void setPlayIcon() {
+        ItemStack playItem = new ItemStack(iconsData().getBaseMaterial());
+        playItem.editMeta(meta -> {
+            meta.customName(Component.text("再生").color(NamedTextColor.GREEN));
+            meta.lore(List.of(
+                    Component.text("左クリック: 現在位置から再生").color(NamedTextColor.GRAY),
+                    Component.text("右クリック: 最初から再生").color(NamedTextColor.GRAY),
+                    Component.text("シフト + 左クリック: 現在トラックの現在位置から再生").color(NamedTextColor.GRAY),
+                    Component.text("シフト + 右クリック: 現在トラックの最初から再生").color(NamedTextColor.GRAY)
+            ));
+            meta.setItemModel(NamespacedKey.minecraft("music_disc_13"));
+            meta.setMaxStackSize(99);
+        });
+        bottomIcons.put(0, new BottomIcon(playItem.clone(), event -> {
+            Player player = (Player) event.getWhoClicked();
+            switch (event.getClick()) {
+                case LEFT -> startPreviewPlay(player, getMusicIndex(), false);
+                case RIGHT -> startPreviewPlay(player, 0, false);
+                case SHIFT_LEFT -> startPreviewPlay(player, getMusicIndex(), true);
+                case SHIFT_RIGHT -> startPreviewPlay(player, 0, true);
+                default -> {
+                }
+            }
+            setStopIcon(page, topNote);
+        }));
+    }
+
+    private void setStopIcon(int page, int topNote) {
+        ItemStack stopItem = new ItemStack(iconsData().getBaseMaterial());
+        stopItem.editMeta(meta -> {
+            meta.setItemModel(NamespacedKey.minecraft("elytra"));
+            meta.customName(Component.text("再生停止").color(NamedTextColor.RED));
+        });
+        ItemData.BUTTON_ID.set(stopItem, "STOP");
+        bottomIcons.put(0, new BottomIcon(stopItem.clone(), event -> {
+            Player player = (Player) event.getWhoClicked();
+            stopMusic(player);
+            onStopMusic(player, page, topNote);
+        }));
+    }
+
+    private void stopMusic(Player player) {
+        isPlaying = false;
+        PlayMusic playMusic = PlayMusicManager.getMusic(player);
+        AutPlayManager.set(player, false);
+        if (playMusic != null) {
+            playMusic.stopTask(player);
+        }
+    }
+
     public void open(Player player) {
+        stopMusic(player);
         inputGuiUpdate(0);
         player.openInventory(this.inv);
         updateFakeItemInPlayerInventorySlot(player);
@@ -341,6 +410,13 @@ public class InputModeHolder extends BaseGuiHolder {
     private void onClickInBottomInventory(InventoryClickEvent event, int slot) {
         BottomIcon bottomIcon = bottomIcons.get(slot);
         if (bottomIcon != null) {
+            if (isPlaying) {
+                if (!("STOP").equals(ItemData.BUTTON_ID.get(bottomIcon.getIcon()))){
+                    Player player = (Player) event.getWhoClicked();
+                    stopMusic(player);
+                    onStopMusic(player, page, topNote);
+                }
+            }
             bottomIcon.runClickAction(event);
         }
     }
@@ -350,6 +426,7 @@ public class InputModeHolder extends BaseGuiHolder {
 
     @Override
     public void onClose(Player player) {
+        stopMusic(player);
         if (!closeFlag) return;
         closeFlag = false;
         setMusicEndpoint();
@@ -360,6 +437,43 @@ public class InputModeHolder extends BaseGuiHolder {
             player.openInventory(mainMenuHolder.getInventory());
             Bukkit.getScheduler().runTask(Man10Music.getInstance(), player::updateInventory);
         });
+    }
+
+    @Override
+    public void onPlayNote(int count, Player player) {
+        page = count / 8 + 1;
+        if (page < 1) page = 1;
+        selectedSlot = count % 8;
+        // 再生中の音符が見えるようにページとスロットを移動する
+        jumpPage(page);
+        updateTopNoteForPlayback(count);
+        inputGuiUpdate(0);
+        updateFakeItemInPlayerInventorySlot(player);
+    }
+
+    private void updateTopNoteForPlayback(int index) {
+        if (musicList == null || index < 0 || index >= musicList.length) {
+            return;
+        }
+        int note = musicList[index];
+        if (note <= 0) {
+            return;
+        }
+        int minTop = (int) Math.ceil(note / 2.0) - 6;
+        if (minTop < 0) {
+            minTop = 0;
+        }
+        if (note <= topNote * 2 || note > (topNote + 6) * 2) {
+            topNote = minTop;
+        }
+    }
+
+    public void onStopMusic(Player player, int page, int topNote) {
+        jumpPage(page);
+        this.topNote = topNote;
+        inputGuiUpdate(0);
+        setPlayIcon();
+        updateFakeItemInPlayerInventorySlot(player);
     }
 
     private void changeTrack(Player player, Track track) {
@@ -485,6 +599,26 @@ public class InputModeHolder extends BaseGuiHolder {
         Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
             PacketManager.setFakeItemInPlayerSlot(player, fakeItemInPlayerInventorySlot);
         });
+    }
+
+    private void startPreviewPlay(Player player, int startIndex, boolean currentTrackOnly) {
+        if (player == null || music == null) {
+            return;
+        }
+        music.setMusic(track, musicList);
+        setMusicEndpoint();
+        EnumSet<Track> trackSet = currentTrackOnly ? EnumSet.of(track) : EnumSet.allOf(Track.class);
+        PlayMusic playing = PlayMusicManager.getMusic(player);
+        if (playing != null) {
+            playing.stopTask(player);
+        }
+        PlayMusic play = new PlayMusic();
+        play.setPrivate(true);
+        play.setRequester(player);
+        PlayMusicManager.setPlayingMusic(player, play);
+        AutPlayManager.set(player, false);
+        play.playMusic(player, music, startIndex, trackSet, musicData().getDefaultVolume(), musicData().getSoundRange());
+        isPlaying = true;
     }
 
     private Track getPrevTrack(Track current) {

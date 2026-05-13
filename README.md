@@ -35,7 +35,7 @@
 - `user`: 接続ユーザー名
 - `password`: 接続パスワード
 
-### `musicConfig.music`
+### `musicConfig.musics`
 - `maxLength`: 楽曲データの最大長
 
 ### `musicConfig.volume`

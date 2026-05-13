@@ -34,6 +34,10 @@ public abstract class BaseGuiHolder implements InventoryHolder {
 
     public abstract void onClose(Player player);
 
+    public void onPlayNote(int index, Player player) {
+        // デフォルトの実装は何もしない
+    }
+
     protected final PluginConfigData configData() {
         return pluginConfigData;
     }

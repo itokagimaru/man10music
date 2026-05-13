@@ -236,7 +236,7 @@ public void playMusic(Entity target, ItemStack pdcHolder) {
 ## ⚙️ Configuration
 - **MySQL Settings**: Configure host/port/database/user/password in `config.yml`
 - **Item Models**: Custom model data (CMD) values defined in `config.yml` under `items.*.cmd`
-- **Icon CMDs**: Triangle/navigation icons use CMD 8-12, sheet music scales/notes use 13-22
+- **Icon CMDs**: Triangle/navigation icons use CMD 8-12, sheet musics scales/notes use 13-22
 
 ## 📊 Data Flow Examples
 
