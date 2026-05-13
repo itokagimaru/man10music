@@ -4,7 +4,9 @@ import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.config.Icons;
 import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
+import io.github.itokagimaru.mun10music.gui.menu.base.BasePlayMusicHolder;
 import io.github.itokagimaru.mun10music.gui.menu.daw.DawsPlayModeHolder;
+import io.github.itokagimaru.mun10music.gui.menu.daw.InputModeHolder;
 import io.github.itokagimaru.mun10music.gui.menu.walkman.ItemsPlayModeHolder;
 import io.github.itokagimaru.mun10music.manager.AutPlayManager;
 import io.github.itokagimaru.mun10music.manager.ParticleManager;
@@ -17,9 +19,13 @@ import io.github.itokagimaru.mun10music.util.MakeItem;
 import io.github.itokagimaru.mun10music.util.PlaySound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.EnumSet;
 
 
 public class PlayMusic {
@@ -27,7 +33,7 @@ public class PlayMusic {
     ItemStack cassetteIcon;
     boolean isPrivate = true;
     Player requester;
-    BaseGuiHolder requestHolder;
+    BasePlayMusicHolder requestHolder;
     float volume;
     Double soundRange;
 
@@ -44,23 +50,47 @@ public class PlayMusic {
         }
     }
 
-    public BaseGuiHolder getRequestHolder() {
+    public BasePlayMusicHolder getRequestHolder() {
         return requestHolder;
     }
 
-    public void setRequestHolder(BaseGuiHolder holder) {
+    public void setRequestHolder(BasePlayMusicHolder holder) {
         // ホルダーを明示的に紐付ける
         requestHolder = holder;
     }
 
     public void playMusic(Entity target, int[] musicRed, int[] musicAqua, int[] musicGreen, int[] musicYellow, int bpm, float volume, Double soundRange) {
+        playMusic(target, musicRed, musicAqua, musicGreen, musicYellow, bpm, volume, soundRange, 0, EnumSet.allOf(Track.class));
+    }
+
+    public void playMusic(Entity target,
+                          int[] musicRed,
+                          int[] musicAqua,
+                          int[] musicGreen,
+                          int[] musicYellow,
+                          int bpm,
+                          float volume,
+                          Double soundRange,
+                          int startIndex,
+                          EnumSet<Track> trackSet) {
         this.volume = volume;
         this.soundRange = soundRange;
+        if (trackSet == null || trackSet.isEmpty()) {
+            return;
+        }
         long interval = (1200 / bpm);
-        int maxLength = getMaxLength(musicRed, musicAqua, musicGreen, musicYellow);
+        int[] red = trackSet.contains(Track.RED) ? musicRed : null;
+        int[] aqua = trackSet.contains(Track.AQUA) ? musicAqua : null;
+        int[] green = trackSet.contains(Track.GREEN) ? musicGreen : null;
+        int[] yellow = trackSet.contains(Track.YELLOW) ? musicYellow : null;
+        int maxLength = getMaxLength(red, aqua, green, yellow);
+        int safeStart = Math.max(0, startIndex);
+        if (safeStart >= maxLength) {
+            return;
+        }
 
         task = new BukkitRunnable() {
-            int count = 0;
+            int count = safeStart;
 
             @Override
             public void run() {
@@ -69,10 +99,14 @@ public class PlayMusic {
                     return;
                 }
 
-                playTrack(target, musicRed, count);
-                playTrack(target, musicAqua, count);
-                playTrack(target, musicGreen, count);
-                playTrack(target, musicYellow, count);
+                playTrack(target, red, count);
+                playTrack(target, aqua, count);
+                playTrack(target, green, count);
+                playTrack(target, yellow, count);
+                InventoryHolder holder = requester.getOpenInventory().getTopInventory().getHolder();
+                if(holder instanceof BaseGuiHolder baseGuiHolder){
+                    baseGuiHolder.onPlayNote(count, requester);
+                }
 
                 count++;
             }
@@ -80,6 +114,11 @@ public class PlayMusic {
     }
 
     public void playMusic(Entity target, Music music, float volume, Double soundRange) {
+        if (music == null) return;
+        playMusic(target, music, 0, EnumSet.allOf(Track.class), volume, soundRange);
+    }
+
+    public void playMusic(Entity target, Music music, int startIndex, EnumSet<Track> trackSet, float volume, Double soundRange) {
         if (music == null) return;
         playMusic(
                 target,
@@ -89,7 +128,9 @@ public class PlayMusic {
                 music.getMusic(Track.YELLOW),
                 music.getBpm(),
                 volume,
-                soundRange
+                soundRange,
+                startIndex,
+                trackSet
         );
     }
 
@@ -117,7 +158,9 @@ public class PlayMusic {
     }
 
     public void stopTask(Entity target) {
-        task.cancel();
+        if (task != null) {
+            task.cancel();
+        }
         PlayMusicManager.removeMusic(target);
         if (AutPlayManager.get(target)) {
             PlayMusic play = new PlayMusic();
@@ -129,6 +172,11 @@ public class PlayMusic {
             ItemStack play = new ItemStack(icons.getTriangleRight().getMaterial());
             MakeItem.setItemMeta(play, "再生", null, icons.getTriangleRight().getCmd(), ItemData.BUTTON_ID, "PLAY");
             requestHolder.getInventory().setItem(4, play);
+        } else if (requester.getOpenInventory().getTopInventory().getHolder() instanceof InputModeHolder holder) {
+            holder.onStopMusic(requester, 0, 0);
+        }
+        if (target instanceof Player player) {
+            player.sendMessage("再生を停止しました");
         }
     }
 
@@ -152,10 +200,19 @@ public class PlayMusic {
     }
 
     private int getMaxLength(int[] musicRed, int[] musicAqua, int[] musicGreen, int[] musicYellow) {
-        int redLength = musicRed == null ? 0 : musicRed.length;
-        int aquaLength = musicAqua == null ? 0 : musicAqua.length;
-        int greenLength = musicGreen == null ? 0 : musicGreen.length;
-        int yellowLength = musicYellow == null ? 0 : musicYellow.length;
+        int redLength = musicRed == null ? 0 : getLen(musicRed);
+        int aquaLength = musicAqua == null ? 0 : getLen(musicAqua);
+        int greenLength = musicGreen == null ? 0 : getLen(musicGreen);
+        int yellowLength = musicYellow == null ? 0 : getLen(musicYellow);
         return Math.max(Math.max(redLength, aquaLength), Math.max(greenLength, yellowLength));
+    }
+
+    int getLen(int[] music){
+        int len = 0;
+        for (int note: music){
+            if (note == -1) return len;
+            len++;
+        }
+        return len;
     }
 }

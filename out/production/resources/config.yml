@@ -15,54 +15,64 @@ musicConfig:
 
 items:
   keyBoard:
-    material: wooden_hoe
+    material: stone_hoe
     cmd: 1
   walkMan:
-    material: wooden_hoe
+    material: stone_hoe
     cmd: 2
+  cassetteWorkspace:
+    item:
+      material: stone_hoe
+      cmd: 3
+    block:
+      material: stone_hoe
+      cmd: 4
+  radio:
+    item:
+      material: stone_hoe
+      cmd: 5
+    block:
+      material: stone_hoe
+      cmd: 6
   cassette:
-    material: paper
+    material: iron_nugget
     cmd: 1
   sheetMusic:
     blank:
-      material: paper
+      material: iron_nugget
       cmd: 2
     written:
-      material: paper
+      material: iron_nugget
       cmd: 3
-  cassetteWorkspace:
-    item:
-      material: paper
-      cmd: 4
-    block:
-      material: paper
-      cmd: 5
-  radio:
-    item:
-      material: paper
-      cmd: 6
-    block:
-      material: paper
-      cmd: 7
 
 icons:
-  material: paper
+  material: wooden_shovel
   triangle:
-    up: 8
-    down: 9
-    left: 10
-    right: 11
-    select: 12
+    up: 1
+    down: 2
+    left: 3
+    right: 4
+    select: 5
   sheetMusic:
     scale:
-      null-F#: 13
-      F-E: 14
-      D#-D: 15
-      C#-C: 16
-      B-A#: 17
-      A-G#: 18
-      G-F#: 19
+      null-F#: 6
+      F-E: 7
+      D#-D: 8
+      C#-C: 9
+      B-A#: 10
+      A-G#: 11
+      G-F#: 12
     note:
-      blank: 20
-      up: 21
-      down: 22
+      blank: 13
+      red:
+        up: 14
+        down: 15
+      aqua:
+        up: 16
+        down: 17
+      green:
+        up: 18
+        down: 19
+      yellow:
+        up: 20
+        down: 21

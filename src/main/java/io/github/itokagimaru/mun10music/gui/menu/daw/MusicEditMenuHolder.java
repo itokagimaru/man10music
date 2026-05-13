@@ -5,6 +5,7 @@ import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.manager.music.Music;
 import io.github.itokagimaru.mun10music.manager.music.MusicManager;
+import io.github.itokagimaru.mun10music.manager.music.Track;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -62,8 +63,8 @@ public class MusicEditMenuHolder extends BaseGuiHolder {
         switch (buttonId) {
             case "EDIT" -> {
                 closeFlag = false;
-                SelectEditTrackHolder selectEditTrackHolder = new SelectEditTrackHolder(music);
-                player.openInventory(selectEditTrackHolder.getInventory());
+                InputModeHolder inputModeHolder = new InputModeHolder(music, Track.RED);
+                inputModeHolder.open(player);
             }
             case "TITLE" -> {
                 closeFlag = false;

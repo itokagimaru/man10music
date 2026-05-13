@@ -5,6 +5,7 @@ import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.gui.menu.base.BaseMusicListHolder;
 import io.github.itokagimaru.mun10music.manager.music.Music;
 import io.github.itokagimaru.mun10music.manager.music.MusicManager;
+import io.github.itokagimaru.mun10music.manager.music.Track;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -73,8 +74,8 @@ public class SelectEditMusicHolder extends BaseMusicListHolder {
     protected void onMusicRightClick(Player player, int musicID) {
         Music music = getMusic(musicID);
         closeFlag = false;
-        SelectEditTrackHolder selectEditTrackHolder = new SelectEditTrackHolder(music);
-        player.openInventory(selectEditTrackHolder.getInventory());
+        InputModeHolder inputModeHolder = new InputModeHolder(music, Track.RED);
+        inputModeHolder.open(player);
     }
 
     @Override
