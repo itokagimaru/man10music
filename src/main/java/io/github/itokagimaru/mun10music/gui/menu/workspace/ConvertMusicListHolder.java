@@ -50,8 +50,7 @@ public class ConvertMusicListHolder extends BaseMusicListHolder {
                 PublishedMusicManager.savePublishedMusic(Man10Music.getInstance().getMySQLManager(), getMusic(musicID)).thenAccept(newID -> {
                     musics[0] = newID;
                 });
-            }
-            musics[0] = publishedID;
+            } else musics[0] = publishedID;
             Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
                 ItemData.PUBLISHED_MUSIC_IDS.set(recordedCassette, musics);
                 ItemData.ITEM_ID.set(recordedCassette, "recordCassette");
