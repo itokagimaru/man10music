@@ -2,6 +2,7 @@ package io.github.itokagimaru.mun10music.gui.menu.daw;
 
 import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.config.Icons;
+import io.github.itokagimaru.mun10music.data.IntKey;
 import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.manager.AutPlayManager;
@@ -30,26 +31,19 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class InputModeHolder extends BaseGuiHolder {
+    // メソッド配置ルール: 初期化 → 公開API → イベント → UI/再生/編集ヘルパー → ユーティリティ
+    IntKey note = new IntKey(new NamespacedKey("mmusic", "note"), () -> -1);
+    IntKey address = new IntKey(new NamespacedKey("mmusic", "address"), () -> -1);
     int[] musicList;
     Music music;
     Track track;
+    int maxNoteId = 31;
 
     boolean isPlaying = false; //操作を受け付けるか
 
     int selectedSlot = 0;
     int page = 1;
     int topNote = 0;
-    private int getNowSelectedSlot() {
-        return selectedSlot;
-    }
-
-    private int getNowPage() {
-        return page;
-    }
-
-    private int getNowTopNote() {
-        return topNote;
-    }
 
     HashMap<Integer, BottomIcon> bottomIcons = new HashMap<Integer, BottomIcon>();
 
@@ -110,16 +104,6 @@ public class InputModeHolder extends BaseGuiHolder {
         setup();
     }
 
-    private NamedTextColor getTitleColor(Track track) {
-        switch (track) {
-            case RED -> {return NamedTextColor.RED;}
-            case AQUA -> {return NamedTextColor.AQUA;}
-            case GREEN -> {return NamedTextColor.GREEN;}
-            case YELLOW -> {return NamedTextColor.YELLOW;}
-            default -> {return NamedTextColor.WHITE;}
-        }
-    }
-
     public void setup() {
         Icons icons = icons();
         ItemStack base = new ItemStack(icons.getBaseMaterial());
@@ -154,6 +138,7 @@ public class InputModeHolder extends BaseGuiHolder {
                 final NoteSpec noteSpec = NOTE_SPECS.get(whiteName[i]);
                 bottomIcons.put(i + 17, new BottomIcon(white.clone(), event -> {
                     applyNoteSpec(noteSpec);
+                    inputGuiUpdate(0);
                     moveNextSelectedSlot();
                 }));
             }
@@ -167,6 +152,7 @@ public class InputModeHolder extends BaseGuiHolder {
                 final NoteSpec noteSpec = NOTE_SPECS.get(blackName[i]);
                 bottomIcons.put(i + 10, new BottomIcon(black.clone(), event -> {
                     applyNoteSpec(noteSpec);
+                    inputGuiUpdate(0);
                     moveNextSelectedSlot();
                 }));
             }
@@ -201,6 +187,303 @@ public class InputModeHolder extends BaseGuiHolder {
         setPlayIcon();
         setTrackIcon();
         jumpPage(1);
+    }
+
+    public void open(Player player) {
+        stopMusic(player);
+        inputGuiUpdate(0);
+        player.openInventory(this.inv);
+        updateFakeItemInPlayerInventorySlot(player);
+    }
+
+    public void inputGuiUpdate(int offset) {
+        if (musicList == null) {
+            return;
+        }
+        int newTopNote = topNote + offset;
+        if (newTopNote < 0 || newTopNote > maxNoteId) return;
+        topNote += offset;
+        int noteData = topNote *2 + 1;
+        int slot = -1;
+        ItemStack icon = new ItemStack(icons().getBaseMaterial());
+        for (int i = 0; i <= 53; i++) {
+            if(slot >= 8) {
+                slot = -1;
+                noteData+=2;
+            }
+            MakeItem.setItemMeta(icon, "", null, icons().getNoteBlank().getCmd(), ItemData.BUTTON_ID, "NOTE ICON");
+            this.note.set(icon, noteData);
+            this.address.set(icon, slot);
+            slot++;
+            this.inv.setItem(i, icon);
+        }
+        int noteId;
+        for (int i = 0; i <= 5; i++) {
+            noteId = topNote + i;
+            icon.setAmount(7 - (noteId + 2) / 6);
+            while (noteId >= 7) noteId -= 6;
+            MakeItem.setItemMeta(icon, "", null, scaleCmd(icons(), noteId), ItemData.TOP_NOTE, topNote);
+            this.inv.setItem(i * 9, icon);
+        }
+        icon.setAmount(1);
+        for (int i = 0; i < 8; i++) {
+            int rawNote = musicList[i + ((page - 1) * 8)];
+            if (rawNote != 0) {
+
+                if (rawNote > topNote * 2 && rawNote <= (topNote + 6) * 2) {
+                    int note = rawNote;
+                    note -= topNote * 2;
+                    if (note == 25) note -= 24;
+                    else if (note >= 13) note -= 12;
+                    if (note % 2 == 1) {
+                        note += 1;
+                    }
+                    int noteSlot = i + 1 + (9 * note / 2 - 9);
+                    ItemStack noteIcon = inv.getItem(noteSlot);
+
+                    noteIcon.editMeta(meta -> {
+                        if (rawNote % 2 == 1) {
+                            meta.setCustomModelData(icons().getNoteUp(track).getCmd());
+                        } else {
+                            meta.setCustomModelData(icons().getNoteDown(track).getCmd());
+                        }
+                    });
+                    noteIcon.editMeta(meta -> {
+                        meta.customName(Component.text(scaleNoteName(rawNote)));
+                    });
+                    this.inv.setItem(noteSlot, noteIcon);
+                }
+            }
+        }
+    }
+
+    public void jumpPage(int page) {
+        if (page < 1 || page > Man10Music.MAX_PAGE) return;
+        this.page = page;
+        ItemStack sign = getSign(page);
+        bottomIcons.put(27, new BottomIcon(sign.clone(), event -> {
+            switch (event.getClick()) {
+                case RIGHT -> jumpNextPage();
+                case LEFT -> jumpBackPage();
+                case SHIFT_RIGHT -> {
+                    setMusicEndpoint();
+                    int endPage = getMusicFinalPage();
+                    jumpPage(endPage);
+                }
+                case SHIFT_LEFT -> jumpPage(1);
+            }
+        }));
+        inputGuiUpdate(0);
+        setSelectedSlot(0);
+    }
+    public void setMusicEndpoint() {
+        for (int i = 0; i < musicList.length; i++) {//エンドポイントの削除
+            if (musicList[i] == -1) musicList[i] = 0;
+        }
+        int music_end_point = 0;
+        for (int i = musicList.length; i > 0; i--) {//エンドポイントの追加
+            if (musicList[i - 1] != 0) {
+                music_end_point = i;
+                break;
+            }
+        }
+        if (!(music_end_point >= musicList.length)) musicList[music_end_point] = -1;
+    }
+
+    public int getMusicFinalPage() {
+        int endPoint = 0;
+        for (int i = 0; i < musicList.length; i++) {
+            if (musicList[i] == -1) endPoint = i;
+        }
+        return endPoint / 8 + 1;
+    }
+
+    @Override
+    public void onClick(InventoryClickEvent event) {
+        event.setCancelled(true);
+        Player player = (Player) event.getWhoClicked();
+        int rawSlot = event.getRawSlot();
+        if (rawSlot < 54) {
+            onClickInTopInventory(event);
+            updateFakeItemInPlayerInventorySlot(player);
+            return;
+        }
+        int slot = event.getSlot() -9;
+        if (slot < 0) slot += 36;
+        onClickInBottomInventory(event, slot);
+        updateFakeItemInPlayerInventorySlot(player);
+    }
+
+    @Override
+    public void onClose(Player player) {
+        stopMusic(player);
+        if (!closeFlag) return;
+        closeFlag = false;
+        setMusicEndpoint();
+        music.setMusic(track, musicList);
+        MusicManager.saveMusicToDb(Man10Music.getInstance().getMySQLManager(), music);
+        Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
+            MainMenuHolder mainMenuHolder = new MainMenuHolder();
+            player.openInventory(mainMenuHolder.getInventory());
+            Bukkit.getScheduler().runTask(Man10Music.getInstance(), player::updateInventory);
+        });
+    }
+
+    @Override
+    public void onPlayNote(int count, Player player) {
+        page = count / 8 + 1;
+        if (page < 1) page = 1;
+        selectedSlot = count % 8;
+        // 再生中の音符が見えるようにページとスロットを移動する
+        jumpPage(page);
+        updateTopNoteForPlayback(count);
+        inputGuiUpdate(0);
+        updateFakeItemInPlayerInventorySlot(player);
+    }
+
+    public void onStopMusic(Player player, int page, int topNote) {
+        jumpPage(page);
+        this.topNote = topNote;
+        inputGuiUpdate(0);
+        setPlayIcon();
+        updateFakeItemInPlayerInventorySlot(player);
+    }
+
+    private void onClickInBottomInventory(InventoryClickEvent event, int slot) {
+        BottomIcon bottomIcon = bottomIcons.get(slot);
+        if (bottomIcon != null) {
+            if (isPlaying) {
+                if (!("STOP").equals(ItemData.BUTTON_ID.get(bottomIcon.getIcon()))){
+                    Player player = (Player) event.getWhoClicked();
+                    stopMusic(player);
+                    onStopMusic(player, page, topNote);
+                }
+            }
+            bottomIcon.runClickAction(event);
+        }
+    }
+
+    private void onClickInTopInventory(InventoryClickEvent event) {
+        ItemStack icon = event.getCurrentItem();
+        if (icon == null) return;
+        switch (ItemData.BUTTON_ID.get(icon)) {
+            case "NOTE ICON" -> {
+                Player player = (Player) event.getWhoClicked();
+                int note = this.note.get(icon);
+                int address = this.address.get(icon);
+
+                if (note == -1) return;
+                if (address == -1) return;
+                if (event.isRightClick()) {
+                    note++;
+                }
+                if (event.isShiftClick()){
+                    note = 1;
+                }
+                musicList[address + ((page - 1) * 8)] = note;
+                player.sendMessage(Component.text("note: " + note + ", address: " + address));
+                inputGuiUpdate(0);
+            }
+        }
+
+    }
+
+    private void changeTrack(Player player, Track track) {
+        setMusicEndpoint();
+        music.setMusic(this.track, musicList);
+        MusicManager.saveMusicToDb(Man10Music.getInstance().getMySQLManager(), music);
+        musicList = music.getMusic(track);
+        this.track = track;
+        setTrackIcon();
+        jumpPage(1);
+        updateFakeItemInPlayerInventorySlot(player);
+    }
+
+    private void applyNoteSpec(NoteSpec spec) {
+        if (spec == null || musicList == null) {
+            return;
+        }
+
+        int index = getMusicIndex();
+
+        if (spec.restToggle()) {
+            musicList[index] = musicList[index] != 1 ? 1 : 0;
+            return;
+        }
+
+        if (spec.skipWhenTopNoteZero() && topNote == 0) {
+            return;
+        }
+
+        int add = Math.min((topNote + spec.addOffset()) / 6, spec.addCap());
+        if (spec.forceAddZeroWhenTopNoteZero() && topNote == 0) {
+            add = 0;
+        }
+        musicList[index] = spec.baseValue() + (12 * add);
+    }
+
+    private int getMusicIndex() {
+        return (page - 1) * 8 + selectedSlot;
+    }
+
+    private void insertRestKeepingLength(int index) {
+        if (musicList == null || musicList.length == 0) {
+            return;
+        }
+        if (index < 0 || index >= musicList.length) {
+            return;
+        }
+
+        for (int i = musicList.length - 1; i > index; i--) {
+            musicList[i] = musicList[i - 1];
+        }
+        musicList[index] = 0;
+    }
+
+    private void cutNoteKeepingLength(int index) {
+        if (musicList == null || musicList.length == 0) {
+            return;
+        }
+        if (index < 0 || index >= musicList.length) {
+            return;
+        }
+
+        for (int i = index; i < musicList.length - 1; i++) {
+            musicList[i] = musicList[i + 1];
+        }
+        musicList[musicList.length - 1] = 0;
+    }
+
+    private void setSelectedSlot(int slot){
+        if (slot < 0 || slot >= 8) slot = 0;
+        selectedSlot = slot;
+
+        ItemStack selected = new ItemStack(icons().getBaseMaterial());
+        MakeItem.setItemMeta(selected, "選択中", null, icons().getTriangleSelect().getCmd(), null, null);
+
+        ItemStack select = new ItemStack(icons().getBaseMaterial());
+        MakeItem.setItemMeta(select, "カーソルを移動", null, icons().getTriangleUp().getCmd(), null, null);
+        for (int i = 0; i < 8; i++){
+            if (i == selectedSlot){
+                bottomIcons.put(i + 1, new BottomIcon(selected, event -> {
+                }));
+
+            } else {
+                int finalI = i;
+                bottomIcons.put(i + 1, new BottomIcon(select, event -> {
+                    setSelectedSlot(finalI);
+                }));
+            }
+        }
+    }
+
+    private void moveNextSelectedSlot(){
+        selectedSlot = selectedSlot + 1;
+        if (selectedSlot >= 8) {
+            jumpNextPage();
+            return;
+        }
+        setSelectedSlot(selectedSlot);
     }
 
     private void setTrackIcon() {
@@ -280,177 +563,6 @@ public class InputModeHolder extends BaseGuiHolder {
         }
     }
 
-    public void open(Player player) {
-        stopMusic(player);
-        inputGuiUpdate(0);
-        player.openInventory(this.inv);
-        updateFakeItemInPlayerInventorySlot(player);
-    }
-
-    public void inputGuiUpdate(int offset) {
-        if (musicList == null) {
-            return;
-        }
-        topNote += offset;
-
-        ItemStack icon = new ItemStack(icons().getBaseMaterial());
-        for (int i = 0; i <= 53; i++) {
-            MakeItem.setItemMeta(icon, "", null, icons().getNoteBlank().getCmd(), null, null);
-            this.inv.setItem(i, icon);
-        }
-        int noteId;
-        for (int i = 0; i <= 5; i++) {
-            noteId = topNote + i;
-            icon.setAmount(7 - (noteId + 2) / 6);
-            while (noteId >= 7) noteId -= 6;
-            MakeItem.setItemMeta(icon, "", null, scaleCmd(icons(), noteId), ItemData.TOP_NOTE, topNote);
-            this.inv.setItem(i * 9, icon);
-        }
-        icon.setAmount(1);
-        for (int i = 0; i < 8; i++) {
-            int note = musicList[i + ((page - 1) * 8)];
-            if (note != 0) {
-                if (note % 2 == 1) {
-                    MakeItem.setItemMeta(icon, "", null, icons().getNoteUp(track).getCmd(), null, null);
-                } else {
-                    MakeItem.setItemMeta(icon, "", null, icons().getNoteDown(track).getCmd(), null, null);
-                }
-                if (note > topNote * 2 && note <= (topNote + 6) * 2) {
-                    note -= topNote * 2;
-                    if (note == 25) note -= 24;
-                    else if (note >= 13) note -= 12;
-                    if (note % 2 == 1) {
-                        note += 1;
-                    }
-                    this.inv.setItem(i + 1 + (9 * note / 2 - 9), icon);
-                }
-            }
-        }
-    }
-
-    public void jumpPage(int page) {
-        if (page < 1 || page > Man10Music.MAX_PAGE) return;
-        this.page = page;
-        ItemStack sign = getSign(page);
-        bottomIcons.put(27, new BottomIcon(sign.clone(), event -> {
-            switch (event.getClick()) {
-                case RIGHT -> jumpNextPage();
-                case LEFT -> jumpBackPage();
-                case SHIFT_RIGHT -> {
-                    setMusicEndpoint();
-                    int endPage = getMusicFinalPage();
-                    jumpPage(endPage);
-                }
-                case SHIFT_LEFT -> jumpPage(1);
-            }
-        }));
-        inputGuiUpdate(0);
-        setSelectedSlot(0);
-    }
-
-    private static @NonNull ItemStack getSign(int page) {
-        ItemStack sign = new ItemStack(Material.OAK_HANGING_SIGN);
-        sign.editMeta(meta -> {
-            meta.customName(Component.text("現在 " + page +" ページ目"));
-            meta.lore(List.of(
-                    Component.text("右クリック            : ").color(NamedTextColor.YELLOW).append(Component.text("次のページへ").color(NamedTextColor.WHITE)),
-                    Component.text("左クリック            : ").color(NamedTextColor.YELLOW).append(Component.text("前のページへ").color(NamedTextColor.WHITE)),
-                    Component.text("シフト + 右クリック : ").color(NamedTextColor.YELLOW).append(Component.text("最後のページへ").color(NamedTextColor.WHITE)),
-                    Component.text("シフト + 左クリック : ").color(NamedTextColor.YELLOW).append(Component.text("最初のページへ").color(NamedTextColor.WHITE))
-            ));
-            meta.setMaxStackSize(99);
-        });
-        return sign;
-    }
-
-    private void jumpNextPage() {
-        jumpPage(page + 1);
-    }
-
-    private void jumpBackPage() {
-        jumpPage(page - 1);
-    }
-
-
-    public void setMusicEndpoint() {
-        for (int i = 0; i < musicList.length; i++) {//エンドポイントの削除
-            if (musicList[i] == -1) musicList[i] = 0;
-        }
-        int music_end_point = 0;
-        for (int i = musicList.length; i > 0; i--) {//エンドポイントの追加
-            if (musicList[i - 1] != 0) {
-                music_end_point = i;
-                break;
-            }
-        }
-        if (!(music_end_point >= musicList.length)) musicList[music_end_point] = -1;
-    }
-
-    public int getMusicFinalPage() {
-        int endPoint = 0;
-        for (int i = 0; i < musicList.length; i++) {
-            if (musicList[i] == -1) endPoint = i;
-        }
-        return endPoint / 8 + 1;
-    }
-
-    @Override
-    public void onClick(InventoryClickEvent event) {
-        event.setCancelled(true);
-        int rawSlot = event.getRawSlot();
-
-        int slot = rawSlot - 54;
-        if (slot < 0) slot += 45;
-
-        if (0 > slot) onClickInTopInventory(event);
-        else onClickInBottomInventory(event, slot);
-        updateFakeItemInPlayerInventorySlot((Player) event.getWhoClicked());
-    }
-
-    private void onClickInBottomInventory(InventoryClickEvent event, int slot) {
-        BottomIcon bottomIcon = bottomIcons.get(slot);
-        if (bottomIcon != null) {
-            if (isPlaying) {
-                if (!("STOP").equals(ItemData.BUTTON_ID.get(bottomIcon.getIcon()))){
-                    Player player = (Player) event.getWhoClicked();
-                    stopMusic(player);
-                    onStopMusic(player, page, topNote);
-                }
-            }
-            bottomIcon.runClickAction(event);
-        }
-    }
-
-    private void onClickInTopInventory(InventoryClickEvent event) {
-    }
-
-    @Override
-    public void onClose(Player player) {
-        stopMusic(player);
-        if (!closeFlag) return;
-        closeFlag = false;
-        setMusicEndpoint();
-        music.setMusic(track, musicList);
-        MusicManager.saveMusicToDb(Man10Music.getInstance().getMySQLManager(), music);
-        Bukkit.getScheduler().runTask(Man10Music.getInstance(), () -> {
-            MainMenuHolder mainMenuHolder = new MainMenuHolder();
-            player.openInventory(mainMenuHolder.getInventory());
-            Bukkit.getScheduler().runTask(Man10Music.getInstance(), player::updateInventory);
-        });
-    }
-
-    @Override
-    public void onPlayNote(int count, Player player) {
-        page = count / 8 + 1;
-        if (page < 1) page = 1;
-        selectedSlot = count % 8;
-        // 再生中の音符が見えるようにページとスロットを移動する
-        jumpPage(page);
-        updateTopNoteForPlayback(count);
-        inputGuiUpdate(0);
-        updateFakeItemInPlayerInventorySlot(player);
-    }
-
     private void updateTopNoteForPlayback(int index) {
         if (musicList == null || index < 0 || index >= musicList.length) {
             return;
@@ -466,129 +578,6 @@ public class InputModeHolder extends BaseGuiHolder {
         if (note <= topNote * 2 || note > (topNote + 6) * 2) {
             topNote = minTop;
         }
-    }
-
-    public void onStopMusic(Player player, int page, int topNote) {
-        jumpPage(page);
-        this.topNote = topNote;
-        inputGuiUpdate(0);
-        setPlayIcon();
-        updateFakeItemInPlayerInventorySlot(player);
-    }
-
-    private void changeTrack(Player player, Track track) {
-        setMusicEndpoint();
-        music.setMusic(this.track, musicList);
-        MusicManager.saveMusicToDb(Man10Music.getInstance().getMySQLManager(), music);
-        musicList = music.getMusic(track);
-        this.track = track;
-        setTrackIcon();
-        jumpPage(1);
-        updateFakeItemInPlayerInventorySlot(player);
-    }
-
-    private Icons icons() {
-        return iconsData();
-    }
-
-    private int scaleCmd(Icons icons, int noteId) {
-        return switch (noteId) {
-            case 0 -> icons.getScaleNullToFSharp().getCmd();
-            case 1 -> icons.getScaleFToE().getCmd();
-            case 2 -> icons.getScaleDSharpToD().getCmd();
-            case 3 -> icons.getScaleCSharpToC().getCmd();
-            case 4 -> icons.getScaleBToASharp().getCmd();
-            case 5 -> icons.getScaleAToGSharp().getCmd();
-            default -> icons.getScaleGToFSharp().getCmd();
-        };
-    }
-
-    private void applyNoteSpec(NoteSpec spec) {
-        if (spec == null || musicList == null) {
-            return;
-        }
-
-        int index = getMusicIndex();
-
-        if (spec.restToggle()) {
-            musicList[index] = musicList[index] != 0 ? 0 : 1;
-            return;
-        }
-
-        if (spec.skipWhenTopNoteZero() && topNote == 0) {
-            return;
-        }
-
-        int add = Math.min((topNote + spec.addOffset()) / 6, spec.addCap());
-        if (spec.forceAddZeroWhenTopNoteZero() && topNote == 0) {
-            add = 0;
-        }
-        musicList[index] = spec.baseValue() + (12 * add);
-        inputGuiUpdate(0);
-    }
-
-    private int getMusicIndex() {
-        return (page - 1) * 8 + selectedSlot;
-    }
-
-    private void insertRestKeepingLength(int index) {
-        if (musicList == null || musicList.length == 0) {
-            return;
-        }
-        if (index < 0 || index >= musicList.length) {
-            return;
-        }
-
-        for (int i = musicList.length - 1; i > index; i--) {
-            musicList[i] = musicList[i - 1];
-        }
-        musicList[index] = 0;
-    }
-
-    private void cutNoteKeepingLength(int index) {
-        if (musicList == null || musicList.length == 0) {
-            return;
-        }
-        if (index < 0 || index >= musicList.length) {
-            return;
-        }
-
-        for (int i = index; i < musicList.length - 1; i++) {
-            musicList[i] = musicList[i + 1];
-        }
-        musicList[musicList.length - 1] = 0;
-    }
-
-    private void setSelectedSlot(int slot){
-        if (slot < 0 || slot >= 8) slot = 0;
-        selectedSlot = slot;
-
-        ItemStack selected = new ItemStack(icons().getBaseMaterial());
-        MakeItem.setItemMeta(selected, "選択中", null, icons().getTriangleSelect().getCmd(), null, null);
-
-        ItemStack select = new ItemStack(icons().getBaseMaterial());
-        MakeItem.setItemMeta(select, "カーソルを移動", null, icons().getTriangleUp().getCmd(), null, null);
-        for (int i = 0; i < 8; i++){
-            if (i == selectedSlot){
-                bottomIcons.put(i + 1, new BottomIcon(selected, event -> {
-                }));
-
-            } else {
-                int finalI = i;
-                bottomIcons.put(i + 1, new BottomIcon(select, event -> {
-                    setSelectedSlot(finalI);
-                }));
-            }
-        }
-    }
-
-    private void moveNextSelectedSlot(){
-        selectedSlot = selectedSlot + 1;
-        if (selectedSlot >= 8) {
-            jumpNextPage();
-            return;
-        }
-        setSelectedSlot(selectedSlot);
     }
 
     private void updateFakeItemInPlayerInventorySlot(Player player) {
@@ -613,12 +602,22 @@ public class InputModeHolder extends BaseGuiHolder {
             playing.stopTask(player);
         }
         PlayMusic play = new PlayMusic();
-        play.setPrivate(true);
+        play.setPrivate(true, player.getWorld());
         play.setRequester(player);
         PlayMusicManager.setPlayingMusic(player, play);
         AutPlayManager.set(player, false);
         play.playMusic(player, music, startIndex, trackSet, musicData().getDefaultVolume(), musicData().getSoundRange());
         isPlaying = true;
+    }
+
+    private NamedTextColor getTitleColor(Track track) {
+        switch (track) {
+            case RED -> {return NamedTextColor.RED;}
+            case AQUA -> {return NamedTextColor.AQUA;}
+            case GREEN -> {return NamedTextColor.GREEN;}
+            case YELLOW -> {return NamedTextColor.YELLOW;}
+            default -> {return NamedTextColor.WHITE;}
+        }
     }
 
     private Track getPrevTrack(Track current) {
@@ -657,6 +656,91 @@ public class InputModeHolder extends BaseGuiHolder {
             case YELLOW -> NamespacedKey.minecraft("gold_block");
             default -> NamespacedKey.minecraft("barrier");
         };
+    }
+
+    private Icons icons() {
+        return iconsData();
+    }
+
+    private int scaleCmd(Icons icons, int noteId) {
+        return switch (noteId) {
+            case 0 -> icons.getScaleNullToFSharp().getCmd();
+            case 1 -> icons.getScaleFToE().getCmd();
+            case 2 -> icons.getScaleDSharpToD().getCmd();
+            case 3 -> icons.getScaleCSharpToC().getCmd();
+            case 4 -> icons.getScaleBToASharp().getCmd();
+            case 5 -> icons.getScaleAToGSharp().getCmd();
+            default -> icons.getScaleGToFSharp().getCmd();
+        };
+    }
+
+    private String scaleNoteName(int rawNoteId){
+        if (rawNoteId == 1) return "休符/R";
+        int noteId = rawNoteId % 12;
+        switch (noteId) {
+            case 0 -> {
+                return "ソ#/G#";
+            }
+            case 1 -> {
+                return "ソ/G";
+            }
+            case 2 -> {
+                return "ファ#/F#";
+            }
+            case 3 -> {
+                return "ファ/F";
+            }
+            case 4 -> {
+                return "ミ/E";
+            }
+            case 5 -> {
+                return "レ#/D#";
+            }
+            case 6 -> {
+                return "レ/D";
+            }
+            case 7 -> {
+                return "ド#/C#";
+            }
+            case 8 -> {
+                return "ド/C";
+            }
+            case 9 -> {
+                return "シ/B";
+            }
+            case 10 -> {
+                return "ラ#/A#";
+            }
+            case 11 -> {
+                return "ラ/A";
+            }
+            default -> {
+                return "";
+            }
+        }
+    }
+
+    private static @NonNull ItemStack getSign(int page) {
+        ItemStack sign = new ItemStack(Material.OAK_HANGING_SIGN);
+        sign.editMeta(meta -> {
+            meta.customName(Component.text("現在 " + page +" ページ目"));
+            meta.lore(List.of(
+                    Component.text("右クリック            : ").color(NamedTextColor.YELLOW).append(Component.text("次のページへ").color(NamedTextColor.WHITE)),
+                    Component.text("左クリック            : ").color(NamedTextColor.YELLOW).append(Component.text("前のページへ").color(NamedTextColor.WHITE)),
+                    Component.text("シフト + 右クリック : ").color(NamedTextColor.YELLOW).append(Component.text("最後のページへ").color(NamedTextColor.WHITE)),
+                    Component.text("シフト + 左クリック : ").color(NamedTextColor.YELLOW).append(Component.text("最初のページへ").color(NamedTextColor.WHITE))
+            ));
+            meta.setMaxStackSize(99);
+        });
+        return sign;
+    }
+
+    private void jumpNextPage() {
+        jumpPage(page + 1);
+    }
+
+    private void jumpBackPage() {
+        jumpPage(page - 1);
     }
 }
 
