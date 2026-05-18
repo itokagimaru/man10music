@@ -12,6 +12,8 @@ musicConfig:
     default: 2
     autoPlay: 0.5
     radius: 5
+  cantPlayPublic:
+    worldName: [""]
 
 items:
   keyBoard:

@@ -95,7 +95,7 @@ public abstract class BasePlayMusicHolder extends BaseGuiHolder {
         }
         Entity target = getPerformingTarget(player);
         currentPlay = new PlayMusic();
-        currentPlay.setPrivate(isPrivate);
+        currentPlay.setPrivate(isPrivate, player.getWorld());
         currentPlay.setRequester(player);
         onCreatePlay(player, currentPlay);
         PlayMusicManager.setPlayingMusic(target, currentPlay);

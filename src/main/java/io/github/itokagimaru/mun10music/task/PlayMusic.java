@@ -2,6 +2,7 @@ package io.github.itokagimaru.mun10music.task;
 
 import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.config.Icons;
+import io.github.itokagimaru.mun10music.config.Musics;
 import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.gui.menu.base.BasePlayMusicHolder;
@@ -17,6 +18,9 @@ import io.github.itokagimaru.mun10music.manager.music.PublishedMusicManager;
 import io.github.itokagimaru.mun10music.manager.music.Track;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import io.github.itokagimaru.mun10music.util.PlaySound;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -37,7 +41,11 @@ public class PlayMusic {
     float volume;
     Double soundRange;
 
-    public void setPrivate(boolean bool){
+    public void setPrivate(boolean bool, World world){
+        if (Man10Music.getInstance().getPluginConfigData().getMusic().getCantPlayPublicWorlds().contains(world.getName())){
+            isPrivate = false;
+            return;
+        }
         isPrivate = bool;
     }
 
@@ -73,11 +81,13 @@ public class PlayMusic {
                           Double soundRange,
                           int startIndex,
                           EnumSet<Track> trackSet) {
+        requester.sendMessage(Component.text("再生を開始しました/" + isPrivate + target.getName()));
         this.volume = volume;
         this.soundRange = soundRange;
         if (trackSet == null || trackSet.isEmpty()) {
             return;
         }
+
         long interval = (1200 / bpm);
         int[] red = trackSet.contains(Track.RED) ? musicRed : null;
         int[] aqua = trackSet.contains(Track.AQUA) ? musicAqua : null;
@@ -114,6 +124,8 @@ public class PlayMusic {
     }
 
     public void playMusic(Entity target, Music music, float volume, Double soundRange) {
+        Entity targetEntity = Bukkit.getEntity(target.getUniqueId());
+        if (targetEntity == null) return;
         if (music == null) return;
         playMusic(target, music, 0, EnumSet.allOf(Track.class), volume, soundRange);
     }
@@ -164,7 +176,7 @@ public class PlayMusic {
         PlayMusicManager.removeMusic(target);
         if (AutPlayManager.get(target)) {
             PlayMusic play = new PlayMusic();
-            play.setPrivate(isPrivate);
+            play.setPrivate(isPrivate, target.getWorld());
             play.setRequester(requester);
             PlayMusicManager.setPlayingMusic(target, play);
         } else if (requester.getOpenInventory().getTopInventory().getHolder() == requestHolder) {
