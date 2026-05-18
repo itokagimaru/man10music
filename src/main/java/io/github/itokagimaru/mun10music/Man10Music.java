@@ -6,7 +6,6 @@ import io.github.itokagimaru.mun10music.db.MySQLManager;
 import io.github.itokagimaru.mun10music.gui.listener.ClickInventoryListener;
 import io.github.itokagimaru.mun10music.gui.listener.CloseInventoryListeners;
 import io.github.itokagimaru.mun10music.listeners.ItemUseListener;
-import io.github.itokagimaru.mun10music.listeners.PlayerInteractEntityListener;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -29,6 +28,7 @@ public class Man10Music extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        instance = this;
         saveDefaultConfig();
         pluginConfigData = new PluginConfigData(getConfig());
         int configuredMusicLength = pluginConfigData.getMusic().getMaxLength();
@@ -42,13 +42,13 @@ public class Man10Music extends JavaPlugin implements Listener {
                 this,
                 new ClickInventoryListener(),
                 new ItemUseListener(),
-                new CloseInventoryListeners(),
-                new PlayerInteractEntityListener()
+                new CloseInventoryListeners()
         );
         getSLF4JLogger().info("イベントリスナーを登録しました。");
 
         // command
         registerCommandWithTabCompleter("mmusic", new Mmusic(), new Mmusic());
+        registerCommandWithTabCompleter("mmusicfurnitures", new MmusicFurnitures(), new MmusicFurnitures());
         getSLF4JLogger().info("コマンドを登録しました。");
 
         //dataBase
@@ -60,7 +60,7 @@ public class Man10Music extends JavaPlugin implements Listener {
                 getConfig().getString("mysql.user"),
                 getConfig().getString("mysql.password")
         );
-        instance = this;
+
     }
 
     private void registerCommandWithTabCompleter(String name, CommandExecutor executor, TabCompleter tabCompleter) {
