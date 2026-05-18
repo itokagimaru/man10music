@@ -13,8 +13,7 @@ import io.github.itokagimaru.mun10music.util.MakeItem;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.GlowItemFrame;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -26,24 +25,21 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class RadioPlayHolder extends BasePlayMusicHolder {
-    private Entity frame;
+    private final ArmorStand stand;
 
-    public void setFream(Entity glowFream){
-        if (!(glowFream instanceof GlowItemFrame)) return;
-        frame = glowFream;
-        setPerformer(glowFream);
-    }
-
-    public RadioPlayHolder(Player requester, GlowItemFrame target) {
+    public RadioPlayHolder(Player requester, ArmorStand stand) {
         super(null);
-        this.frame = target;
-        setPerformer(target);
-        setup(target);
+        this.stand = stand;
+        if (stand != null) {
+            setPerformer(stand);
+        }
+        setup();
         isPrivate = false;
     }
 
-    public void setup(Entity target) {
-        PlayMusic play = PlayMusicManager.getMusic(target);
+    private void setup() {
+        if (stand == null) return;
+        PlayMusic play = PlayMusicManager.getMusic(stand);
         if (play != null) {
             if (play.getRequestHolder() instanceof BasePlayMusicHolder holder) {
                 holder.requestStopFromExternal();
@@ -54,56 +50,52 @@ public class RadioPlayHolder extends BasePlayMusicHolder {
                 removeIcon();
             } else {
                 setRecordIcons(cassetteIcon);
-                setMusics();
+                setMusics(cassetteIcon.clone());
             }
             setStopIcon();
         }
-        setSettingItem();
-    }
-
-    public void setSettingItem(){
-        ItemStack setting = new ItemStack(Material.FLOWER_BANNER_PATTERN);
-        MakeItem.setItemMetaByColor(setting, "Setting", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "setting");
-        inv.setItem(0, setting);
     }
     @Override
     public void onClick(InventoryClickEvent event){
         ItemStack clicked = event.getCurrentItem();
         if (clicked == null) return;
         String buttonId = ItemData.BUTTON_ID.get(clicked);
-        if (("setting").equals(buttonId)){
-            Player player = (Player) event.getWhoClicked();
-            closeFlag = false;
-            if (frame != null) {
-                RadiosSettingHolder radiosSettingHolder = new RadiosSettingHolder(frame.getUniqueId());
-                player.openInventory(radiosSettingHolder.getInventory());
-            }
+        Player player = (Player) event.getWhoClicked();
+
+        if (stand == null) {
+            player.sendMessage("GUIをもう一度開きなおしてください");
             return;
         }
+
         if ("PLAY".equals(buttonId)) {
-            Player player = (Player) event.getWhoClicked();
-            Entity target = frame != null ? frame : getPerformingTarget(player);
-            AutPlayManager.set(target, true);
+            ItemStack selected = inv.getItem(7);
+            if (selected == null) {
+                player.sendMessage("カセットが選択されていません");
+                return;
+            }
+            // 再生直前に最新の曲リストを再ロード
+            setMusics(selected.clone());
+            if (musics == null || musics.isEmpty()) {
+                player.sendMessage("読み込み中です。少し待ってから再生してください");
+                return;
+            }
+            AutPlayManager.set(stand, true);
+            setPerformer(stand);
             super.onClick(event);
-            setSettingItem();
             return;
         }
         if ("STOP".equals(buttonId)) {
-            Player player = (Player) event.getWhoClicked();
-            Entity target = frame != null ? frame : getPerformingTarget(player);
-            AutPlayManager.set(target, false);
+            AutPlayManager.set(stand, false);
             super.onClick(event);
-            setSettingItem();
             return;
         }
         super.onClick(event);
         if (Objects.equals(ItemData.ITEM_ID.get(clicked), "recordCassette") || Objects.equals(ItemData.ITEM_ID.get(clicked), "mergedCassette")) {
             setRecordIcons(clicked);
-            setMusics();
+            setMusics(clicked.clone());
         } else if (Objects.equals(buttonId, "RECORD BUTTON")) {
             removeIcon();
         }
-        setSettingItem();
     }
 
     public void removeIcon(){
@@ -124,8 +116,7 @@ public class RadioPlayHolder extends BasePlayMusicHolder {
         inv.setItem(7, recordButton);
     }
 
-    private void setMusics() {
-        ItemStack selected = inv.getItem(7);
+    private void setMusics(ItemStack selected) {
         if (selected == null) {
             musics = Collections.emptyList();
             return;
@@ -181,8 +172,7 @@ public class RadioPlayHolder extends BasePlayMusicHolder {
 
     @Override
     protected void onSequenceFinished(Player player) {
-        Entity target = frame != null ? frame : getPerformingTarget(player);
-        if (musics != null && !musics.isEmpty() && AutPlayManager.get(target)) {
+        if (musics != null && !musics.isEmpty() && AutPlayManager.get(stand)) {
             currentIndex = 0;
             startSequence(player);
             return;

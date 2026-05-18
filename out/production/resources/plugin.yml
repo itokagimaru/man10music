@@ -11,3 +11,7 @@ commands:
   mmusic:
     description: /mmusicコマンドのヘルプを表示
     usage: /mmusic [help]
+
+  mmusicfurnitures:
+    description: /mmusicFurnitureコマンドのヘルプを表示
+    usage: /mmusicFurniture [help]
