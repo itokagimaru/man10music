@@ -23,9 +23,6 @@ public class WorkspacesMenuHolder extends BaseGuiHolder {
         setup();
     }
     public void setup() {
-        ItemStack setting = new ItemStack(Material.FLOWER_BANNER_PATTERN);
-        MakeItem.setItemMetaByColor(setting, "Setting", NamedTextColor.YELLOW, 0, ItemData.BUTTON_ID, "setting");
-        inv.setItem(0, setting);
         ItemStack convert = new ItemStack(itemsData().getCassette().getMaterial());
         MakeItem.setItemMetaByColor(convert,"Convert", NamedTextColor.YELLOW, itemsData().getCassette().getCmd(), ItemData.BUTTON_ID,"convert");
         convert.lore(List.of(Component.text("楽譜をカセットテープに変換します")));
@@ -44,10 +41,6 @@ public class WorkspacesMenuHolder extends BaseGuiHolder {
         if(clicked == null) return;
         String buttonId = ItemData.BUTTON_ID.get(clicked);
         switch (buttonId) {
-            case "setting" -> {
-                SettingHolder settingHolder = new SettingHolder(frameUuid);
-                player.openInventory(settingHolder.getInventory());
-            }
             case "convert" -> {
                 ConvertMusicListHolder convertMusicListHolder = new ConvertMusicListHolder(player, frameUuid);
                 player.openInventory(convertMusicListHolder.getInventory());
