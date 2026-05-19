@@ -10,7 +10,6 @@ import io.github.itokagimaru.mun10music.manager.music.Music;
 import io.github.itokagimaru.mun10music.manager.music.PublishedMusicManager;
 import io.github.itokagimaru.mun10music.task.PlayMusic;
 import io.github.itokagimaru.mun10music.util.MakeItem;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -160,10 +159,6 @@ public class RadioPlayHolder extends BasePlayMusicHolder {
         ItemStack cassetteIcon = inv.getItem(7);
         if (cassetteIcon == null) return;
         play.setCassetteIcon(cassetteIcon.clone());
-    }
-
-    public ItemStack upDateAutoPlayIcon(boolean flag){
-        return new ItemStack(Material.AIR);
     }
 
     private Icons icons() {

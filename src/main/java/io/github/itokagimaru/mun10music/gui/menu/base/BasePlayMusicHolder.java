@@ -5,8 +5,6 @@ import io.github.itokagimaru.mun10music.config.Icons;
 import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.manager.PlayMusicManager;
 import io.github.itokagimaru.mun10music.manager.music.Music;
-import io.github.itokagimaru.mun10music.manager.music.MusicManager;
-import io.github.itokagimaru.mun10music.manager.music.PublishedMusicManager;
 import io.github.itokagimaru.mun10music.task.PlayMusic;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import net.kyori.adventure.text.Component;
@@ -62,7 +60,6 @@ public abstract class BasePlayMusicHolder extends BaseGuiHolder {
         Entity target = getPerformingTarget(player);
         switch (ItemData.BUTTON_ID.get(item)) {
             case "PLAY" -> {
-                player.sendMessage(Component.text("再生を開始します/ "));
                 if (musics == null || musics.isEmpty()) return;
                 startSequence(player);
             }

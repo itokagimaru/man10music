@@ -17,9 +17,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +27,6 @@ public class MergeHolder extends BaseGuiHolder {
     int NUM_OF_ICONS = 5;
     ItemStack[] icons = new ItemStack[NUM_OF_ICONS];
     int SLOT_OFFSET = 1;
-    boolean itemReturnFlag = true;
 
     UUID frameUuid;
 

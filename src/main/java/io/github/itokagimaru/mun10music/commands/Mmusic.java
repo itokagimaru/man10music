@@ -1,6 +1,7 @@
 package io.github.itokagimaru.mun10music.commands;
 
 import io.github.itokagimaru.mun10music.Man10Music;
+import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.manager.PlayMusicManager;
 import io.github.itokagimaru.mun10music.manager.MusicYamlManager;
 import io.github.itokagimaru.mun10music.manager.music.PublishedMusicManager;
@@ -13,6 +14,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
@@ -45,9 +47,15 @@ public class Mmusic implements CommandExecutor, TabCompleter {
                 switch (args[1]){
                     case "daw" -> player.give(GetPresetItemStack.daw());
                     case "playItem" -> player.give(GetPresetItemStack.walkMan());
-                    case "workSpase" -> player.give(GetPresetItemStack.workSpace());
-                    case "cassette" -> player.give(GetPresetItemStack.cassette());
-                    case "radio" -> player.give(GetPresetItemStack.radio());
+                    case "cassette" -> {
+                        if (args.length == 2) player.give(GetPresetItemStack.cassette());
+                        else {
+                            ItemStack item = GetPresetItemStack.cassette();
+                            ItemData.PUBLISHED_MUSIC_IDS.set(item, new int[] {Integer.parseInt(args[2])});
+                            ItemData.ITEM_ID.set(item, "recordCassette");
+                            player.give(item);
+                        }
+                    }
                 }
             }
             case "help" -> {
@@ -107,9 +115,7 @@ public class Mmusic implements CommandExecutor, TabCompleter {
                 return List.of(
                         "daw",
                         "playItem",
-                        "workSpase",
-                        "cassette",
-                        "radio"
+                        "cassette"
                 );
             } else if (args[0].equalsIgnoreCase("yml")) {
                 return List.of(

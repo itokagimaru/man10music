@@ -29,19 +29,11 @@ public final class Items {
     private final Entry cassette;
     private final Entry sheetMusicBlank;
     private final Entry sheetMusicWritten;
-    private final Entry cassetteWorkspaceItem;
-    private final Entry cassetteWorkspaceBlock;
-    private final Entry radioItem;
-    private final Entry radioBlock;
 
     public Items(FileConfiguration config) {
         // 生成時に文字列をMaterialへ変換して保持
         this.keyBoard = readEntry(config, "items.keyBoard", Material.STONE_HOE, 1);
         this.walkMan = readEntry(config, "items.walkMan", Material.STONE_HOE, 2);
-        this.cassetteWorkspaceItem = readEntry(config, "items.cassetteWorkspace.item", Material.STONE_HOE, 3);
-        this.cassetteWorkspaceBlock = readEntry(config, "items.cassetteWorkspace.block", Material.STONE_HOE, 4);
-        this.radioItem = readEntry(config, "items.radio.item", Material.STONE_HOE, 5);
-        this.radioBlock = readEntry(config, "items.radio.block", Material.STONE_HOE, 6);
         this.cassette = readEntry(config, "items.cassette", Material.IRON_NUGGET, 1);
         this.sheetMusicBlank = readEntry(config, "items.sheetMusic.blank", Material.IRON_NUGGET, 2);
         this.sheetMusicWritten = readEntry(config, "items.sheetMusic.written", Material.IRON_NUGGET, 3);
@@ -80,22 +72,6 @@ public final class Items {
 
     public Entry getSheetMusicWritten() {
         return sheetMusicWritten;
-    }
-
-    public Entry getCassetteWorkspaceItem() {
-        return cassetteWorkspaceItem;
-    }
-
-    public Entry getCassetteWorkspaceBlock() {
-        return cassetteWorkspaceBlock;
-    }
-
-    public Entry getRadioItem() {
-        return radioItem;
-    }
-
-    public Entry getRadioBlock() {
-        return radioBlock;
     }
 }
 
