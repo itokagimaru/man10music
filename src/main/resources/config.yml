@@ -22,20 +22,6 @@ items:
   walkMan:
     material: stone_hoe
     cmd: 2
-  cassetteWorkspace:
-    item:
-      material: stone_hoe
-      cmd: 3
-    block:
-      material: stone_hoe
-      cmd: 4
-  radio:
-    item:
-      material: stone_hoe
-      cmd: 5
-    block:
-      material: stone_hoe
-      cmd: 6
   cassette:
     material: iron_nugget
     cmd: 1

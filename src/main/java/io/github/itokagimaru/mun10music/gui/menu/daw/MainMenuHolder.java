@@ -14,8 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Objects;
 
 public class MainMenuHolder extends BaseGuiHolder {
-    int defBPM = 60;
-
     public MainMenuHolder() {
         this.inv = Bukkit.createInventory(this, 9, Component.text("MainMenu"));
         setup();

@@ -2,7 +2,6 @@ package io.github.itokagimaru.mun10music.task;
 
 import io.github.itokagimaru.mun10music.Man10Music;
 import io.github.itokagimaru.mun10music.config.Icons;
-import io.github.itokagimaru.mun10music.config.Musics;
 import io.github.itokagimaru.mun10music.data.ItemData;
 import io.github.itokagimaru.mun10music.gui.menu.base.BaseGuiHolder;
 import io.github.itokagimaru.mun10music.gui.menu.base.BasePlayMusicHolder;
@@ -18,12 +17,10 @@ import io.github.itokagimaru.mun10music.manager.music.PublishedMusicManager;
 import io.github.itokagimaru.mun10music.manager.music.Track;
 import io.github.itokagimaru.mun10music.util.MakeItem;
 import io.github.itokagimaru.mun10music.util.PlaySound;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -81,7 +78,6 @@ public class PlayMusic {
                           Double soundRange,
                           int startIndex,
                           EnumSet<Track> trackSet) {
-        requester.sendMessage(Component.text("再生を開始しました/" + isPrivate + target.getName()));
         this.volume = volume;
         this.soundRange = soundRange;
         if (trackSet == null || trackSet.isEmpty()) {
