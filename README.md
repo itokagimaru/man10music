@@ -2,29 +2,20 @@
 
 ## コマンド
 
-- `/getDawItem`  
+- `/mmusic get daw`  
   DAWアイテムを取得します。
 
-- `/getSheetMusic`  
-  空白の楽譜を取得します。
-
-- `/getPlayItem`  
+- `/mmusic get playItem`  
   再生アイテムを取得します。
 
-- `/getCassetteTape`  
-  カセットテープを取得します。
+- `/mmusic help`  
+  管理者用コマンド一覧を表示します。
 
-- `/getCassetteWorkSpace`  
-  カセット編集台を取得します。
-
-- `/setCassettesName`  
-  カセットテープに曲名を設定します。
-
-- `/cassetteTransfer`  
-  旧PDCで保存された楽曲データを新PDCへ移行します。
-
-- `/getRadio`  
-  ラジオアイテムを取得します。
+- `/mmusicfurnitures`  
+  家具連携用コマンドです。Man10系の家具プラグイン導入が必要です。  
+  - `workspace <player>`: ワークスペースGUIを開きます。  
+  - `radio play <player> <x> <y> <z>`: 指定座標のラジオ用アーマースタンドで再生GUIを開きます。  
+  - `radio remove <player> <x> <y> <z>`: 指定座標のラジオ用アーマースタンドを削除します。
 
 ## コンフィグ（`config.yml`）
 
@@ -45,7 +36,7 @@
 
 ### `items`
 各アイテムの `material` と `cmd` を定義します。  
-例: `keyBoard`, `walkMan`, `cassette`, `sheetMusic`, `cassetteWorkspace`, `radio`
+例: `keyBoard`, `walkMan`, `cassette`, `cassetteWorkspace`, `radio`
 
 ### `icons`
 GUIアイコンの `material` と `cmd` を定義します。  
