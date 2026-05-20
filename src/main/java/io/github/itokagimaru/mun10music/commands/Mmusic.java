@@ -37,12 +37,6 @@ public class Mmusic implements CommandExecutor, TabCompleter {
         if (!player.hasPermission("man10music.admin")) return true;
 
         switch (args[0]){
-            case "stop_all_music" -> {
-                for (PlayMusic play : PlayMusicManager.getMusicList()) {
-                    play.stopTask();
-                }
-                PlayMusicManager.removeMusic();
-            }
             case "get" -> {
                 switch (args[1]){
                     case "daw" -> player.give(GetPresetItemStack.daw());
@@ -60,7 +54,6 @@ public class Mmusic implements CommandExecutor, TabCompleter {
             }
             case "help" -> {
                 player.sendMessage(Component.text("/mmusic get [item] -> アイテムの入手").color(net.kyori.adventure.text.format.NamedTextColor.GREEN));
-                player.sendMessage(Component.text("/mmusic stop_all_music -> 全ての音楽を停止").color(net.kyori.adventure.text.format.NamedTextColor.GREEN));
             }
             case "yml" -> {
                 if (args.length < 2) return false;
@@ -106,8 +99,7 @@ public class Mmusic implements CommandExecutor, TabCompleter {
         if (!player.hasPermission("man10music.admin")) return null;
         if (args.length == 1) {
             return List.of(
-                    "get",
-                    "stop_all_music"
+                    "get"
             );
         }
         if (args.length == 2) {
